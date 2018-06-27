@@ -15,7 +15,7 @@ import pathlib
 
 class Ui_MainWindow(object):
     def __init__(self, _mainUI = None):
-        self.absPath = './../res/'
+        self.absPath = './../res'
         self.dirName = 'device'
         self.side = 'side'
         self.sideNum = 1
@@ -228,10 +228,9 @@ class Ui_MainWindow(object):
 
     def do_Capture(self):
         print("##-IMAGE CAPTURE START")
-
         root_path = self.absPath; config.makeDir(root_path)
         device_path = os.path.join(root_path, self.dirName); config.makeDir(device_path)
-        sideStr = self.side + self.sideNum
+        sideStr = self.side + str(self.sideNum)
         side_path = os.path.join(device_path, sideStr)
         config.makeDir(side_path)
 
