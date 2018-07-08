@@ -81,7 +81,7 @@ def image_capture(dir_path, current_side, cameraNum, do_write_ROI):
                 w = r[2]
                 h = r[3]
                 dirName = current_side + '_' + objName + '_' + str(elements[objName])
-                if do_write_ROI == True : dirName += '_cor'
+                if do_write_ROI : dirName += '_cor'
                 else : dirName += '_incor'
                 temppath = dirPath + '/' + dirName
 

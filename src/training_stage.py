@@ -15,7 +15,7 @@ import pathlib
 
 class Ui_MainWindow(object):
     def __init__(self, _mainUI = None):
-        self.absPath = './../res'
+        self.absPath = './res'
         self.dirName = 'device'
         self.side = 'side'
         self.sideNum = 1
@@ -223,7 +223,7 @@ class Ui_MainWindow(object):
         captured_image = image_process.image_capture(dir_path=device_path,
                                                      current_side=sideStr,
                                                      cameraNum=self.cameraNum,
-                                                     do_write_ROI=True)
+                                                     do_write_ROI=False)
         self.selectImg.extend(captured_image)
 
     def do_Capture(self):
@@ -242,8 +242,8 @@ class Ui_MainWindow(object):
         self.selectImg.extend(captured_image)
 
     def do_NextSide(self):
-        self.cameraNum = (self.cameraNum + 1) % 2 # CAMERA CHANGE
-        self.sideNum+=1
+        self.cameraNum = (self.cameraNum + 1) % config.CAMERA_NUMBER # CAMERA CHANGE
+        self.sideNum= (self.sideNum) % 5 + 1;
         side = self.side + str(self.sideNum)
         self.setState(side)
         print("##-CLIKED THE NEXT BUTTON :" + side)
@@ -257,7 +257,7 @@ class Ui_MainWindow(object):
 
     def make_model(self):
         #plz write the device path
-        path = self.absPath + self.dirName
+        path = os.path.join(self.absPath, self.dirName)
         print("Training device: " + path)
         train_on_tensor.execute_training_on_tensor(device=self.dirName,
                                                    base_path=path)

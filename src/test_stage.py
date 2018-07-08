@@ -17,7 +17,7 @@ from src import image_process, predict, inputBox, config, roi_unit
 
 class Ui_MainWindow(object):
     def __init__(self, _mainUI = None):
-        self.absPath = './../res'
+        self.absPath = './res'
         self.deviceName = 'device'
         self.sideName = 'side'
         self.sideNum = 1
@@ -176,12 +176,12 @@ class Ui_MainWindow(object):
 
     def img_capture(self):
         print('##-CAPTURE BUTTON PRESSED')
-        self.ROI = roi_unit.readROI(self.absPath + self.deviceName + '/locationInfo.txt',
+        self.ROI = roi_unit.readROI( os.path.join(self.absPath, self.deviceName, 'locationInfo.txt'),
                                     config.WINDOW_RATIO)
-
-        predictPath = self.absPath + self.deviceName + '/predict'; config.makeDir(predictPath)
-        pOImagePath= self.absPath + self.deviceName + '/predict/images'; config.makeDir(pOImagePath)
-        pCImagePath = self.absPath + self.deviceName + '/predict/imagesCanny'; config.makeDir(pCImagePath)
+        print(self.ROI)
+        predictPath = os.path.join(self.absPath, self.deviceName, 'predict'); config.makeDir(predictPath)
+        pOImagePath= os.path.join(predictPath, 'images'); config.makeDir(pOImagePath)
+        pCImagePath = os.path.join(predictPath, 'imagesCanny'); config.makeDir(pCImagePath)
 
         side = self.sideName + str(self.sideNum)
         print(self.ROI[side])
@@ -192,13 +192,13 @@ class Ui_MainWindow(object):
 
     def do_Nextbutton(self):
         print("##-NEXT BUTTON CLICKED")
-        self.sideNum += 1
-        self.cameraNum = (self.cameraNum + 1) % config.CAMERA_NUMBER
+        self.cameraNum = (self.cameraNum + 1) % config.CAMERA_NUMBER  # CAMERA CHANGE
+        self.sideNum = (self.sideNum) % 5 + 1;
 
     def do_startTest(self):
         print("##-TEST BUTTON CLICKED")
         ## You write the To-do method here
-        path = self.absPath + self.deviceName
+        path = os.path.join(self.absPath, self.deviceName)
         img_list = os.listdir(path + '/predict')
         classes = os.listdir(path + '/t_images')
 
@@ -246,7 +246,7 @@ class Ui_MainWindow(object):
         ## You write the To-do method here and Set result
         self.graphicsView.setText("RESULT DATA")
         keys = self.smallImages.keys()
-        result_path = self.absPath + self.deviceName + '/result'
+        result_path = os.path.join(self.absPath, self.deviceName ,'result')
         config.makeDir(result_path)
         print('Sides:',keys)
         for key in keys :

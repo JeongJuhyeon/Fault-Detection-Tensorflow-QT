@@ -11,8 +11,8 @@ WINDOW_SIZE : 실제 카메라 캡쳐화면의 크기
 
 CAMERA_NUMBER = 1
 AUTO_FOCUS = False
-TESTWINDOW_SIZE = {'width' : 1632, 'height' : 1224}
-WINDOW_SIZE = {'width' : 3264, 'height' : 2448}
+TESTWINDOW_SIZE = {'width' : 700, 'height' : 700}
+WINDOW_SIZE = {'width' : 700, 'height' : 700}
 WINDOW_RATIO = {
     'width_ratio' : WINDOW_SIZE['width'] / TESTWINDOW_SIZE['width'],
     'height_ratio' : WINDOW_SIZE['height'] / TESTWINDOW_SIZE['height']
