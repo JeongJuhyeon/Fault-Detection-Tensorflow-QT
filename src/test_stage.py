@@ -15,8 +15,10 @@ import os
 from src import image_process, predict, inputBox, config, roi_unit
 
 
+# Contains test stage UI
+
 class Ui_MainWindow(object):
-    def __init__(self, _mainUI = None):
+    def __init__(self, _mainUI=None):
         self.absPath = './res'
         self.deviceName = 'device'
         self.sideName = 'side'
@@ -58,12 +60,6 @@ class Ui_MainWindow(object):
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setObjectName("label")
 
-        # Home Button
-        self.home = QtWidgets.QPushButton(self.centralwidget)
-        self.home.setGeometry(QtCore.QRect(730, 10, 50, 50))
-        self.home.clicked.connect(self.do_Home)
-        self.home.setStyleSheet(css)
-        self.home.setFont(font2)
         self.widget = QtWidgets.QWidget(self.centralwidget)
         self.widget.setGeometry(QtCore.QRect(10, 60, 781, 491))
         self.widget.setObjectName("widget")
@@ -72,42 +68,23 @@ class Ui_MainWindow(object):
         self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame.setObjectName("frame")
-        self.verticalLayoutWidget = QtWidgets.QWidget(self.frame)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 260, 321, 141))
-        self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.button_start_test = QtWidgets.QPushButton(self.verticalLayoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
 
-        sizePolicy.setHeightForWidth(self.button_start_test.sizePolicy().hasHeightForWidth())
+        # Home Button
+        self.home = QtWidgets.QPushButton(self.centralwidget)
+        self.home.setGeometry(QtCore.QRect(730, 10, 60, 60))
+        self.home.clicked.connect(self.do_Home)
+        self.home.setStyleSheet(css)
+        self.home.setFont(font2)
 
-        #Start Button
-        self.button_start_test.setSizePolicy(sizePolicy)
-        self.button_start_test.setFont(font)
-        self.button_start_test.setObjectName("button_start_test")
-        self.button_start_test.clicked.connect(self.do_startTest)
-        self.button_start_test.setStyleSheet(css)
-        self.button_start_test.setFont(font)
-        self.verticalLayout.addWidget(self.button_start_test)
+        # "Set Device Number" Button
+        self.button_device_number = QtWidgets.QPushButton(self.frame)
+        self.button_device_number.setGeometry(QtCore.QRect(10, 10, 321, 61))
+        self.button_device_number.setObjectName("button_device_number")
+        self.button_device_number.clicked.connect(self.setDeviceNum)
+        self.button_device_number.setStyleSheet(css)
+        self.button_device_number.setFont(font)
 
-        self.button_show_result = QtWidgets.QPushButton(self.verticalLayoutWidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.button_show_result.sizePolicy().hasHeightForWidth())
-        #Show Button
-        self.button_show_result.setSizePolicy(sizePolicy)
-        self.button_show_result.setObjectName("button_show_result")
-        self.button_show_result.setFont(font)
-        self.button_show_result.setStyleSheet(css)
-        self.button_show_result.clicked.connect(self.show_Result)
-        self.verticalLayout.addWidget(self.button_show_result)
-
-        #Capture button
+        # "Capture" button
         self.button_capture = QtWidgets.QPushButton(self.frame)
         self.button_capture.setGeometry(QtCore.QRect(10, 80, 321, 61))
         self.button_capture.setFont(font)
@@ -116,21 +93,59 @@ class Ui_MainWindow(object):
         # connect the image capture method
         self.button_capture.clicked.connect(self.img_capture)
 
-        #Next Button
-        self.button_capture_next = QtWidgets.QPushButton(self.frame)
-        self.button_capture_next.setGeometry(QtCore.QRect(170, 150, 161, 30))
-        self.button_capture_next.setObjectName("button_capture_next")
-        self.button_capture_next.clicked.connect(self.do_Nextbutton)
-        self.button_capture_next.setFont(font2)
-        self.button_capture_next.setStyleSheet(css)
+        # "Camera autofocus" Check Box
+        self.autofocus_checkbox = QtWidgets.QCheckBox("Camera autofocus", self.frame)
+        self.autofocus_checkbox.setGeometry(QtCore.QRect(25, 140, 165, 100))
+        self.autofocus_checkbox.setObjectName("autofocus_checkbox")
+        self.autofocus_checkbox.setStyleSheet(css)
+        self.autofocus_checkbox.setFont(font2)
+        self.autofocus_checkbox.setChecked(config.AUTO_FOCUS)
+        self.autofocus_checkbox.stateChanged.connect(config.change_autofocus)
 
-        #Set Device Number
-        self.button_device_number = QtWidgets.QPushButton(self.frame)
-        self.button_device_number.setGeometry(QtCore.QRect(10, 10, 321, 61))
-        self.button_device_number.setObjectName("button_device_number")
-        self.button_device_number.clicked.connect(self.setDeviceNum)
-        self.button_device_number.setStyleSheet(css)
-        self.button_device_number.setFont(font)
+        # "Next" Button
+        self.button_capture_next = QtWidgets.QPushButton(self.frame)
+        self.button_capture_next.setGeometry(QtCore.QRect(230, 160, 60, 60))
+        self.button_capture_next.setObjectName("button_capture_next")
+        self.button_capture_next.setStyleSheet(css)
+        self.button_capture_next.setFont(font2)
+        self.button_capture_next.clicked.connect(self.do_Nextbutton)
+
+        # Vertical layout for "Start test" and "Show result" buttons
+        self.verticalLayoutWidget = QtWidgets.QWidget(self.frame)
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 250, 321, 141))
+        self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setObjectName("verticalLayout")
+
+        # "Start Test" Button
+        self.button_start_test = QtWidgets.QPushButton(self.verticalLayoutWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.button_start_test.sizePolicy().hasHeightForWidth())
+        self.button_start_test.setSizePolicy(sizePolicy)
+
+        self.button_start_test.setFont(font)
+        self.button_start_test.setObjectName("button_start_test")
+        self.button_start_test.clicked.connect(self.do_startTest)
+        self.button_start_test.setStyleSheet(css)
+        self.button_start_test.setFont(font)
+        self.verticalLayout.addWidget(self.button_start_test)
+
+        # "Show Result" Button
+        self.button_show_result = QtWidgets.QPushButton(self.verticalLayoutWidget)
+        self.button_show_result.setObjectName("button_show_result")
+        self.button_show_result.setFont(font)
+        self.button_show_result.setStyleSheet(css)
+        self.button_show_result.clicked.connect(self.show_Result)
+        self.verticalLayout.addWidget(self.button_show_result)
+
+        self.button_show_result.setSizePolicy(sizePolicy)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.button_show_result.sizePolicy().hasHeightForWidth())
 
         self.graphicsView = QtWidgets.QLabel(self.widget)
         self.graphicsView.setGeometry(QtCore.QRect(370, 60, 401, 391))
@@ -176,17 +191,20 @@ class Ui_MainWindow(object):
 
     def img_capture(self):
         print('##-CAPTURE BUTTON PRESSED')
-        self.ROI = roi_unit.readROI( os.path.join(self.absPath, self.deviceName, 'locationInfo.txt'),
+        self.ROI = roi_unit.readROI(os.path.join(self.absPath, self.deviceName, 'locationInfo.txt'),
                                     config.WINDOW_RATIO)
         print(self.ROI)
-        predictPath = os.path.join(self.absPath, self.deviceName, 'predict'); config.makeDir(predictPath)
-        pOImagePath= os.path.join(predictPath, 'images'); config.makeDir(pOImagePath)
-        pCImagePath = os.path.join(predictPath, 'imagesCanny'); config.makeDir(pCImagePath)
+        predictPath = os.path.join(self.absPath, self.deviceName, 'predict');
+        config.makeDir(predictPath)
+        pOImagePath = os.path.join(predictPath, 'images');
+        config.makeDir(pOImagePath)
+        pCImagePath = os.path.join(predictPath, 'imagesCanny');
+        config.makeDir(pCImagePath)
 
         side = self.sideName + str(self.sideNum)
         print(self.ROI[side])
         self.img = image_process.test_image_capture(self.ROI[side], pOImagePath, pCImagePath, self.cameraNum)
-        cv2.imwrite(predictPath + '/' + side +'.jpg', self.img)
+        cv2.imwrite(predictPath + '/' + side + '.jpg', self.img)
         self.imgview = QImage(self.img.data, self.img.shape[1], self.img.shape[0], QImage.Format_RGB888)
         self.graphicsView.setPixmap(QPixmap.fromImage(self.imgview))
 
@@ -203,15 +221,17 @@ class Ui_MainWindow(object):
         classes = os.listdir(path + '/t_images')
 
         incor_class = {}
-        for label in classes :
-            if label.split('_')[-1] == 'incor' :
+        for label in classes:
+            if label.split('_')[-1] == 'incor':
                 value = label.split('_')[1]
-                if value in incor_class : incor_class[value].append(label)
-                else : incor_class[value] = [label]
+                if value in incor_class:
+                    incor_class[value].append(label)
+                else:
+                    incor_class[value] = [label]
 
         self.smallImages = {}
-        for image in img_list :
-            if not os.path.isdir(path + '/predict/' + image) :
+        for image in img_list:
+            if not os.path.isdir(path + '/predict/' + image):
                 self.smallImages[image.split('.')[0]] = cv2.imread(path + '/predict/' + image)
 
         img_list = os.listdir(path + '/predict/imagesCanny')
@@ -224,7 +244,7 @@ class Ui_MainWindow(object):
         print('#Predicting')
         results = predict.run_inference_on_image(modelFullPath, labelsFullPath, imageDir, tensorName)
 
-        for result in results :
+        for result in results:
             image = result['imageName']
             print('#Predict Result[{}]'.format(image))
             matchRates = result['results']
@@ -236,9 +256,9 @@ class Ui_MainWindow(object):
 
             if isSuit == 'CORRECT':
                 cv2.rectangle(self.smallImages[side], start, end, config.GREEN, 2)
-            elif isSuit == 'CHECK' :
+            elif isSuit == 'CHECK':
                 cv2.rectangle(self.smallImages[side], start, end, config.BLUE, 2)
-            else :
+            else:
                 cv2.rectangle(self.smallImages[side], start, end, config.RED, 2)
 
     def show_Result(self):
@@ -246,10 +266,10 @@ class Ui_MainWindow(object):
         ## You write the To-do method here and Set result
         self.graphicsView.setText("RESULT DATA")
         keys = self.smallImages.keys()
-        result_path = os.path.join(self.absPath, self.deviceName ,'result')
+        result_path = os.path.join(self.absPath, self.deviceName, 'result')
         config.makeDir(result_path)
-        print('Sides:',keys)
-        for key in keys :
+        print('Sides:', keys)
+        for key in keys:
             cv2.imwrite(result_path + '/' + key + '.jpg', self.smallImages[key])
 
     def getArea(self, imageName):
@@ -257,11 +277,12 @@ class Ui_MainWindow(object):
         side = temp[0]
         cur = None
         for roi in self.ROI[side]:
-            if roi.side == side and roi.element == temp[1] and roi.number == temp[2] :
+            if roi.side == side and roi.element == temp[1] and roi.number == temp[2]:
                 cur = roi
 
         st, end = cur.getArea()
         return st, end, side
+
 
 def getResult(imageName, result_arr):
     temp = imageName.split('_')
@@ -270,11 +291,15 @@ def getResult(imageName, result_arr):
     current_class = temp[0] + '_' + temp[1] + '_' + temp[3]
     print(current_class, currect_class)
 
-    if result_arr[0][1] > 0.7 and current_class == currect_class : return 'CORRECT'
-    else : return 'INCORRECT'
+    if result_arr[0][1] > 0.7 and current_class == currect_class:
+        return 'CORRECT'
+    else:
+        return 'INCORRECT'
+
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()

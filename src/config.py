@@ -69,3 +69,8 @@ def delete_folder(pth) :
         else :
             sub.unlink()
     pth.rmdir()
+
+def change_autofocus(self):
+    global AUTO_FOCUS
+    AUTO_FOCUS = not AUTO_FOCUS
+    print("Autofocus is", "on" if AUTO_FOCUS else "off")
