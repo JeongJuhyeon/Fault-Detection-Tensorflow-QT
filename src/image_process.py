@@ -51,7 +51,7 @@ def convert_coord(coord, size_conf):
                 int((coord[1] + coord[3]) * heightRatio))
     return newCoord
 
-
+# Used in training stage
 def image_capture(dir_path, current_side, cameraNum, do_write_ROI):
     if do_write_ROI: file = open(dir_path + '/' + 'locationInfo.txt', "a+")
     actiondialog = roiactiondialog.ROIActionDialog()
@@ -144,7 +144,7 @@ def image_capture(dir_path, current_side, cameraNum, do_write_ROI):
                 file.close()
             return selected_rois
 
-
+# Used in test stage
 def test_image_capture(infos, O_path, C_path, cameraNum):
     print('## Test image capture:', O_path, C_path)
     img = get_image_from_camera(cameraNum, config.WINDOW_SIZE)

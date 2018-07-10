@@ -13,8 +13,10 @@ from PyQt5.QtCore import Qt
 import pathlib
 
 
+# Contains training_stage UI
+
 class Ui_MainWindow(object):
-    def __init__(self, _mainUI = None):
+    def __init__(self, _mainUI=None):
         self.absPath = './res'
         self.dirName = 'device'
         self.side = 'side'
@@ -33,7 +35,7 @@ class Ui_MainWindow(object):
                             }"""
         font = QFont('D2Coding', 18, QFont.Light)
         font2 = QFont('D2Coding', 12, QFont.Light)
-        self.MainWindow =_MainWindow
+        self.MainWindow = _MainWindow
         self.MainWindow.setObjectName("MainWindow")
         self.MainWindow.resize(800, 600)
         pal = self.MainWindow.palette()
@@ -43,8 +45,8 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(self.MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
-        #Title Label
-        font3= QFont('D2Coding', 25, QFont.Light)
+        # Title Label
+        font3 = QFont('D2Coding', 25, QFont.Light)
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(10, 30, 781, 41))
         self.label.setAlignment(QtCore.Qt.AlignCenter)
@@ -52,14 +54,14 @@ class Ui_MainWindow(object):
         self.label.setFont(font3)
 
         self.currentState = QtWidgets.QLabel(self.centralwidget)
-        self.currentState.setGeometry(QtCore.QRect(10,71,781,21))
+        self.currentState.setGeometry(QtCore.QRect(10, 71, 781, 21))
         self.currentState.setFont(font2)
         self.currentState.setAlignment(QtCore.Qt.AlignCenter)
         self.currentState.setObjectName('currentState')
 
-        #Home Button
+        # Home Button
         self.home = QtWidgets.QPushButton(self.centralwidget)
-        self.home.setGeometry(QtCore.QRect(730,10,50,50))
+        self.home.setGeometry(QtCore.QRect(730, 10, 60, 60))
         self.home.clicked.connect(self.do_Home)
         self.home.setFont(font2)
         self.home.setStyleSheet(css)
@@ -80,6 +82,41 @@ class Ui_MainWindow(object):
         self.gridLayout.setVerticalSpacing(5)
         self.gridLayout.setObjectName("gridLayout")
 
+        # Correct Capture Button
+        self.correct_capture = QtWidgets.QPushButton(self.frame)
+        self.correct_capture.setGeometry(QtCore.QRect(10, 10, 155, 80))
+        self.correct_capture.setStyleSheet(css)
+        self.correct_capture.setFont(font)
+        self.correct_capture.setObjectName("correct_capture")
+        self.correct_capture.clicked.connect(self.do_Capture)
+
+        # Incorrect Capture Button
+        self.incorrect_capture = QtWidgets.QPushButton(self.frame)
+        self.incorrect_capture.setGeometry(QtCore.QRect(170, 10, 155, 80))
+        self.incorrect_capture.setStyleSheet(css)
+        self.incorrect_capture.setFont(font)
+        self.incorrect_capture.setObjectName("Incorrect Capture")
+        self.incorrect_capture.clicked.connect(self.do_InCorrect)
+
+        # "Camera autofocus" Check Box
+        self.autofocus_checkbox = QtWidgets.QCheckBox("Camera autofocus", self.frame)
+        self.autofocus_checkbox.setGeometry(QtCore.QRect(25, 90, 165, 100))
+        self.autofocus_checkbox.setObjectName("autofocus_checkbox")
+        self.autofocus_checkbox.setStyleSheet(css)
+        self.autofocus_checkbox.setFont(font2)
+        self.autofocus_checkbox.setChecked(config.AUTO_FOCUS)
+        self.autofocus_checkbox.stateChanged.connect(config.change_autofocus)
+
+
+        # Next Button
+        self.button_capture_next = QtWidgets.QPushButton(self.frame)
+        self.button_capture_next.setGeometry(QtCore.QRect(230, 110, 60, 60))
+        self.button_capture_next.setObjectName("button_capture_next")
+        self.button_capture_next.setStyleSheet(css)
+        self.button_capture_next.setFont(font2)
+        self.button_capture_next.clicked.connect(self.do_NextSide)
+
+        # Show ROI button
         self.button_show_roi = QtWidgets.QPushButton(self.gridLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -92,7 +129,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.button_show_roi, 1, 0, 1, 1)
         self.button_show_roi.clicked.connect(self.do_ShowROI)
 
-        #Delete All button
+        # Delete All button
         self.button_all_delete = QtWidgets.QPushButton(self.gridLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -112,7 +149,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
 
-        #Create Image
+        # Create Image
         self.button_create_img = QtWidgets.QPushButton(self.verticalLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
@@ -137,36 +174,8 @@ class Ui_MainWindow(object):
         self.pushButton_training.setStyleSheet(css)
         self.pushButton_training.setFont(font)
         self.verticalLayout.addWidget(self.pushButton_training)
-        #this button calls make_mode method
+        # this button calls make_model method
         self.pushButton_training.clicked.connect(self.make_model)
-
-        #Incorrect Capture Button
-        self.incorrect_capture = QtWidgets.QPushButton(self.frame)
-        self.incorrect_capture.setGeometry(QtCore.QRect(170, 10, 160, 80))
-        self.incorrect_capture.setFont(font)
-        self.incorrect_capture.setStyleSheet(css)
-
-        #Correct Capture Button
-        self.correct_capture = QtWidgets.QPushButton(self.frame)
-        self.correct_capture.setGeometry(QtCore.QRect(10, 10, 155, 80))
-        self.correct_capture.setFont(font)
-        self.correct_capture.setStyleSheet(css)
-        self.correct_capture.setFont(font)
-        self.correct_capture.setObjectName("correct_capture")
-        self.incorrect_capture.setFont(font)
-        self.incorrect_capture.setObjectName("Incorrect Capture")
-        self.incorrect_capture.clicked.connect(self.do_InCorrect)
-        # this button calls do_capture method
-        self.correct_capture.clicked.connect(self.do_Capture)
-
-        #Next Button
-        self.button_capture_next = QtWidgets.QPushButton(self.frame)
-        self.button_capture_next.setGeometry(QtCore.QRect(170, 100, 161, 30))
-        self.button_capture_next.setObjectName("button_capture_next")
-        self.button_capture_next.setStyleSheet(css)
-        self.button_capture_next.setFont(font2)
-
-        self.button_capture_next.clicked.connect(self.do_NextSide)
 
         self.graphicsView = QtWidgets.QGraphicsView(self.widget)
         self.graphicsView.setGeometry(QtCore.QRect(370, 60, 401, 391))
@@ -194,7 +203,7 @@ class Ui_MainWindow(object):
         # self.button_start_roi.setText(_translate("MainWindow", "Start ROI"))
         # self.button_delete.setText(_translate("MainWindow", "Delete"))
         self.button_show_roi.setText(_translate("MainWindow", "Show ROI"))
-        self.button_all_delete.setText(_translate("MainWindow", "All Delete"))
+        self.button_all_delete.setText(_translate("MainWindow", "Delete All"))
         self.pushButton_training.setText(_translate("MainWindow", "Training Start"))
         self.button_create_img.setText(_translate("MainWindow", "Create Training Image"))
         self.correct_capture.setText(_translate("MainWindow", "Correct\nCapture"))
@@ -202,7 +211,7 @@ class Ui_MainWindow(object):
         self.button_capture_next.setText(_translate("MainWindow", "Next"))
         self.home.setText(_translate("MainWindow", "Home"))
 
-    def setState(self, _side = 'side1'):
+    def setState(self, _side='side1'):
         self.currentState.setText(QtCore.QCoreApplication.translate("MainWindow", self.dirName + " " + _side))
 
     def do_AllDelete(self):
@@ -218,7 +227,7 @@ class Ui_MainWindow(object):
     def do_InCorrect(self):
         # write that you want to do
         print("##-INCORRECT CAPTURE START")
-        device_path = os.path.join(self.absPath ,self.dirName)
+        device_path = os.path.join(self.absPath, self.dirName)
         sideStr = self.side + str(self.sideNum)
         captured_image = image_process.image_capture(dir_path=device_path,
                                                      current_side=sideStr,
@@ -228,8 +237,10 @@ class Ui_MainWindow(object):
 
     def do_Capture(self):
         print("##-IMAGE CAPTURE START")
-        root_path = self.absPath; config.makeDir(root_path)
-        device_path = os.path.join(root_path, self.dirName); config.makeDir(device_path)
+        root_path = self.absPath;
+        config.makeDir(root_path)
+        device_path = os.path.join(root_path, self.dirName);
+        config.makeDir(device_path)
         sideStr = self.side + str(self.sideNum)
         side_path = os.path.join(device_path, sideStr)
         config.makeDir(side_path)
@@ -242,32 +253,33 @@ class Ui_MainWindow(object):
         self.selectImg.extend(captured_image)
 
     def do_NextSide(self):
-        self.cameraNum = (self.cameraNum + 1) % config.CAMERA_NUMBER # CAMERA CHANGE
-        self.sideNum= (self.sideNum) % 5 + 1;
+        self.cameraNum = (self.cameraNum + 1) % config.CAMERA_NUMBER  # CAMERA CHANGE
+        self.sideNum = (self.sideNum) % 5 + 1;
         side = self.side + str(self.sideNum)
         self.setState(side)
         print("##-CLIKED THE NEXT BUTTON :" + side)
 
     def create_image(self):
-        #plz write the image path
+        # plz write the image path
         device_path = os.path.join(self.absPath, self.dirName)
         print(device_path)
         train_on_tensor.copy_images(device_path_to_copy=device_path)
         print('#COPY IMAGES DONE')
 
     def make_model(self):
-        #plz write the device path
+        # plz write the device path
         path = os.path.join(self.absPath, self.dirName)
         print("Training device: " + path)
         train_on_tensor.execute_training_on_tensor(device=self.dirName,
                                                    base_path=path)
 
+
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
-
