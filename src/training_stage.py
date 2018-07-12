@@ -149,7 +149,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
 
-        # Create Image
+        # Create Training Image
         self.button_create_img = QtWidgets.QPushButton(self.verticalLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
@@ -163,7 +163,7 @@ class Ui_MainWindow(object):
         self.button_create_img.clicked.connect(self.create_image)
         self.verticalLayout.addWidget(self.button_create_img)
 
-        # Training Button
+        # Training Start Button
         self.pushButton_training = QtWidgets.QPushButton(self.verticalLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
