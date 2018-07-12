@@ -1,10 +1,11 @@
 import sys
 
-from src import test_stage, inputBox, training_stage
+from src import test_stage, inputBox, training_stage, devname_cameraxy_inputbox
 
 from PyQt5.QtGui import QFont
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt
+
 
 class Ui_Interface(object):
     def setupUi(self, _interface):
@@ -30,7 +31,6 @@ class Ui_Interface(object):
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
 
-        #Training Stage
         css = """QPushButton { background-color: white;
                 border-style: outset;
                 border-width: 2px;
@@ -38,7 +38,9 @@ class Ui_Interface(object):
                 border-color: black;
                 padding: 4px;
             }
+        
             """
+        # Training Stage Button
         self.button_training_stage = QtWidgets.QPushButton(self.verticalLayoutWidget)
         self.button_training_stage.setEnabled(True)
         self.button_training_stage.setMinimumSize(QtCore.QSize(1, 100))
@@ -46,20 +48,19 @@ class Ui_Interface(object):
         font = QFont('D2Coding', 25, QFont.Light)
         self.button_training_stage.setFont(font)
         self.button_training_stage.setStyleSheet(css)
-
-        # button push
         self.button_training_stage.clicked.connect(self.go_training_stage)
         self.verticalLayout.addWidget(self.button_training_stage)
-        # Test Stage
 
+        # Test Stage Button
         self.button_test_stage = QtWidgets.QPushButton(self.verticalLayoutWidget)
         self.button_test_stage.setMinimumSize(QtCore.QSize(1, 100))
         self.button_test_stage.setObjectName("button_test_stage")
         self.button_test_stage.clicked.connect(self.go_test_stage)
         self.button_test_stage.setStyleSheet(css)
         self.button_test_stage.setFont(font)
-
         self.verticalLayout.addWidget(self.button_test_stage)
+
+        # Statistics Button
         self.button_statistic_stage = QtWidgets.QPushButton(self.verticalLayoutWidget)
         self.button_statistic_stage.setMinimumSize(QtCore.QSize(1, 100))
         self.button_statistic_stage.setObjectName("button_statistic_stage")
@@ -67,8 +68,8 @@ class Ui_Interface(object):
         self.button_statistic_stage.setFont(font)
         # self.button_statistic_stage.clicked.connect(self.create_inputBox)
         self.verticalLayout.addWidget(self.button_statistic_stage)
-        self.interface.setCentralWidget(self.centralwidget)
 
+        self.interface.setCentralWidget(self.centralwidget)
         self.retranslateUi()
 
         QtCore.QMetaObject.connectSlotsByName(self.interface)
@@ -95,9 +96,15 @@ class Ui_Interface(object):
         print("##-STAGE CHANGED(Test Stage)")
 
     def go_training_stage(self):
+        cameraxyinputbox = devname_cameraxy_inputbox.devnameCameraXYInputbox()
+
         inputbox = inputBox.App("Enter the device name")
         inputbox.do_UI()
         print("##-RETURN  VALUE : " + inputbox.getValue())
+        cameraxyinputbox.curDevName = inputbox.getValue()
+        cameraxyinputbox.searchDevice()
+        cameraxyinputbox.exec()
+
         self.training_Window = QtWidgets.QMainWindow()
         self.training_interface = training_stage.Ui_MainWindow(self.interface)
         self.training_interface.setupUi(self.training_Window)
@@ -123,6 +130,7 @@ def main():
     ui.setupUi(Interface)
     Interface.show()
     sys.exit(app.exec_())
+
 
 if __name__ == "__main__":
     main()

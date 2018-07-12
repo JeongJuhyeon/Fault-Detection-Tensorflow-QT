@@ -38,7 +38,7 @@ def execute_training_on_tensor(device, base_path):
     _image_dir = base_path + '/t_images'
     _summaries_dir = base_path + '/model/log'
     _tensor_name = device
-    cmd = "python src/inception.py --image_dir={image_dir} \
+    cmd = "python inception.py --image_dir={image_dir} \
                                     --saved_model_dir={model_dir} \
                                     --bottleneck_dir={store_path} \
                                     --how_many_training_steps={iteration} \
