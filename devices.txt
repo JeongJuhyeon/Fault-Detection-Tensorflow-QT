@@ -21,3 +21,11 @@ center=124897
 left2=124
 right2=12445
 
+[bob]
+left1=12321
+right1=12439
+center=1239
+left2=12313
+right2=1231231
+
+
