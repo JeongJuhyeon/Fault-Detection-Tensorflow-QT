@@ -266,7 +266,7 @@ class Ui_MainWindow(object):
         ## You write the To-do method here and Set result
         self.graphicsView.setText("RESULT DATA")
         keys = self.smallImages.keys()
-        result_path = os.path.join(self.absPath, self.deviceName, 'result')
+        result_path = os.path.join(self.absPath, self.deviceName, 'results')
         config.makeDir(result_path)
         print('Sides:', keys)
         for key in keys:
