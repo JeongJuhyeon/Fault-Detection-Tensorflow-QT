@@ -12,7 +12,7 @@ from PyQt5.QtGui import QImage, QPixmap, QFont
 from PyQt5.QtCore import Qt
 
 import os
-from src import image_process, predict, inputBox, config, roi_unit
+from src import image_process, predict, inputBox, config, roi_unit, result_images_widget
 
 
 # Contains test stage UI
@@ -271,6 +271,10 @@ class Ui_MainWindow(object):
         print('Sides:', keys)
         for key in keys:
             cv2.imwrite(result_path + '/' + key + '.jpg', self.smallImages[key])
+        self.resultImagesWidget = result_images_widget.resultImagesWidget()
+        self.resultImagesWidget.curDevName = self.deviceName
+        self.resultImagesWidget.initUI()
+
 
     def getArea(self, imageName):
         temp = imageName.split('.')[-2].split('_')

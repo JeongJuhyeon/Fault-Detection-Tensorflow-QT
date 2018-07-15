@@ -6,7 +6,7 @@ from PyQt5.QtGui import QIcon, QPixmap
 class resultImagesWidget(QWidget):
     def __init__(self):
         super(resultImagesWidget, self).__init__()
-        self.initUI()
+        #self.initUI()
 
     def initUI(self):
         self.curImg = 1
@@ -15,22 +15,27 @@ class resultImagesWidget(QWidget):
         self.resultspath_absolute = os.path.dirname(sys.argv[0]) + self.resultspath_relative[1:]
 
         self.image_names = os.listdir(self.resultspath_relative)
-        self.image_no = len(self.image_names)
+        self.nrOfImages = len(self.image_names)
 
         # "left" button
         self.button_left = QPushButton(self)
-        self.button_left.setGeometry(QRect(10, 10, 321, 61))
+        self.button_left.move(10, 10)
         self.button_left.clicked.connect(self.onLeft)
         self.button_left.setDisabled(True)
         self.button_left.setText("Left")
 
         # "right" button
         self.button_right = QPushButton(self)
-        self.button_right.setGeometry(QRect(400, 10, 321, 61))
+        self.button_right.move(190, 10)
         self.button_right.clicked.connect(self.onRight)
-        if self.image_no == 1:
+        if self.nrOfImages == 1:
             self.button_right.setDisabled(True)
         self.button_right.setText("Right")
+
+        #Label that shows cur/max image number
+        self.imageNoLabel = QLabel(self)
+        self.imageNoLabel.setText("1/" + str(self.nrOfImages))
+        self.imageNoLabel.move(140, 15)
 
         #Pixmap that will show the image
         self.pixmap = QPixmap(self.resultspath_absolute + "/" + self.image_names[self.curImg - 1])
@@ -42,28 +47,27 @@ class resultImagesWidget(QWidget):
 
         # Resize window
         self.resize(self.pixmap.width() + 200, self.pixmap.height() + 200)
-
         self.show()
 
     def onLeft(self):
         self.curImg -= 1
-        self.pixmap = QPixmap(self.resultspath_absolute + "/" + self.image_names[self.curImg - 1])
         self.imageLabel.setPixmap(self.pixmap)
         if not self.button_right.isEnabled():
             self.button_right.setEnabled(True)
         if self.curImg == 1:
             self.button_left.setDisabled(True)
+        self.pixmap = QPixmap(self.resultspath_absolute + "/" + self.image_names[self.curImg - 1])
+        self.imageNoLabel.setText(str(self.curImg) + "/" + str(self.nrOfImages))
 
     def onRight(self):
         self.curImg += 1
-        self.pixmap = QPixmap(self.resultspath_absolute + "/" + self.image_names[self.curImg - 1])
         self.imageLabel.setPixmap(self.pixmap)
         if not self.button_left.isEnabled():
             self.button_left.setEnabled(True)
-        if self.curImg == self.image_no:
+        if self.curImg == self.nrOfImages:
             self.button_right.setDisabled(True)
-
-
+        self.pixmap = QPixmap(self.resultspath_absolute + "/" + self.image_names[self.curImg - 1])
+        self.imageNoLabel.setText(str(self.curImg) + "/" + str(self.nrOfImages))
 
 if __name__ == '__main__':
     import random
