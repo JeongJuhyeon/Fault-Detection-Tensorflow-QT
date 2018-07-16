@@ -99,14 +99,13 @@ class Ui_MainWindow(object):
         self.incorrect_capture.clicked.connect(self.do_InCorrect)
 
         # "Camera autofocus" Check Box
-        self.autofocus_checkbox = QtWidgets.QCheckBox("Camera autofocus", self.frame)
+        self.autofocus_checkbox = QtWidgets.QCheckBox("Autofocus", self.frame)
         self.autofocus_checkbox.setGeometry(QtCore.QRect(25, 90, 165, 100))
         self.autofocus_checkbox.setObjectName("autofocus_checkbox")
         self.autofocus_checkbox.setStyleSheet(css)
         self.autofocus_checkbox.setFont(font2)
         self.autofocus_checkbox.setChecked(config.AUTO_FOCUS)
         self.autofocus_checkbox.stateChanged.connect(config.change_autofocus)
-
 
         # Next Button
         self.button_capture_next = QtWidgets.QPushButton(self.frame)
@@ -196,7 +195,9 @@ class Ui_MainWindow(object):
 
     def do_ShowROI(self):
         print("##-SHOW ROI")
-        image_process.showROI(self.selectImg, self.cameraNum)
+        image_process.showROI(selectROI=self.selectImg,
+                              cameraNum=self.cameraNum,
+                              current_side=self.side + str(self.sideNum))
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate

@@ -12,7 +12,8 @@ from PyQt5.QtGui import QImage, QPixmap, QFont
 from PyQt5.QtCore import Qt
 
 import os
-import image_process, predict, inputBox, config, roi_unit
+import image_process, predict, inputBox, config, roi_unit, result_images_widget, result_images_widget_grid, \
+    result_text_widget
 
 # Contains test stage UI
 
@@ -31,6 +32,7 @@ class Ui_MainWindow(object):
         self.model = None
         self.ROI = None
         self.smallImages = {}
+        self.correctList = [[0, 0] for _ in range(5)]
 
     def setupUi(self, _mainwindow):
         css = """QPushButton { background-color: white;
@@ -40,7 +42,7 @@ class Ui_MainWindow(object):
                         border-color: black;
                         padding: 4px;
                     }"""
-        font = QFont('D2Coding', 25, QFont.Light)
+        font = QFont('D2Coding', 22, QFont.Light)
         font2 = QFont('D2Coding', 12, QFont.Light)
         self.MainWindow = _mainwindow
         self.MainWindow.setObjectName("MainWindow")
@@ -93,7 +95,7 @@ class Ui_MainWindow(object):
         self.button_capture.clicked.connect(self.img_capture)
 
         # "Camera autofocus" Check Box
-        self.autofocus_checkbox = QtWidgets.QCheckBox("Camera autofocus", self.frame)
+        self.autofocus_checkbox = QtWidgets.QCheckBox("Autofocus", self.frame)
         self.autofocus_checkbox.setGeometry(QtCore.QRect(25, 140, 165, 100))
         self.autofocus_checkbox.setObjectName("autofocus_checkbox")
         self.autofocus_checkbox.setStyleSheet(css)
@@ -111,7 +113,7 @@ class Ui_MainWindow(object):
 
         # Vertical layout for "Start test" and "Show result" buttons
         self.verticalLayoutWidget = QtWidgets.QWidget(self.frame)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 250, 321, 141))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 230, 321, 180))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -132,6 +134,39 @@ class Ui_MainWindow(object):
         self.button_start_test.setFont(font)
         self.verticalLayout.addWidget(self.button_start_test)
 
+        # "Show Result" Label
+        self.label_show_result = QtWidgets.QLabel(self.verticalLayoutWidget)
+        self.label_show_result.setObjectName("label_show_result")
+        self.label_show_result.setFont(font)
+        self.label_show_result.setStyleSheet(css)
+        self.label_show_result.setAlignment(Qt.AlignHCenter)
+        self.verticalLayout.addWidget(self.label_show_result)
+
+        # Show "Text" Result Button
+        self.button_text_result = QtWidgets.QPushButton(self.frame)
+        self.button_text_result.setText("Text")
+        self.button_text_result.setGeometry(QtCore.QRect(230, 160, 60, 60))
+        self.button_text_result.setStyleSheet(css)
+        self.button_text_result.setFont(font2)
+        self.button_text_result.clicked.connect(self.showTextResult)
+
+        # Show "Images" Result Button
+        self.button_images_result = QtWidgets.QPushButton(self.frame)
+        self.button_images_result.setText("Images")
+        self.button_images_result.setGeometry(QtCore.QRect(230, 160, 60, 60))
+        self.button_images_result.setStyleSheet(css)
+        self.button_images_result.setFont(font2)
+        self.button_images_result.clicked.connect(self.showImagesResult)
+
+        # Hbox for "Text" result and "Images" result buttons
+        hbox = QtWidgets.QHBoxLayout()
+        hbox.addWidget(self.button_text_result)
+        hbox.addWidget(self.button_images_result)
+        # hbox.addStretch(1)
+
+        self.verticalLayout.addLayout(hbox)
+
+        """
         # "Show Result" Button
         self.button_show_result = QtWidgets.QPushButton(self.verticalLayoutWidget)
         self.button_show_result.setObjectName("button_show_result")
@@ -139,12 +174,13 @@ class Ui_MainWindow(object):
         self.button_show_result.setStyleSheet(css)
         self.button_show_result.clicked.connect(self.show_Result)
         self.verticalLayout.addWidget(self.button_show_result)
+        """
 
-        self.button_show_result.setSizePolicy(sizePolicy)
+        self.label_show_result.setSizePolicy(sizePolicy)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.button_show_result.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.label_show_result.sizePolicy().hasHeightForWidth())
 
         self.graphicsView = QtWidgets.QLabel(self.widget)
         self.graphicsView.setGeometry(QtCore.QRect(370, 60, 401, 391))
@@ -171,7 +207,7 @@ class Ui_MainWindow(object):
         self.MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label.setText(_translate("MainWindow", "Test Stage"))
         self.button_start_test.setText(_translate("MainWindow", "Start Test"))
-        self.button_show_result.setText(_translate("MainWindow", "Show Result"))
+        self.label_show_result.setText(_translate("MainWindow", "Show Result"))
         self.button_capture.setText(_translate("MainWindow", "Capture"))
         self.button_capture_next.setText(_translate("MainWindow", "Next"))
         self.button_device_number.setText(_translate("MainWindow", "Device #"))
@@ -190,6 +226,7 @@ class Ui_MainWindow(object):
         path = self.absPath + self.deviceName + '/' + self.sideName
         print('##-PATH : ' + path)
 
+    # "Capture" Button method
     def img_capture(self):
         print('##-CAPTURE BUTTON PRESSED')
         self.ROI = roi_unit.readROI(os.path.join(self.absPath, self.deviceName, 'locationInfo.txt'),
@@ -251,24 +288,24 @@ class Ui_MainWindow(object):
 
         for result in results:
             image = result['imageName']
+            sideNo = int(result['imageName'][4])
             print('#Predict Result[{}]'.format(image))
             matchRates = result['results']
-            isSuit = getResult(image, matchRates)
+            isCorrect = getResult(image, matchRates)
 
-            print('result:', isSuit, end='\n')
+            print('result:', isCorrect, end='\n')
 
             start, end, side = self.getArea(image)
 
-            if isSuit == 'CORRECT':
+            if isCorrect == 'CORRECT':
                 cv2.rectangle(self.smallImages[side], start, end, config.GREEN, 2)
-            elif isSuit == 'CHECK':
+                self.correctList[sideNo - 1][0] += 1
+            elif isCorrect == 'CHECK':
                 cv2.rectangle(self.smallImages[side], start, end, config.BLUE, 2)
             else:
+                self.correctList[sideNo - 1][1] += 1
                 cv2.rectangle(self.smallImages[side], start, end, config.RED, 2)
 
-    def show_Result(self):
-        print("##-SHOW RESULT BUTTON CLICKED")
-        ## You write the To-do method here and Set result
         self.graphicsView.setText("RESULT DATA")
         keys = self.smallImages.keys()
         result_path = os.path.join(self.absPath, self.deviceName, 'result')
@@ -276,6 +313,14 @@ class Ui_MainWindow(object):
         print('Sides:', keys)
         for key in keys:
             cv2.imwrite(result_path + '/' + key + '.jpg', self.smallImages[key])
+
+    def showTextResult(self):
+        print("##-SHOW TEXT RESULT BUTTON CLICKED")
+        self.resultTextWidget = result_text_widget.resultTextWidget(self.correctList, self.deviceName)
+
+    def showImagesResult(self):
+        print("##-SHOW IMAGES RESULT BUTTON CLICKED")
+        self.resultImagesWidget = result_images_widget_grid.resultImagesWidget(self.deviceName)
 
     def getArea(self, imageName):
         temp = imageName.split('.')[-2].split('_')
@@ -295,22 +340,24 @@ def getResult(imageName, result_arr):
 
     print(result_arr)
     result_sum_dict = {}
-    for result_pair in result_arr :
+
+    for result_pair in result_arr:
         temp = result_pair[0].decode('ascii').split(' ')
         result_class_name = temp[0] + '_' + temp[1] + '_' + temp[3]
-        if result_class_name in result_sum_dict :
+        if result_class_name in result_sum_dict:
             result_sum_dict[result_class_name] += result_pair[1]
-        else :
+        else:
             result_sum_dict[result_class_name] = result_pair[1]
 
-    maximum_class = None; maximum_score = -1.0
-    for result_sum_key in result_sum_dict.keys() :
+    maximum_class = None;
+    maximum_score = -1.0
+    for result_sum_key in result_sum_dict.keys():
         if result_sum_dict[result_sum_key] > maximum_score:
             maximum_score = result_sum_dict[result_sum_key]
             maximum_class = result_sum_key
 
-    print( maximum_class, currect_class)
-    if maximum_class == currect_class:
+    print(maximum_class, correct_class)
+    if maximum_class == correct_class:
         return 'CORRECT'
     else:
         return 'INCORRECT'
