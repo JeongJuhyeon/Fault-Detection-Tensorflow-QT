@@ -15,7 +15,6 @@ import os
 import image_process, predict, inputBox, config, roi_unit, result_images_widget, result_images_widget_grid, \
     result_text_widget
 
-
 # Contains test stage UI
 
 class Ui_MainWindow(object):
@@ -267,6 +266,7 @@ class Ui_MainWindow(object):
                 else:
                     incor_class[value] = [label]
 
+
         self.smallImages = {}
         for image in img_list:
             if not os.path.isdir(path + '/predict/' + image):
@@ -310,6 +310,10 @@ class Ui_MainWindow(object):
         print('Sides:', keys)
         for key in keys:
             cv2.imwrite(result_path + '/' + key + '.jpg', self.smallImages[key])
+        self.resultImagesWidget = result_images_widget_grid.resultImagesWidget()
+        self.resultImagesWidget.curDevName = self.deviceName
+        self.resultImagesWidget.initUI()
+
 
     def showTextResult(self):
         print("##-SHOW TEXT RESULT BUTTON CLICKED")
@@ -337,6 +341,7 @@ def getResult(imageName, result_arr):
 
     print(result_arr)
     result_sum_dict = {}
+
     for result_pair in result_arr:
         temp = result_pair[0].decode('ascii').split(' ')
         result_class_name = temp[0] + '_' + temp[1] + '_' + temp[3]
@@ -357,7 +362,6 @@ def getResult(imageName, result_arr):
         return 'CORRECT'
     else:
         return 'INCORRECT'
-
 
 if __name__ == "__main__":
     import sys
