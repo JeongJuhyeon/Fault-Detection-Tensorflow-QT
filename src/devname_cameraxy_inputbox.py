@@ -16,7 +16,7 @@ class devnameCameraXYInputbox(QDialog):
 
 
         # Add labels and self.lineEdits
-        self.labels = ["left 1", "right 1", "center", "left 2", "right 2"]
+        self.labels = ["left 1", "right 1", "above", "left 2", "right 2"]
         form = QFormLayout(self)
         form.addRow(QLabel("            Camera positions:"))
         self.lineEdits = []
