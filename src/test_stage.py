@@ -200,6 +200,8 @@ class Ui_MainWindow(object):
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
 
+        config.initialize_machine()
+
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -247,12 +249,15 @@ class Ui_MainWindow(object):
     def do_Nextbutton(self):
         print("##-NEXT BUTTON CLICKED")
         self.cameraNum = (self.cameraNum + 1) % config.CAMERA_NUMBER  # CAMERA CHANGE
-        self.sideNum = (self.sideNum) % 5 + 1;
+        self.sideNum = (self.sideNum) % 5 + 1
+        side = self.side + str(self.sideNum)
+        print("##-CLIKED THE NEXT BUTTON :" + side)
+        if self.sideNum > 3:
+            config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
 
-    # "Start Test" button method
     def do_startTest(self):
         print("##-TEST BUTTON CLICKED")
-
+        ## You write the To-do method here
         path = os.path.join(self.absPath, self.deviceName)
         img_list = os.listdir(path + '/predict')
         classes = os.listdir(path + '/t_images')
@@ -265,7 +270,6 @@ class Ui_MainWindow(object):
                     incor_class[value].append(label)
                 else:
                     incor_class[value] = [label]
-
 
         self.smallImages = {}
         for image in img_list:
@@ -282,7 +286,6 @@ class Ui_MainWindow(object):
         print('#Predicting')
         results = predict.run_inference_on_image(modelFullPath, labelsFullPath, imageDir, tensorName)
 
-        # results is a [{}, {}, ..] list of dictionaries
         for result in results:
             image = result['imageName']
             sideNo = int(result['imageName'][4])
@@ -305,12 +308,11 @@ class Ui_MainWindow(object):
 
         self.graphicsView.setText("RESULT DATA")
         keys = self.smallImages.keys()
-        result_path = os.path.join(self.absPath, self.deviceName, 'results')
+        result_path = os.path.join(self.absPath, self.deviceName, 'result')
         config.makeDir(result_path)
         print('Sides:', keys)
         for key in keys:
             cv2.imwrite(result_path + '/' + key + '.jpg', self.smallImages[key])
-
 
     def showTextResult(self):
         print("##-SHOW TEXT RESULT BUTTON CLICKED")
@@ -334,7 +336,7 @@ class Ui_MainWindow(object):
 
 def getResult(imageName, result_arr):
     temp = imageName.split('_')
-    correct_class = temp[0] + '_' + temp[1] + '_' + 'cor'
+    currect_class = temp[0] + '_' + temp[1] + '_' + 'cor'
 
     print(result_arr)
     result_sum_dict = {}

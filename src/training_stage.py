@@ -191,6 +191,8 @@ class Ui_MainWindow(object):
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
 
+        config.initialize_machine()
+
     def do_ShowROI(self):
         print("##-SHOW ROI")
         image_process.showROI(selectROI=self.selectImg,
@@ -259,6 +261,8 @@ class Ui_MainWindow(object):
         side = self.side + str(self.sideNum)
         self.setState(side)
         print("##-CLIKED THE NEXT BUTTON :" + side)
+        if self.sideNum > 3:
+            config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
 
     def create_image(self):
         # plz write the image path
