@@ -1,5 +1,6 @@
-# res
+# Project-specific
 res/
+devices.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -89,6 +90,9 @@ celerybeat-schedule
 .venv
 env/
 venv/
+venv1/
+tcl/
+Include/
 ENV/
 env.bak/
 venv.bak/
@@ -108,3 +112,4 @@ venv.bak/
 
 # IDEA
 .idea/
+

@@ -12,7 +12,8 @@ from PyQt5.QtGui import QImage, QPixmap, QFont
 from PyQt5.QtCore import Qt
 
 import os
-import image_process, predict, inputBox, config, roi_unit
+import image_process, predict, inputBox, config, roi_unit, result_images_widget, result_images_widget_grid
+
 
 # Contains test stage UI
 
@@ -212,9 +213,10 @@ class Ui_MainWindow(object):
         self.cameraNum = (self.cameraNum + 1) % config.CAMERA_NUMBER  # CAMERA CHANGE
         self.sideNum = (self.sideNum) % 5 + 1;
 
+    # "Start Test" button method
     def do_startTest(self):
         print("##-TEST BUTTON CLICKED")
-        ## You write the To-do method here
+
         path = os.path.join(self.absPath, self.deviceName)
         img_list = os.listdir(path + '/predict')
         classes = os.listdir(path + '/t_images')
@@ -227,6 +229,7 @@ class Ui_MainWindow(object):
                     incor_class[value].append(label)
                 else:
                     incor_class[value] = [label]
+
 
         self.smallImages = {}
         for image in img_list:
@@ -243,19 +246,20 @@ class Ui_MainWindow(object):
         print('#Predicting')
         results = predict.run_inference_on_image(modelFullPath, labelsFullPath, imageDir, tensorName)
 
+        # results is a [{}, {}, ..] list of dictionaries
         for result in results:
             image = result['imageName']
             print('#Predict Result[{}]'.format(image))
             matchRates = result['results']
-            isSuit = getResult(image, matchRates)
+            isCorrect = getResult(image, matchRates)
 
-            print('result:', isSuit, end='\n')
+            print('result:', isCorrect, end='\n')
 
             start, end, side = self.getArea(image)
 
-            if isSuit == 'CORRECT':
+            if isCorrect == 'CORRECT':
                 cv2.rectangle(self.smallImages[side], start, end, config.GREEN, 2)
-            elif isSuit == 'CHECK':
+            elif isCorrect == 'CHECK':
                 cv2.rectangle(self.smallImages[side], start, end, config.BLUE, 2)
             else:
                 cv2.rectangle(self.smallImages[side], start, end, config.RED, 2)
@@ -265,11 +269,15 @@ class Ui_MainWindow(object):
         ## You write the To-do method here and Set result
         self.graphicsView.setText("RESULT DATA")
         keys = self.smallImages.keys()
-        result_path = os.path.join(self.absPath, self.deviceName, 'result')
+        result_path = os.path.join(self.absPath, self.deviceName, 'results')
         config.makeDir(result_path)
         print('Sides:', keys)
         for key in keys:
             cv2.imwrite(result_path + '/' + key + '.jpg', self.smallImages[key])
+        self.resultImagesWidget = result_images_widget_grid.resultImagesWidget()
+        self.resultImagesWidget.curDevName = self.deviceName
+        self.resultImagesWidget.initUI()
+
 
     def getArea(self, imageName):
         temp = imageName.split('.')[-2].split('_')
@@ -285,7 +293,7 @@ class Ui_MainWindow(object):
 
 def getResult(imageName, result_arr):
     temp = imageName.split('_')
-    currect_class = temp[0] + '_' + temp[1] + '_' + 'cor'
+    correct_class = temp[0] + '_' + temp[1] + '_' + 'cor'
 
     print(result_arr)
     result_sum_dict = {}
@@ -303,8 +311,8 @@ def getResult(imageName, result_arr):
             maximum_score = result_sum_dict[result_sum_key]
             maximum_class = result_sum_key
 
-    print( maximum_class, currect_class)
-    if maximum_class == currect_class:
+    print( maximum_class, correct_class)
+    if maximum_class == correct_class:
         return 'CORRECT'
     else:
         return 'INCORRECT'
