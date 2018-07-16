@@ -1,6 +1,6 @@
 from subprocess import call
 import os
-from src import make_images, config
+import make_images, config
 
 def copy_images(device_path_to_copy):
     print('##-COPY IMAGES FOR TRAINING')

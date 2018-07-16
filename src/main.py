@@ -1,6 +1,6 @@
 import sys
 
-from src import test_stage, inputBox, training_stage, devname_cameraxy_inputbox
+import test_stage, inputBox, training_stage, devname_cameraxy_inputbox
 
 from PyQt5.QtGui import QFont
 from PyQt5 import QtCore, QtWidgets
