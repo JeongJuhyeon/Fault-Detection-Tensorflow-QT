@@ -107,7 +107,6 @@ class Ui_MainWindow(object):
         self.autofocus_checkbox.setChecked(config.AUTO_FOCUS)
         self.autofocus_checkbox.stateChanged.connect(config.change_autofocus)
 
-
         # Next Button
         self.button_capture_next = QtWidgets.QPushButton(self.frame)
         self.button_capture_next.setGeometry(QtCore.QRect(230, 110, 60, 60))

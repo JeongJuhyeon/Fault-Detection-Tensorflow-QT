@@ -4,11 +4,11 @@ from PyQt5.QtCore import QObject, pyqtSignal, QRect, Qt
 from PyQt5.QtGui import QIcon, QPixmap
 
 class resultTextWidget(QWidget):
-    def __init__(self, correct):
+    def __init__(self, correct, curDevname):
         super(resultTextWidget, self).__init__()
-        self.curDevName = ""
+        self.curDevName = curDevname
         self.correctList = correct
-        #self.initUI()
+        self.initUI()
 
     def initUI(self):
         self.resultspath_relative = "./res" + "/" + self.curDevName + "/results"

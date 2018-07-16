@@ -4,10 +4,10 @@ from PyQt5.QtCore import QObject, pyqtSignal, QRect, Qt
 from PyQt5.QtGui import QIcon, QPixmap
 
 class resultImagesWidget(QWidget):
-    def __init__(self):
+    def __init__(self, curDevName):
         super(resultImagesWidget, self).__init__()
-        self.curDevName = ""
-        #self.initUI()
+        self.curDevName = curDevName
+        self.initUI()
 
     def initUI(self):
         self.curImg = 1

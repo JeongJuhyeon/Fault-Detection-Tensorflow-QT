@@ -12,7 +12,8 @@ from PyQt5.QtGui import QImage, QPixmap, QFont
 from PyQt5.QtCore import Qt
 
 import os
-import image_process, predict, inputBox, config, roi_unit, result_images_widget, result_images_widget_grid, result_text_widget
+import image_process, predict, inputBox, config, roi_unit, result_images_widget, result_images_widget_grid, \
+    result_text_widget
 
 
 # Contains test stage UI
@@ -148,7 +149,7 @@ class Ui_MainWindow(object):
         self.button_text_result.setGeometry(QtCore.QRect(230, 160, 60, 60))
         self.button_text_result.setStyleSheet(css)
         self.button_text_result.setFont(font2)
-        #self.button_text_result.clicked.connect(self.showTextResult)
+        self.button_text_result.clicked.connect(self.showTextResult)
 
         # Show "Images" Result Button
         self.button_images_result = QtWidgets.QPushButton(self.frame)
@@ -156,7 +157,7 @@ class Ui_MainWindow(object):
         self.button_images_result.setGeometry(QtCore.QRect(230, 160, 60, 60))
         self.button_images_result.setStyleSheet(css)
         self.button_images_result.setFont(font2)
-        #self.button_images_result.clicked.connect(self.showImagesResult)
+        self.button_images_result.clicked.connect(self.showImagesResult)
 
         # Hbox for "Text" result and "Images" result buttons
         hbox = QtWidgets.QHBoxLayout()
@@ -266,7 +267,6 @@ class Ui_MainWindow(object):
                 else:
                     incor_class[value] = [label]
 
-
         self.smallImages = {}
         for image in img_list:
             if not os.path.isdir(path + '/predict/' + image):
@@ -303,7 +303,6 @@ class Ui_MainWindow(object):
                 self.correctList[sideNo - 1][1] += 1
                 cv2.rectangle(self.smallImages[side], start, end, config.RED, 2)
 
-
         self.graphicsView.setText("RESULT DATA")
         keys = self.smallImages.keys()
         result_path = os.path.join(self.absPath, self.deviceName, 'results')
@@ -312,13 +311,13 @@ class Ui_MainWindow(object):
         for key in keys:
             cv2.imwrite(result_path + '/' + key + '.jpg', self.smallImages[key])
 
-    def show_Result(self):
-        print("##-SHOW RESULT BUTTON CLICKED")
-        #self.resultImagesWidget = result_images_widget_grid.resultImagesWidget()
-        self.resultImagesWidget = result_text_widget.resultTextWidget(self.correctList)
-        self.resultImagesWidget.curDevName = self.deviceName
-        self.resultImagesWidget.initUI()
+    def showTextResult(self):
+        print("##-SHOW TEXT RESULT BUTTON CLICKED")
+        self.resultTextWidget = result_text_widget.resultTextWidget(self.correctList, self.deviceName)
 
+    def showImagesResult(self):
+        print("##-SHOW TEXT RESULT BUTTON CLICKED")
+        self.resultTextWidget = result_images_widget_grid.resultImagesWidget(self.deviceName)
 
     def getArea(self, imageName):
         temp = imageName.split('.')[-2].split('_')
@@ -338,25 +337,27 @@ def getResult(imageName, result_arr):
 
     print(result_arr)
     result_sum_dict = {}
-    for result_pair in result_arr :
+    for result_pair in result_arr:
         temp = result_pair[0].decode('ascii').split(' ')
         result_class_name = temp[0] + '_' + temp[1] + '_' + temp[3]
-        if result_class_name in result_sum_dict :
+        if result_class_name in result_sum_dict:
             result_sum_dict[result_class_name] += result_pair[1]
-        else :
+        else:
             result_sum_dict[result_class_name] = result_pair[1]
 
-    maximum_class = None; maximum_score = -1.0
-    for result_sum_key in result_sum_dict.keys() :
+    maximum_class = None;
+    maximum_score = -1.0
+    for result_sum_key in result_sum_dict.keys():
         if result_sum_dict[result_sum_key] > maximum_score:
             maximum_score = result_sum_dict[result_sum_key]
             maximum_class = result_sum_key
 
-    print( maximum_class, correct_class)
+    print(maximum_class, correct_class)
     if maximum_class == correct_class:
         return 'CORRECT'
     else:
         return 'INCORRECT'
+
 
 if __name__ == "__main__":
     import sys
