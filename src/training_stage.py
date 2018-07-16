@@ -8,7 +8,7 @@
 import os
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QFont
-import image_process, config, train_on_tensor
+from src import image_process, config, train_on_tensor
 from PyQt5.QtCore import Qt
 import pathlib
 
@@ -99,7 +99,7 @@ class Ui_MainWindow(object):
         self.incorrect_capture.clicked.connect(self.do_InCorrect)
 
         # "Camera autofocus" Check Box
-        self.autofocus_checkbox = QtWidgets.QCheckBox("Camera autofocus", self.frame)
+        self.autofocus_checkbox = QtWidgets.QCheckBox("Autofocus", self.frame)
         self.autofocus_checkbox.setGeometry(QtCore.QRect(25, 90, 165, 100))
         self.autofocus_checkbox.setObjectName("autofocus_checkbox")
         self.autofocus_checkbox.setStyleSheet(css)

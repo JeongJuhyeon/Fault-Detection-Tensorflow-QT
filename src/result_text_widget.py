@@ -3,10 +3,11 @@ from PyQt5.QtWidgets import QLabel, QApplication, QFormLayout, QPushButton, QWid
 from PyQt5.QtCore import QObject, pyqtSignal, QRect, Qt
 from PyQt5.QtGui import QIcon, QPixmap
 
-class resultImagesWidget(QWidget):
-    def __init__(self):
-        super(resultImagesWidget, self).__init__()
+class resultTextWidget(QWidget):
+    def __init__(self, correct):
+        super(resultTextWidget, self).__init__()
         self.curDevName = ""
+        self.correctList = correct
         #self.initUI()
 
     def initUI(self):
@@ -62,7 +63,15 @@ class resultImagesWidget(QWidget):
         self.show()
 
     def set_label_numbers(self):
-
+        totalCorrect = 0
+        totalIncorrect = 0
+        for i in range(5):
+            self.dynamic_labels[i][0].setText(str(self.correctList[i][0]))
+            totalCorrect += self.correctList[i][0]
+            self.dynamic_labels[i][1].setText(str(self.correctList[i][1]))
+            totalIncorrect += self.correctList[i][1]
+        self.dynamic_labels[5][0].setText(str(totalCorrect))
+        self.dynamic_labels[5][1].setText(str(totalIncorrect))
 
 
 if __name__ == '__main__':
@@ -72,7 +81,7 @@ if __name__ == '__main__':
     pathname = os.path.dirname(sys.argv[0])
     print('path =', pathname)
     print('full path =', os.path.abspath(pathname))
-    window = resultImagesWidget()
+    window = resultTextWidget()
     window.curDevName = "dev1"
     window.initUI()
     sys.exit(app.exec_())
