@@ -1,7 +1,7 @@
 # Contains the functions and logic used  after clicking on "Correct Capture" in training stage
 
 import cv2, os, pathlib
-from src import crop_image, roiactiondialog, roiobjectinputdialog, config
+import crop_image, roiactiondialog, roiobjectinputdialog, config
 import copy
 
 img_path_list = []

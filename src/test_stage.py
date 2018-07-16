@@ -12,8 +12,7 @@ from PyQt5.QtGui import QImage, QPixmap, QFont
 from PyQt5.QtCore import Qt
 
 import os
-from src import image_process, predict, inputBox, config, roi_unit
-
+import image_process, predict, inputBox, config, roi_unit
 
 # Contains test stage UI
 
@@ -287,15 +286,28 @@ class Ui_MainWindow(object):
 def getResult(imageName, result_arr):
     temp = imageName.split('_')
     currect_class = temp[0] + '_' + temp[1] + '_' + 'cor'
-    temp = result_arr[0][0].decode('ascii').split(' ')
-    current_class = temp[0] + '_' + temp[1] + '_' + temp[3]
-    print(current_class, currect_class)
 
-    if result_arr[0][1] > 0.7 and current_class == currect_class:
+    print(result_arr)
+    result_sum_dict = {}
+    for result_pair in result_arr :
+        temp = result_pair[0].decode('ascii').split(' ')
+        result_class_name = temp[0] + '_' + temp[1] + '_' + temp[3]
+        if result_class_name in result_sum_dict :
+            result_sum_dict[result_class_name] += result_pair[1]
+        else :
+            result_sum_dict[result_class_name] = result_pair[1]
+
+    maximum_class = None; maximum_score = -1.0
+    for result_sum_key in result_sum_dict.keys() :
+        if result_sum_dict[result_sum_key] > maximum_score:
+            maximum_score = result_sum_dict[result_sum_key]
+            maximum_class = result_sum_key
+
+    print( maximum_class, currect_class)
+    if maximum_class == currect_class:
         return 'CORRECT'
     else:
         return 'INCORRECT'
-
 
 if __name__ == "__main__":
     import sys

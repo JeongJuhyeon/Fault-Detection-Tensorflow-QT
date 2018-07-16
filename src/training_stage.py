@@ -8,7 +8,7 @@
 import os
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QFont
-from src import image_process, config, train_on_tensor
+import image_process, config, train_on_tensor
 from PyQt5.QtCore import Qt
 import pathlib
 
