@@ -4,6 +4,8 @@ import cv2, os, pathlib
 import crop_image, roiactiondialog, roiobjectinputdialog, config
 import copy
 
+from config import cameraConfig
+
 img_path_list = []
 selected_rois = []
 
@@ -22,7 +24,15 @@ def readfile():
     return dic
 
 
-def get_image_from_camera(cameraNum, size_conf):
+def get_image_from_camera(sideNum, size_conf):
+    cameraNum = None
+    if sideNum == 1 or sideNum == 4 :
+        cameraNum = cameraConfig.get_camera_number('LEFT')
+    elif sideNum == 2 or sideNum == 5 :
+        cameraNum = cameraConfig.get_camera_number('RIGHT')
+    else :
+        cameraNum = cameraConfig.get_camera_number('CENTER')
+
     cap = cv2.VideoCapture(cameraNum)
     cap.set(3, int(size_conf['width']))
     cap.set(4, int(size_conf['height']))
