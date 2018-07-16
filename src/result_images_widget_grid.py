@@ -1,5 +1,5 @@
 import sys, os
-from PyQt5.QtWidgets import QLabel, QApplication, QFormLayout, QPushButton, QWidget, QHBoxLayout, QVBoxLayout
+from PyQt5.QtWidgets import QLabel, QApplication, QFormLayout, QPushButton, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout
 from PyQt5.QtCore import QObject, pyqtSignal, QRect, Qt
 from PyQt5.QtGui import QIcon, QPixmap
 
@@ -32,11 +32,16 @@ class resultImagesWidget(QWidget):
             self.button_next.setDisabled(True)
         #self.button_next.setText("Next")
 
-        # Horizontal box for the buttons
+
+        """# Horizontal box for the buttons
         hbox = QHBoxLayout()
         hbox.addWidget(self.button_previous)
         hbox.addWidget(self.button_next)
         hbox.addStretch(1)
+        """
+
+        self.grid = QGridLayout()
+        self.grid.setSpacing(10)
 
         #Label that shows cur/max image number
         self.imageNoLabel = QLabel(self)
@@ -54,6 +59,7 @@ class resultImagesWidget(QWidget):
         # Resize window
         #self.resize(self.pixmap.width() + 200, self.pixmap.height() + 200)
 
+        """
         # Vertical box to add everything to
         vbox = QVBoxLayout()
         vbox.addWidget(self.imageNoLabel)
@@ -61,7 +67,18 @@ class resultImagesWidget(QWidget):
         vbox.addLayout(hbox)
         vbox.setAlignment(Qt.AlignVCenter)
         self.setLayout(vbox)
+        """
 
+        self.grid.addWidget(self.imageNoLabel, 1, 6)
+        self.grid.addWidget(self.imageLabel, 2, 1, 5, 10)
+        self.grid.addWidget(self.button_previous, 8, 5)
+        self.grid.addWidget(self.button_next, 8, 6)
+
+
+        self.setLayout(self.grid)
+
+        self.setGeometry(300, 300, 350, 300)
+        self.setWindowTitle('Result Images')
         self.show()
 
     def onPrevious(self):
