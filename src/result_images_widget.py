@@ -1,7 +1,9 @@
 import sys, os
-from PyQt5.QtWidgets import QLabel, QApplication, QFormLayout, QPushButton, QWidget, QHBoxLayout, QVBoxLayout
-from PyQt5.QtCore import QObject, pyqtSignal, QRect, Qt
-from PyQt5.QtGui import QIcon, QPixmap
+
+from PyQt5.QtWidgets import QLabel, QApplication, QPushButton, QWidget, QHBoxLayout, QVBoxLayout
+from PyQt5.QtCore import QRect, Qt
+from PyQt5.QtGui import QPixmap
+
 
 class resultImagesWidget(QWidget):
     def __init__(self):
