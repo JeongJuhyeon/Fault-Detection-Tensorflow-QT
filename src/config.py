@@ -1,5 +1,5 @@
-import os, subprocess
-
+import os
+from subprocess import call
 '''
 <카메라 설정>
 CAMERA_NUMBER : 현재 연결된 카메라 개수
@@ -46,14 +46,23 @@ class cameraConfig(object):
         else :
             return cameraConfig.__cameraConfig.CENTER_CAM
 
-def rotate_machine_with_degree():
+def rotate_machine_with_degree(_x_value=450000, _y_value=500000):
     print('#ROTATE MACHINE')
+    cmd = "./stage/rotatePort.exe {side_number} {x_value} {y_value}".format(side_number=cameraConfig.get_camera_number('CENTER'),
+                                                                            x_value=_x_value,
+                                                                            y_value=_y_value)
+    rt_value = call(cmd)
 
 def initialize_machine():
     print('#INITIALIZE MACHINE')
+    rt_value = call("../stage/initializePort.exe")
 
-def move_camera_with_position():
+def move_camera_with_position(camera_device_number, _x_value, _y_value):
     print('#MOVE CAMERA')
+    cmd = "./stage/rotatePort.exe {side_number} {x_value} {y_value}".format(
+        side_number=camera_device_number,
+        x_value=_x_value,
+        y_value=_y_value)
 
 '''
 <학습 설정>
@@ -65,7 +74,7 @@ NUM_CHANNEL : 추후 수정
 VALIDATION_SIZE = 0.3
 DROPOUT = 0.3
 IMAGE_SIZE = 128
-ITERATION = 25
+ITERATION = 500
 BATCH_SIZE = 16
 NUM_CHANNEL = 3
 

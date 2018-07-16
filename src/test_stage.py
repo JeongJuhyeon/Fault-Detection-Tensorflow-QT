@@ -12,8 +12,7 @@ from PyQt5.QtGui import QImage, QPixmap, QFont
 from PyQt5.QtCore import Qt
 
 import os
-import image_process, predict, inputBox, config, roi_unit, result_images_widget, result_images_widget_grid
-
+import image_process, predict, inputBox, config, roi_unit
 
 # Contains test stage UI
 
@@ -165,6 +164,8 @@ class Ui_MainWindow(object):
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
 
+        config.initialize_machine()
+
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -211,12 +212,15 @@ class Ui_MainWindow(object):
     def do_Nextbutton(self):
         print("##-NEXT BUTTON CLICKED")
         self.cameraNum = (self.cameraNum + 1) % config.CAMERA_NUMBER  # CAMERA CHANGE
-        self.sideNum = (self.sideNum) % 5 + 1;
+        self.sideNum = (self.sideNum) % 5 + 1
+        side = self.side + str(self.sideNum)
+        print("##-CLIKED THE NEXT BUTTON :" + side)
+        if self.sideNum > 3:
+            config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
 
-    # "Start Test" button method
     def do_startTest(self):
         print("##-TEST BUTTON CLICKED")
-
+        ## You write the To-do method here
         path = os.path.join(self.absPath, self.deviceName)
         img_list = os.listdir(path + '/predict')
         classes = os.listdir(path + '/t_images')
@@ -229,7 +233,6 @@ class Ui_MainWindow(object):
                     incor_class[value].append(label)
                 else:
                     incor_class[value] = [label]
-
 
         self.smallImages = {}
         for image in img_list:
@@ -246,20 +249,19 @@ class Ui_MainWindow(object):
         print('#Predicting')
         results = predict.run_inference_on_image(modelFullPath, labelsFullPath, imageDir, tensorName)
 
-        # results is a [{}, {}, ..] list of dictionaries
         for result in results:
             image = result['imageName']
             print('#Predict Result[{}]'.format(image))
             matchRates = result['results']
-            isCorrect = getResult(image, matchRates)
+            isSuit = getResult(image, matchRates)
 
-            print('result:', isCorrect, end='\n')
+            print('result:', isSuit, end='\n')
 
             start, end, side = self.getArea(image)
 
-            if isCorrect == 'CORRECT':
+            if isSuit == 'CORRECT':
                 cv2.rectangle(self.smallImages[side], start, end, config.GREEN, 2)
-            elif isCorrect == 'CHECK':
+            elif isSuit == 'CHECK':
                 cv2.rectangle(self.smallImages[side], start, end, config.BLUE, 2)
             else:
                 cv2.rectangle(self.smallImages[side], start, end, config.RED, 2)
@@ -269,15 +271,11 @@ class Ui_MainWindow(object):
         ## You write the To-do method here and Set result
         self.graphicsView.setText("RESULT DATA")
         keys = self.smallImages.keys()
-        result_path = os.path.join(self.absPath, self.deviceName, 'results')
+        result_path = os.path.join(self.absPath, self.deviceName, 'result')
         config.makeDir(result_path)
         print('Sides:', keys)
         for key in keys:
             cv2.imwrite(result_path + '/' + key + '.jpg', self.smallImages[key])
-        self.resultImagesWidget = result_images_widget_grid.resultImagesWidget()
-        self.resultImagesWidget.curDevName = self.deviceName
-        self.resultImagesWidget.initUI()
-
 
     def getArea(self, imageName):
         temp = imageName.split('.')[-2].split('_')
@@ -293,7 +291,7 @@ class Ui_MainWindow(object):
 
 def getResult(imageName, result_arr):
     temp = imageName.split('_')
-    correct_class = temp[0] + '_' + temp[1] + '_' + 'cor'
+    currect_class = temp[0] + '_' + temp[1] + '_' + 'cor'
 
     print(result_arr)
     result_sum_dict = {}
@@ -311,8 +309,8 @@ def getResult(imageName, result_arr):
             maximum_score = result_sum_dict[result_sum_key]
             maximum_class = result_sum_key
 
-    print( maximum_class, correct_class)
-    if maximum_class == correct_class:
+    print( maximum_class, currect_class)
+    if maximum_class == currect_class:
         return 'CORRECT'
     else:
         return 'INCORRECT'
