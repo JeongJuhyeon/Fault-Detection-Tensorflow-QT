@@ -1,4 +1,4 @@
-import os
+import os, subprocess
 
 '''
 <카메라 설정>
@@ -18,6 +18,43 @@ WINDOW_RATIO = {
     'height_ratio' : WINDOW_SIZE['height'] / TESTWINDOW_SIZE['height']
 }
 
+class cameraConfig(object):
+    class __cameraConfig:
+        def __init__(self):
+            self.CENTER_CAM=None
+            self.LEFT_CAM=None
+            self.RIGHT_CAM=None
+        def set_camera_number(self, SIDE, camera_number):
+            if SIDE == 'LEFT':
+                self.LEFT_CAM=camera_number
+            elif SIDE == 'RIGHT':
+                self.RIGHT_CAM=camera_number
+            else :
+                self.CENTER_CAM=camera_number
+
+    instance = None
+    def __new__(cls):
+        if not cameraConfig.instance:
+            cameraConfig.instance = cameraConfig.__cameraConfig()
+        return cameraConfig.instance
+
+    def get_camera_number(self, SIDE):
+        if SIDE == 'LEFT':
+            return cameraConfig.__cameraConfig.LEFT_CAM
+        elif SIDE == 'RIGHT':
+            return cameraConfig.__cameraConfig.RIGHT_CAM
+        else :
+            return cameraConfig.__cameraConfig.CENTER_CAM
+
+def rotate_machine_with_degree():
+    print('#ROTATE MACHINE')
+
+def initialize_machine():
+    print('#INITIALIZE MACHINE')
+
+def move_camera_with_position():
+    print('#MOVE CAMERA')
+
 '''
 <학습 설정>
 IMAGE_SIZE : 학습에 사용되는 이미지 가로 및 세로 픽셀수, 512 이상 권장
@@ -28,7 +65,7 @@ NUM_CHANNEL : 추후 수정
 VALIDATION_SIZE = 0.3
 DROPOUT = 0.3
 IMAGE_SIZE = 128
-ITERATION = 500
+ITERATION = 25
 BATCH_SIZE = 16
 NUM_CHANNEL = 3
 

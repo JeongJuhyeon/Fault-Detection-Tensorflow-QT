@@ -1,7 +1,7 @@
 import tensorflow as tf
 import cv2
 import numpy as np
-from src import config
+import config
 
 
 class ImportGraph():
