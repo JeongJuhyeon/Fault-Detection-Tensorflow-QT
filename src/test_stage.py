@@ -310,9 +310,6 @@ class Ui_MainWindow(object):
         print('Sides:', keys)
         for key in keys:
             cv2.imwrite(result_path + '/' + key + '.jpg', self.smallImages[key])
-        self.resultImagesWidget = result_images_widget_grid.resultImagesWidget()
-        self.resultImagesWidget.curDevName = self.deviceName
-        self.resultImagesWidget.initUI()
 
 
     def showTextResult(self):
@@ -320,8 +317,8 @@ class Ui_MainWindow(object):
         self.resultTextWidget = result_text_widget.resultTextWidget(self.correctList, self.deviceName)
 
     def showImagesResult(self):
-        print("##-SHOW TEXT RESULT BUTTON CLICKED")
-        self.resultTextWidget = result_images_widget_grid.resultImagesWidget(self.deviceName)
+        print("##-SHOW IMAGES RESULT BUTTON CLICKED")
+        self.resultImagesWidget = result_images_widget_grid.resultImagesWidget(self.deviceName)
 
     def getArea(self, imageName):
         temp = imageName.split('.')[-2].split('_')
