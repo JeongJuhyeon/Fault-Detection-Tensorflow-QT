@@ -1,7 +1,7 @@
 [Bob3]
 left1=123231
 right1=124124
-center=124124
+above=124124
 left2=12132
 right2=132123
 
@@ -9,7 +9,7 @@ right2=132123
 [Bob]
 left1=12124
 right1=21421
-center=124412
+above=124412
 left2=666666
 right2=124
 
@@ -17,15 +17,46 @@ right2=124
 [Bob2]
 left1=124890
 right1=214789
-center=124897
+above=124897
 left2=124
 right2=12445
+
 
 [bob]
 left1=12321
 right1=12439
-center=1239
+above=1239
 left2=12313
 right2=1231231
 
 
+[bob6]
+left1=1239
+right1=2148
+above=1239
+left2=2148
+right2=1238
+
+
+[dev1]
+left1=12412
+right1=191293
+above=21312
+left2=123881
+right2=2139123
+
+
+[restest]
+left1=1239
+right1=12390
+above=21481
+left2=1239
+right2=12398
+
+
+[dev1]
+left1=12389
+right1=27
+above=23190
+left2=21389
+right2=12389
