@@ -9,7 +9,7 @@ WINDOW_SIZE : 실제 카메라 캡쳐화면의 크기
 * IPEVO ZIGGI 같은 경우는 (3264 X 2448) 이 최대 해상도 입니다.
 '''
 
-CAMERA_NUMBER = 1
+CAMERA_NUMBER = 2
 AUTO_FOCUS = False
 TESTWINDOW_SIZE = {'width' : 700, 'height' : 700}
 WINDOW_SIZE = {'width' : 700, 'height' : 700}

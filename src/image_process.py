@@ -78,14 +78,16 @@ def image_capture(dir_path, current_side, cameraNum, do_write_ROI):
     2. Take rectangle, wait until enter (cv2.selectROI only ends when you've pressed enter)
     3. Selection box pops up (after the enter) 
     """
+
     while True:
         # Drawing ROI's
         if len(selected_rois) > 0:
             for rect in selected_rois:
-                if rect[4]:
-                    cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 1)
-                else:
-                    cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (255, 0, 0), 1)
+                if rect[5] == current_side:
+                    if rect[4]:
+                        cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 1)
+                    else:
+                        cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (255, 0, 0), 1)
         r = cv2.selectROI("Select ROI", img, fromCenter)
 
         # Asking what the user wants to do
@@ -116,7 +118,7 @@ def image_capture(dir_path, current_side, cameraNum, do_write_ROI):
                                              crop_coords=coord,
                                              saved_base_path=file_name + '_' + str(obj_name_frequencies[obj_name]))
             img_path_list.append(temp_path)
-            selected_rois.append([x, y, w, h, do_write_ROI])
+            selected_rois.append([x, y, w, h, do_write_ROI, current_side])
             if do_write_ROI:
                 file.write(
                     "%s_%s_%s_%s_%s_%s_%s\n" % (x, y, w, h, current_side, obj_name, obj_name_frequencies[obj_name]))
@@ -184,7 +186,7 @@ def checkclicked(checkbox, dirPath, imCrop, x1, x2, y1, y2, file, side):
     print("##-COMPLETE SAVE FILE : " + objName)
 
 
-def showROI(selectROI, cameraNum):
+def showROI(selectROI, cameraNum, current_side):
     capture = cv2.VideoCapture(cameraNum)
     capture.set(3, int(config.TESTWINDOW_SIZE['width']))
     capture.set(4, int(config.TESTWINDOW_SIZE['height']))
@@ -192,10 +194,11 @@ def showROI(selectROI, cameraNum):
         ret, frame = capture.read()
         if (len(selected_rois) > 0):
             for rect in (selected_rois):
-                if (rect[4]):
-                    cv2.rectangle(frame, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 3)
-                else:
-                    cv2.rectangle(frame, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (255, 0, 0), 3)
+                if rect[5] == current_side:
+                    if (rect[4]):
+                        cv2.rectangle(frame, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 3)
+                    else:
+                        cv2.rectangle(frame, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (255, 0, 0), 3)
         if not ret:
             return
 

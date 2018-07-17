@@ -323,8 +323,8 @@ class Ui_MainWindow(object):
         self.resultTextWidget = result_text_widget.resultTextWidget(self.correctList, self.deviceName)
 
     def showImagesResult(self):
-        print("##-SHOW TEXT RESULT BUTTON CLICKED")
-        self.resultTextWidget = result_images_widget_grid.resultImagesWidget(self.deviceName)
+        print("##-SHOW IMAGES RESULT BUTTON CLICKED")
+        self.resultImagesWidget = result_images_widget_grid.resultImagesWidget(self.deviceName)
 
     def getArea(self, imageName):
         temp = imageName.split('.')[-2].split('_')
