@@ -316,9 +316,6 @@ class Ui_MainWindow(object):
         print('Sides:', keys)
         for key in keys:
             cv2.imwrite(result_path + '/' + key + '.jpg', self.smallImages[key])
-        self.resultImagesWidget = result_images_widget_grid.resultImagesWidget()
-        self.resultImagesWidget.curDevName = self.deviceName
-        self.resultImagesWidget.initUI()
 
 
     def showTextResult(self):
