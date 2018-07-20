@@ -280,6 +280,7 @@ class Ui_MainWindow(object):
                 else:
                     incor_class[value] = [label]
 
+
         self.smallImages = {}
         for image in img_list:
             if not os.path.isdir(path + '/predict/' + image):
@@ -318,11 +319,12 @@ class Ui_MainWindow(object):
 
         self.graphicsView.setText("RESULT DATA")
         keys = self.smallImages.keys()
-        result_path = os.path.join(self.absPath, self.deviceName, 'result')
+        result_path = os.path.join(self.absPath, self.deviceName, 'results')
         config.makeDir(result_path)
         print('Sides:', keys)
         for key in keys:
             cv2.imwrite(result_path + '/' + key + '.jpg', self.smallImages[key])
+
 
     def showTextResult(self):
         print("##-SHOW TEXT RESULT BUTTON CLICKED")
