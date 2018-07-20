@@ -26,9 +26,9 @@ DEBUG_STAGE_ABSENT = True
 class cameraConfig(object):
     class __cameraConfig:
         def __init__(self):
-            self.CENTER_CAM=None
-            self.LEFT_CAM=None
-            self.RIGHT_CAM=None
+            self.CENTER_CAM=0
+            self.LEFT_CAM=0
+            self.RIGHT_CAM=0
         def set_camera_number(self, SIDE, camera_number):
             if SIDE == 'LEFT':
                 self.LEFT_CAM=camera_number
@@ -44,13 +44,17 @@ class cameraConfig(object):
             cameraConfig.instance = cameraConfig.__cameraConfig()
         return cameraConfig.instance
 
-    def get_camera_number(self, SIDE):
+    @staticmethod
+    def get_camera_number(SIDE):
         if SIDE == 'LEFT':
-            return cameraConfig.__cameraConfig.LEFT_CAM
+            # return cameraConfig.__cameraConfig.self.LEFT_CAM
+            return 0
         elif SIDE == 'RIGHT':
-            return cameraConfig.__cameraConfig.RIGHT_CAM
+            # return cameraConfig.__cameraConfig.self.RIGHT_CAM
+            return 0
         else :
-            return cameraConfig.__cameraConfig.CENTER_CAM
+            # return cameraConfig.__cameraConfig.self.CENTER_CAM
+            return 0
 
 def rotate_machine_with_degree(_x_value=450000, _y_value=500000):
     print('#ROTATE MACHINE')
