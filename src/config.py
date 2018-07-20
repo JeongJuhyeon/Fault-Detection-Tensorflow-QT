@@ -10,7 +10,7 @@ WINDOW_SIZE : 실제 카메라 캡쳐화면의 크기
 * IPEVO ZIGGI 같은 경우는 (3264 X 2448) 이 최대 해상도 입니다.
 '''
 
-CAMERA_NUMBER = 2
+CAMERA_NUMBER = 1
 AUTO_FOCUS = False
 TESTWINDOW_SIZE = {'width': 700, 'height': 700}
 WINDOW_SIZE = {'width': 700, 'height': 700}
@@ -52,14 +52,23 @@ class cameraConfig(object):
         else :
             return cameraConfig.__cameraConfig.CENTER_CAM
 
-def rotate_machine_with_degree():
+def rotate_machine_with_degree(_x_value=450000, _y_value=500000):
     print('#ROTATE MACHINE')
+    cmd = "./stage/rotatePort.exe {side_number} {x_value} {y_value}".format(side_number=cameraConfig.get_camera_number('CENTER'),
+                                                                            x_value=_x_value,
+                                                                            y_value=_y_value)
+    rt_value = call(cmd)
 
 def initialize_machine():
     print('#INITIALIZE MACHINE')
+    rt_value = call("../stage/initializePort.exe")
 
-def move_camera_with_position():
+def move_camera_with_position(camera_device_number, _x_value, _y_value):
     print('#MOVE CAMERA')
+    cmd = "./stage/rotatePort.exe {side_number} {x_value} {y_value}".format(
+        side_number=camera_device_number,
+        x_value=_x_value,
+        y_value=_y_value)
 
 '''
 <학습 설정>
@@ -71,7 +80,7 @@ NUM_CHANNEL : 추후 수정
 VALIDATION_SIZE = 0.3
 DROPOUT = 0.3
 IMAGE_SIZE = 128
-ITERATION = 25
+ITERATION = 500
 BATCH_SIZE = 16
 NUM_CHANNEL = 3
 
