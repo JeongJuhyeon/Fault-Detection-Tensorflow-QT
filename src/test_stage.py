@@ -12,7 +12,7 @@ from PyQt5.QtGui import QImage, QPixmap, QFont
 from PyQt5.QtCore import Qt
 
 import os
-import image_process, predict, inputBox, config, roi_unit, result_images_widget, result_images_widget_grid, \
+import image_process, predict, inputBox, config, roi_unit, result_images_widget_grid, \
     result_text_widget
 
 # Contains test stage UI

@@ -1,6 +1,6 @@
 import sys
 
-import test_stage, inputBox, training_stage, devname_cameraxy_inputbox
+import test_stage, inputBox, training_stage, cameraxy_inputbox
 
 from PyQt5.QtGui import QFont
 from PyQt5 import QtCore, QtWidgets
@@ -96,12 +96,10 @@ class Ui_Interface(object):
         print("##-STAGE CHANGED(Test Stage)")
 
     def go_training_stage(self):
-        cameraxyinputbox = devname_cameraxy_inputbox.devnameCameraXYInputbox()
-
         inputbox = inputBox.App("Enter the device name")
         inputbox.do_UI()
         print("##-RETURN  VALUE : " + inputbox.getValue())
-        cameraxyinputbox.curDevName = inputbox.getValue()
+        cameraxyinputbox = cameraxy_inputbox.cameraXYInputbox(inputbox.getValue())
         cameraxyinputbox.searchDevice()
         cameraxyinputbox.exec()
 

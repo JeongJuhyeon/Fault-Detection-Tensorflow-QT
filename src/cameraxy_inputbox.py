@@ -1,19 +1,17 @@
 import sys, config
 from PyQt5.QtWidgets import QLabel, QApplication, QFormLayout, QLineEdit, QDialog, QDialogButtonBox
-from PyQt5.QtCore import QObject, pyqtSignal
 
-class devnameCameraXYInputbox(QDialog):
-    def __init__(self):
-        super(devnameCameraXYInputbox, self).__init__()
+class cameraXYInputbox(QDialog):
+    def __init__(self, curDevName):
+        super(cameraXYInputbox, self).__init__()
+        self.curDevName = curDevName
         self.initUI()
 
     def initUI(self):
-        self.curDevName = ""
         self.newDevice = True
         self.foundDeviceLineNo = -1
         self.textChanged = False
         self.configFilePath = "../devices.txt"
-
 
         # Add labels and self.lineEdits
         self.labels = config.SIDE_NAMES
@@ -83,7 +81,7 @@ class devnameCameraXYInputbox(QDialog):
 if __name__ == '__main__':
     import random
     app = QApplication(sys.argv)
-    dialog = devnameCameraXYInputbox()
+    dialog = cameraXYInputbox()
     dialog.curDevName = "Bob" + str(random)
     dialog.searchDevice()
     a = dialog.exec()

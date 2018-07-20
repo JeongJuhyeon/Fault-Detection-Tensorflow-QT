@@ -1,7 +1,6 @@
 import sys, os, config
-from PyQt5.QtWidgets import QLabel, QApplication, QFormLayout, QPushButton, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout
-from PyQt5.QtCore import QObject, pyqtSignal, QRect, Qt
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QLabel, QApplication, QWidget, QGridLayout
+
 
 class resultTextWidget(QWidget):
     def __init__(self, correct, curDevname):
