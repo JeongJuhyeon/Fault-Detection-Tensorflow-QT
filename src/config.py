@@ -1,4 +1,5 @@
-import os, subprocess
+import os
+from subprocess import call
 
 '''
 <카메라 설정>
@@ -11,12 +12,16 @@ WINDOW_SIZE : 실제 카메라 캡쳐화면의 크기
 
 CAMERA_NUMBER = 2
 AUTO_FOCUS = False
-TESTWINDOW_SIZE = {'width' : 700, 'height' : 700}
-WINDOW_SIZE = {'width' : 700, 'height' : 700}
+TESTWINDOW_SIZE = {'width': 700, 'height': 700}
+WINDOW_SIZE = {'width': 700, 'height': 700}
 WINDOW_RATIO = {
-    'width_ratio' : WINDOW_SIZE['width'] / TESTWINDOW_SIZE['width'],
-    'height_ratio' : WINDOW_SIZE['height'] / TESTWINDOW_SIZE['height']
+    'width_ratio': WINDOW_SIZE['width'] / TESTWINDOW_SIZE['width'],
+    'height_ratio': WINDOW_SIZE['height'] / TESTWINDOW_SIZE['height']
 }
+SIDE_NAMES = ["left 1", "right 1", "center", "left 2", "right 2"]
+
+DEBUG_STAGE_ABSENT = True
+
 
 class cameraConfig(object):
     class __cameraConfig:
@@ -33,6 +38,7 @@ class cameraConfig(object):
                 self.CENTER_CAM=camera_number
 
     instance = None
+
     def __new__(cls):
         if not cameraConfig.instance:
             cameraConfig.instance = cameraConfig.__cameraConfig()

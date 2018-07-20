@@ -85,9 +85,9 @@ def image_capture(dir_path, current_side, cameraNum, do_write_ROI):
             for rect in selected_rois:
                 if rect[5] == current_side:
                     if rect[4]:
-                        cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 3)
+                        cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 1)
                     else:
-                        cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (255, 0, 0), 3)
+                        cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (255, 0, 0), 1)
         r = cv2.selectROI("Select ROI", img, fromCenter)
 
         # Asking what the user wants to do
@@ -196,9 +196,9 @@ def showROI(selectROI, cameraNum, current_side):
             for rect in (selected_rois):
                 if rect[5] == current_side:
                     if (rect[4]):
-                        cv2.rectangle(frame, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 3)
+                        cv2.rectangle(frame, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 1)
                     else:
-                        cv2.rectangle(frame, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (255, 0, 0), 3)
+                        cv2.rectangle(frame, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (255, 0, 0), 1)
         if not ret:
             return
 

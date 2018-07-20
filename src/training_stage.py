@@ -47,11 +47,11 @@ class Ui_MainWindow(object):
 
         # Title Label
         font3 = QFont('D2Coding', 25, QFont.Light)
-        self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(10, 30, 781, 41))
-        self.label.setAlignment(QtCore.Qt.AlignCenter)
-        self.label.setObjectName("label")
-        self.label.setFont(font3)
+        self.title_label = QtWidgets.QLabel(self.centralwidget)
+        self.title_label.setGeometry(QtCore.QRect(10, 30, 781, 41))
+        self.title_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.title_label.setObjectName("label")
+        self.title_label.setFont(font3)
 
         self.currentState = QtWidgets.QLabel(self.centralwidget)
         self.currentState.setGeometry(QtCore.QRect(10, 71, 781, 21))
@@ -109,11 +109,18 @@ class Ui_MainWindow(object):
 
         # Next Button
         self.button_capture_next = QtWidgets.QPushButton(self.frame)
-        self.button_capture_next.setGeometry(QtCore.QRect(230, 110, 60, 60))
+        self.button_capture_next.setGeometry(QtCore.QRect(175, 110, 60, 60))
         self.button_capture_next.setObjectName("button_capture_next")
         self.button_capture_next.setStyleSheet(css)
         self.button_capture_next.setFont(font2)
         self.button_capture_next.clicked.connect(self.do_NextSide)
+
+        # Side Label
+        self.side_label = QtWidgets.QLabel(self.frame)
+        self.side_label.setGeometry(QtCore.QRect(250, 90, 165, 100))
+        self.side_label.setText("Side:\n" + config.SIDE_NAMES[0])
+        self.side_label.setFont(font2)
+
 
         # Show ROI button
         self.button_show_roi = QtWidgets.QPushButton(self.gridLayoutWidget)
@@ -191,6 +198,9 @@ class Ui_MainWindow(object):
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
 
+        if not config.DEBUG_STAGE_ABSENT:
+            config.initialize_machine()
+
     def do_ShowROI(self):
         print("##-SHOW ROI")
         image_process.showROI(selectROI=self.selectImg,
@@ -200,7 +210,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label.setText(_translate("MainWindow", "Training Stage"))
+        self.title_label.setText(_translate("MainWindow", "Training Stage"))
         # self.button_start_roi.setText(_translate("MainWindow", "Start ROI"))
         # self.button_delete.setText(_translate("MainWindow", "Delete"))
         self.button_show_roi.setText(_translate("MainWindow", "Show ROI"))
@@ -259,6 +269,9 @@ class Ui_MainWindow(object):
         side = self.side + str(self.sideNum)
         self.setState(side)
         print("##-CLIKED THE NEXT BUTTON :" + side)
+        if self.sideNum > 3 and not config.DEBUG_STAGE_ABSENT:
+            config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
+        self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
 
     def create_image(self):
         # plz write the image path

@@ -1,4 +1,4 @@
-import sys
+import sys, config
 from PyQt5.QtWidgets import QLabel, QApplication, QFormLayout, QLineEdit, QDialog, QDialogButtonBox
 from PyQt5.QtCore import QObject, pyqtSignal
 
@@ -16,7 +16,7 @@ class devnameCameraXYInputbox(QDialog):
 
 
         # Add labels and self.lineEdits
-        self.labels = ["left 1", "right 1", "above", "left 2", "right 2"]
+        self.labels = config.SIDE_NAMES
         form = QFormLayout(self)
         form.addRow(QLabel("            Camera positions:"))
         self.lineEdits = []

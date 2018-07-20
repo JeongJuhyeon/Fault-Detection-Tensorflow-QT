@@ -105,11 +105,17 @@ class Ui_MainWindow(object):
 
         # "Next" Button
         self.button_capture_next = QtWidgets.QPushButton(self.frame)
-        self.button_capture_next.setGeometry(QtCore.QRect(230, 160, 60, 60))
+        self.button_capture_next.setGeometry(QtCore.QRect(175, 160, 60, 60))
         self.button_capture_next.setObjectName("button_capture_next")
         self.button_capture_next.setStyleSheet(css)
         self.button_capture_next.setFont(font2)
         self.button_capture_next.clicked.connect(self.do_Nextbutton)
+
+        # Side Label
+        self.side_label = QtWidgets.QLabel(self.frame)
+        self.side_label.setGeometry(QtCore.QRect(250, 140, 165, 100))
+        self.side_label.setText("Side:\n" + config.SIDE_NAMES[0])
+        self.side_label.setFont(font2)
 
         # Vertical layout for "Start test" and "Show result" buttons
         self.verticalLayoutWidget = QtWidgets.QWidget(self.frame)
@@ -200,6 +206,9 @@ class Ui_MainWindow(object):
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
 
+        if not config.DEBUG_STAGE_ABSENT:
+            config.initialize_machine()
+
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -247,7 +256,12 @@ class Ui_MainWindow(object):
     def do_Nextbutton(self):
         print("##-NEXT BUTTON CLICKED")
         self.cameraNum = (self.cameraNum + 1) % config.CAMERA_NUMBER  # CAMERA CHANGE
-        self.sideNum = (self.sideNum) % 5 + 1;
+        self.sideNum = (self.sideNum) % 5 + 1
+        side = 'side' + str(self.sideNum)
+        print("##-CLIKED THE NEXT BUTTON :" + side)
+        if self.sideNum > 3 and not config.DEBUG_STAGE_ABSENT:
+            config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
+        self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
 
     # "Start Test" button method
     def do_startTest(self):
