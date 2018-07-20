@@ -62,8 +62,15 @@ def convert_coord(coord, size_conf):
     return newCoord
 
 # Used in training stage
-def image_capture(dir_path, current_side, cameraNum, do_write_ROI):
-    if do_write_ROI: file = open(dir_path + '/' + 'locationInfo.txt', "a+")
+def image_capture(dir_path, current_side, cameraNum, correct_ROIs):
+    if correct_ROIs:
+        file = open(dir_path + '/' + 'locationInfo.txt', "a+")
+    else:
+        correct_locs = []
+        file = open(dir_path + '/' + 'locationInfo.txt', "r")
+        for line in file:
+            correct_locs.append([int(x) for x in line.split("_")[0:4]])
+
     actiondialog = roiactiondialog.ROIActionDialog()
     objectinputbox = roiobjectinputdialog.ROIobjectInputDialog()
 
@@ -100,6 +107,18 @@ def image_capture(dir_path, current_side, cameraNum, do_write_ROI):
                         cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (255, 0, 0), 1)
         r = cv2.selectROI("Select ROI", img, fromCenter)
 
+        if not correct_ROIs and config.SELECT_CLOSEST_CORRECT_ROI_WHEN_SELECTING_INCORRECT_ROI:
+            closest_dist = 100000
+            for rect in correct_locs:
+                dist = abs(rect[0] - r[0]) + abs(rect[1] - r[1])
+                if dist < closest_dist:
+                    closest_dist = dist
+                    closest_rect = rect
+            r = list(closest_rect)
+
+
+
+
         # Asking what the user wants to do
         button_pressed = actiondialog.exec()
 
@@ -114,7 +133,7 @@ def image_capture(dir_path, current_side, cameraNum, do_write_ROI):
                 obj_name_frequencies[obj_name] = 0
             x, y, w, h = r[0], r[1], r[2], r[3]
             dir_name = current_side + '_' + obj_name + '_' + str(obj_name_frequencies[obj_name])
-            if do_write_ROI:
+            if correct_ROIs:
                 dir_name += '_cor'
             else:
                 dir_name += '_incor'
@@ -128,8 +147,8 @@ def image_capture(dir_path, current_side, cameraNum, do_write_ROI):
                                              crop_coords=coord,
                                              saved_base_path=file_name + '_' + str(obj_name_frequencies[obj_name]))
             img_path_list.append(temp_path)
-            selected_rois.append([x, y, w, h, do_write_ROI, current_side])
-            if do_write_ROI:
+            selected_rois.append([x, y, w, h, correct_ROIs, current_side])
+            if correct_ROIs:
                 file.write(
                     "%s_%s_%s_%s_%s_%s_%s\n" % (x, y, w, h, current_side, obj_name, obj_name_frequencies[obj_name]))
                 file.flush()
@@ -152,8 +171,7 @@ def image_capture(dir_path, current_side, cameraNum, do_write_ROI):
         elif button_pressed == 0x00200000:
             print("##-IMAGE PROCESS COMPLETE")
             cv2.destroyAllWindows()
-            if do_write_ROI:
-                file.close()
+            file.close()
             return selected_rois
 
 # Used in test stage

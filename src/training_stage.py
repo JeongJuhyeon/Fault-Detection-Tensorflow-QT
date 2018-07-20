@@ -243,7 +243,7 @@ class Ui_MainWindow(object):
         captured_image = image_process.image_capture(dir_path=device_path,
                                                      current_side=sideStr,
                                                      cameraNum=self.cameraNum,
-                                                     do_write_ROI=False)
+                                                     correct_ROIs=False)
         self.selectImg.extend(captured_image)
 
     def do_Capture(self):
@@ -260,7 +260,7 @@ class Ui_MainWindow(object):
         captured_image = image_process.image_capture(dir_path=device_path,
                                                      current_side=sideStr,
                                                      cameraNum=self.cameraNum,
-                                                     do_write_ROI=True)
+                                                     correct_ROIs=True)
         self.selectImg.extend(captured_image)
 
     def do_NextSide(self):
