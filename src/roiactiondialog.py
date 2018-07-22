@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QMessageBox, QApplication
+from PyQt5.QtWidgets import QWidget, QMessageBox, QApplication, QAbstractButton
 
 class ROIActionDialog(QMessageBox):
 
