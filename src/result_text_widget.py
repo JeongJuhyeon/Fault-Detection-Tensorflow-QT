@@ -1,7 +1,6 @@
-import sys, os
-from PyQt5.QtWidgets import QLabel, QApplication, QFormLayout, QPushButton, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout
-from PyQt5.QtCore import QObject, pyqtSignal, QRect, Qt
-from PyQt5.QtGui import QIcon, QPixmap
+import sys, os, config
+from PyQt5.QtWidgets import QLabel, QApplication, QWidget, QGridLayout
+
 
 class resultTextWidget(QWidget):
     def __init__(self, correct, curDevname):
@@ -20,7 +19,7 @@ class resultTextWidget(QWidget):
         self.grid = QGridLayout()
         self.grid.setSpacing(10)
 
-        self.camera_names = ["left1", "right1", "above", "left2", "right2"]
+        self.camera_names = config.SIDE_NAMES
 
         # "Correct", "Incorrect"
         self.grid.addWidget(QLabel("Correct"), 0, 1)
