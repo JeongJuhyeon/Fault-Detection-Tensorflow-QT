@@ -1,5 +1,6 @@
 import os
 from subprocess import call
+
 '''
 <카메라 설정>
 CAMERA_NUMBER : 현재 연결된 카메라 개수
@@ -11,19 +12,24 @@ WINDOW_SIZE : 실제 카메라 캡쳐화면의 크기
 
 CAMERA_NUMBER = 1
 AUTO_FOCUS = False
-TESTWINDOW_SIZE = {'width' : 700, 'height' : 700}
-WINDOW_SIZE = {'width' : 700, 'height' : 700}
+TESTWINDOW_SIZE = {'width': 700, 'height': 700}
+WINDOW_SIZE = {'width': 700, 'height': 700}
 WINDOW_RATIO = {
-    'width_ratio' : WINDOW_SIZE['width'] / TESTWINDOW_SIZE['width'],
-    'height_ratio' : WINDOW_SIZE['height'] / TESTWINDOW_SIZE['height']
+    'width_ratio': WINDOW_SIZE['width'] / TESTWINDOW_SIZE['width'],
+    'height_ratio': WINDOW_SIZE['height'] / TESTWINDOW_SIZE['height']
 }
+SIDE_NAMES = ["left 1", "right 1", "center", "left 2", "right 2"]
+
+DEBUG_STAGE_ABSENT = True
+SELECT_CLOSEST_CORRECT_ROI_WHEN_SELECTING_INCORRECT_ROI = True
+
 
 class cameraConfig(object):
     class __cameraConfig:
         def __init__(self):
-            self.CENTER_CAM=None
-            self.LEFT_CAM=None
-            self.RIGHT_CAM=None
+            self.CENTER_CAM=0
+            self.LEFT_CAM=0
+            self.RIGHT_CAM=0
         def set_camera_number(self, SIDE, camera_number):
             if SIDE == 'LEFT':
                 self.LEFT_CAM=camera_number
@@ -33,18 +39,23 @@ class cameraConfig(object):
                 self.CENTER_CAM=camera_number
 
     instance = None
+
     def __new__(cls):
         if not cameraConfig.instance:
             cameraConfig.instance = cameraConfig.__cameraConfig()
         return cameraConfig.instance
 
-    def get_camera_number(self, SIDE):
+    @staticmethod
+    def get_camera_number(SIDE):
         if SIDE == 'LEFT':
-            return cameraConfig.__cameraConfig.LEFT_CAM
+            # return cameraConfig.__cameraConfig.self.LEFT_CAM
+            return 0
         elif SIDE == 'RIGHT':
-            return cameraConfig.__cameraConfig.RIGHT_CAM
+            # return cameraConfig.__cameraConfig.self.RIGHT_CAM
+            return 0
         else :
-            return cameraConfig.__cameraConfig.CENTER_CAM
+            # return cameraConfig.__cameraConfig.self.CENTER_CAM
+            return 0
 
 def rotate_machine_with_degree(_x_value=450000, _y_value=500000):
     print('#ROTATE MACHINE')

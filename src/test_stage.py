@@ -12,7 +12,7 @@ from PyQt5.QtGui import QImage, QPixmap, QFont
 from PyQt5.QtCore import Qt
 
 import os
-import image_process, predict, inputBox, config, roi_unit, result_images_widget, result_images_widget_grid, \
+import image_process, predict, inputBox, config, roi_unit, result_images_widget_grid, \
     result_text_widget
 
 # Contains test stage UI
@@ -105,11 +105,17 @@ class Ui_MainWindow(object):
 
         # "Next" Button
         self.button_capture_next = QtWidgets.QPushButton(self.frame)
-        self.button_capture_next.setGeometry(QtCore.QRect(230, 160, 60, 60))
+        self.button_capture_next.setGeometry(QtCore.QRect(175, 160, 60, 60))
         self.button_capture_next.setObjectName("button_capture_next")
         self.button_capture_next.setStyleSheet(css)
         self.button_capture_next.setFont(font2)
         self.button_capture_next.clicked.connect(self.do_Nextbutton)
+
+        # Side Label
+        self.side_label = QtWidgets.QLabel(self.frame)
+        self.side_label.setGeometry(QtCore.QRect(250, 140, 165, 100))
+        self.side_label.setText("Side:\n" + config.SIDE_NAMES[0])
+        self.side_label.setFont(font2)
 
         # Vertical layout for "Start test" and "Show result" buttons
         self.verticalLayoutWidget = QtWidgets.QWidget(self.frame)
@@ -200,7 +206,8 @@ class Ui_MainWindow(object):
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
 
-        config.initialize_machine()
+        if not config.DEBUG_STAGE_ABSENT:
+            config.initialize_machine()
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
@@ -250,14 +257,16 @@ class Ui_MainWindow(object):
         print("##-NEXT BUTTON CLICKED")
         self.cameraNum = (self.cameraNum + 1) % config.CAMERA_NUMBER  # CAMERA CHANGE
         self.sideNum = (self.sideNum) % 5 + 1
-        side = self.side + str(self.sideNum)
+        side = 'side' + str(self.sideNum)
         print("##-CLIKED THE NEXT BUTTON :" + side)
-        if self.sideNum > 3:
+        if self.sideNum > 3 and not config.DEBUG_STAGE_ABSENT:
             config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
+        self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
 
+    # "Start Test" button method
     def do_startTest(self):
         print("##-TEST BUTTON CLICKED")
-        ## You write the To-do method here
+
         path = os.path.join(self.absPath, self.deviceName)
         img_list = os.listdir(path + '/predict')
         classes = os.listdir(path + '/t_images')
@@ -286,6 +295,7 @@ class Ui_MainWindow(object):
         print('#Predicting')
         results = predict.run_inference_on_image(modelFullPath, labelsFullPath, imageDir, tensorName)
 
+        # results is a [{}, {}, ..] list of dictionaries
         for result in results:
             image = result['imageName']
             sideNo = int(result['imageName'][4])
@@ -298,13 +308,13 @@ class Ui_MainWindow(object):
             start, end, side = self.getArea(image)
 
             if isCorrect == 'CORRECT':
-                cv2.rectangle(self.smallImages[side], start, end, config.GREEN, 2)
+                cv2.rectangle(self.smallImages[side], start, end, config.GREEN, 1)
                 self.correctList[sideNo - 1][0] += 1
             elif isCorrect == 'CHECK':
-                cv2.rectangle(self.smallImages[side], start, end, config.BLUE, 2)
+                cv2.rectangle(self.smallImages[side], start, end, config.BLUE, 1)
             else:
                 self.correctList[sideNo - 1][1] += 1
-                cv2.rectangle(self.smallImages[side], start, end, config.RED, 2)
+                cv2.rectangle(self.smallImages[side], start, end, config.RED, 1)
 
         self.graphicsView.setText("RESULT DATA")
         keys = self.smallImages.keys()
@@ -336,7 +346,7 @@ class Ui_MainWindow(object):
 
 def getResult(imageName, result_arr):
     temp = imageName.split('_')
-    currect_class = temp[0] + '_' + temp[1] + '_' + 'cor'
+    correct_class = temp[0] + '_' + temp[1] + '_' + 'cor'
 
     print(result_arr)
     result_sum_dict = {}
