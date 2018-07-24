@@ -1,6 +1,6 @@
 import sys
 
-import test_stage, inputBox, training_stage, cameraxy_inputbox
+import test_stage, inputBox, training_stage, cameraxy_inputbox, config, devname_cameraxy_inputbox
 
 from PyQt5.QtGui import QFont
 from PyQt5 import QtCore, QtWidgets
@@ -85,6 +85,11 @@ class Ui_Interface(object):
         inputbox = inputBox.App("Enter the device name")
         inputbox.do_UI()
         print("##RETURN  VALUE : " + inputbox.getValue())
+
+        cameraxyinputbox = devname_cameraxy_inputbox.devnameCameraXYInputbox(inputbox.getValue())
+        cameraxyinputbox.searchDevice()
+        self.initialize_machine(inputBox_lineEdits=cameraxy_inputbox)
+
         self.test_Window = QtWidgets.QMainWindow()
         self.test_interface = test_stage.Ui_MainWindow(self.interface)
         self.test_interface.setupUi(self.test_Window)
@@ -99,9 +104,12 @@ class Ui_Interface(object):
         inputbox = inputBox.App("Enter the device name")
         inputbox.do_UI()
         print("##-RETURN  VALUE : " + inputbox.getValue())
-        cameraxyinputbox = cameraxy_inputbox.cameraXYInputbox(inputbox.getValue())
+
+        cameraxyinputbox = devname_cameraxy_inputbox.devnameCameraXYInputbox(inputbox.getValue())
         cameraxyinputbox.searchDevice()
         cameraxyinputbox.exec()
+
+        self.initialize_machine(inputBox_lineEdits=cameraxy_inputbox)
 
         self.training_Window = QtWidgets.QMainWindow()
         self.training_interface = training_stage.Ui_MainWindow(self.interface)
@@ -120,6 +128,15 @@ class Ui_Interface(object):
         print("return value : " + self.inputbox.getValue())
         # print(self.inputbox.text)
 
+    def initialize_machine(self, inputBox_lineEdits):
+        left_x, right_x = int(inputBox_lineEdits[0].text()), int(inputBox_lineEdits[1].text())
+        left_y, right_y = int(inputBox_lineEdits[3].text()), int(inputBox_lineEdits[4].text())
+        center_y = int(inputBox_lineEdits[2].text())
+
+        config.initialize_machine()
+        config.move_camera_with_position(1, 1, center_y)
+        config.move_camera_with_position(2, left_x, left_y)
+        config.move_camera_with_position(3, right_x, right_y)
 
 def main():
     app = QtWidgets.QApplication(sys.argv)

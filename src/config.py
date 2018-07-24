@@ -59,7 +59,7 @@ class cameraConfig(object):
 
 def rotate_machine_with_degree(_x_value=450000, _y_value=500000):
     print('#ROTATE MACHINE')
-    cmd = "./stage/rotatePort.exe {side_number} {x_value} {y_value}".format(side_number=cameraConfig.get_camera_number('CENTER'),
+    cmd = "../stage/rotatePort.exe {side_number} {x_value} {y_value}".format(side_number=cameraConfig.get_camera_number('CENTER'),
                                                                             x_value=_x_value,
                                                                             y_value=_y_value)
     rt_value = call(cmd)
