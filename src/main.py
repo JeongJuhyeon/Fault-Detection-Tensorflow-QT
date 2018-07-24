@@ -88,7 +88,7 @@ class Ui_Interface(object):
 
         cameraxyinputbox = devname_cameraxy_inputbox.devnameCameraXYInputbox(inputbox.getValue())
         cameraxyinputbox.searchDevice()
-        self.initialize_machine(inputBox_lineEdits=cameraxy_inputbox)
+        self.initialize_machine(inputBox_lineEdits=cameraxyinputbox.lineEdits)
 
         self.test_Window = QtWidgets.QMainWindow()
         self.test_interface = test_stage.Ui_MainWindow(self.interface)
@@ -109,7 +109,7 @@ class Ui_Interface(object):
         cameraxyinputbox.searchDevice()
         cameraxyinputbox.exec()
 
-        self.initialize_machine(inputBox_lineEdits=cameraxy_inputbox)
+        self.initialize_machine(inputBox_lineEdits=cameraxyinputbox.lineEdits)
 
         self.training_Window = QtWidgets.QMainWindow()
         self.training_interface = training_stage.Ui_MainWindow(self.interface)
@@ -129,14 +129,16 @@ class Ui_Interface(object):
         # print(self.inputbox.text)
 
     def initialize_machine(self, inputBox_lineEdits):
-        left_x, right_x = int(inputBox_lineEdits[0].text()), int(inputBox_lineEdits[1].text())
-        left_y, right_y = int(inputBox_lineEdits[3].text()), int(inputBox_lineEdits[4].text())
-        center_y = int(inputBox_lineEdits[2].text())
+        print("## INITIALIZE MACHINE")
+        print(inputBox_lineEdits[0].text())
+        _left_x, _right_x = int(inputBox_lineEdits[0].text()), int(inputBox_lineEdits[1].text())
+        _left_y, _right_y = int(inputBox_lineEdits[3].text()), int(inputBox_lineEdits[4].text())
+        _center_y = int(inputBox_lineEdits[2].text())
 
         config.initialize_machine()
-        config.move_camera_with_position(1, 1, center_y)
-        config.move_camera_with_position(2, left_x, left_y)
-        config.move_camera_with_position(3, right_x, right_y)
+        config.move_camera_with_position(1, 1, _center_y)
+        config.move_camera_with_position(2, _left_x, _left_y)
+        config.move_camera_with_position(3, _right_x, _right_y)
 
 def main():
     app = QtWidgets.QApplication(sys.argv)

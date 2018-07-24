@@ -19,7 +19,7 @@ import image_process, predict, inputBox, config, roi_unit, result_images_widget_
 
 class Ui_MainWindow(object):
     def __init__(self, _mainUI=None):
-        self.absPath = './res'
+        self.absPath = '../res'
         self.deviceName = 'device'
         self.sideName = 'side'
         self.sideNum = 1

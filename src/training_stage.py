@@ -17,7 +17,7 @@ import pathlib
 
 class Ui_MainWindow(object):
     def __init__(self, _mainUI=None):
-        self.absPath = './res'
+        self.absPath = '../res'
         self.dirName = 'device'
         self.side = 'side'
         self.sideNum = 1

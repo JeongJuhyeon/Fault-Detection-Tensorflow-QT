@@ -23,7 +23,6 @@ SIDE_NAMES = ["left 1", "right 1", "center", "left 2", "right 2"]
 DEBUG_STAGE_ABSENT = True
 SELECT_CLOSEST_CORRECT_ROI_WHEN_SELECTING_INCORRECT_ROI = True
 
-
 class cameraConfig(object):
     class __cameraConfig:
         def __init__(self):
