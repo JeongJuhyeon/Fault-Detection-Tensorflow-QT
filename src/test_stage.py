@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import os
+
 # Form implementation generated from reading ui file '.\test_stage.ui'
 #
 # Created by: PyQt5 UI code generator 5.10.1
@@ -8,12 +10,17 @@
 import cv2
 import numpy
 from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtGui import QImage, QPixmap, QFont
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QImage, QPixmap, QFont
 
-import os
-import image_process, predict, inputBox, config, roi_unit, result_images_widget_grid, \
-    result_text_widget
+import config
+import image_process
+import inputBox
+import predict
+import result_images_widget_grid
+import result_text_widget
+import roi_unit
+
 
 # Contains test stage UI
 
@@ -149,18 +156,24 @@ class Ui_MainWindow(object):
         self.button_start_test.setFont(font)
         self.verticalLayout.addWidget(self.button_start_test)
 
+        # Invisible label
+        self.label_invisible = QtWidgets.QLabel(self.verticalLayoutWidget)
+        self.label_invisible.setFixedSize(20, 20)
+        self.verticalLayout.addWidget(self.label_invisible)
+
         # "Show Result" Label
-        self.label_show_result = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.label_show_result.setObjectName("label_show_result")
-        self.label_show_result.setFont(font)
-        self.label_show_result.setStyleSheet(css)
-        self.label_show_result.setAlignment(Qt.AlignHCenter)
-        self.verticalLayout.addWidget(self.label_show_result)
+        self.label_show_results = QtWidgets.QLabel(self.verticalLayoutWidget)
+        self.label_show_results.setObjectName("label_show_result")
+        self.label_show_results.setFont(QFont('D2Coding', 18))
+        self.label_show_results.setStyleSheet(css)
+        self.label_show_results.setAlignment(Qt.AlignHCenter)
+        self.verticalLayout.addWidget(self.label_show_results)
 
         # Show "Text" Result Button
         self.button_text_result = QtWidgets.QPushButton(self.frame)
         self.button_text_result.setText("Text")
-        self.button_text_result.setGeometry(QtCore.QRect(230, 160, 60, 60))
+        #self.button_text_result.setGeometry(QtCore.QRect(230, 160, 60, 60))
+        self.button_text_result.setFixedSize(150, 50)
         self.button_text_result.setStyleSheet(css)
         self.button_text_result.setFont(font2)
         self.button_text_result.clicked.connect(self.showTextResult)
@@ -168,7 +181,7 @@ class Ui_MainWindow(object):
         # Show "Images" Result Button
         self.button_images_result = QtWidgets.QPushButton(self.frame)
         self.button_images_result.setText("Images")
-        self.button_images_result.setGeometry(QtCore.QRect(230, 160, 60, 60))
+        self.button_images_result.setFixedSize(150, 50)
         self.button_images_result.setStyleSheet(css)
         self.button_images_result.setFont(font2)
         self.button_images_result.clicked.connect(self.showImagesResult)
@@ -191,11 +204,11 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.button_show_result)
         """
 
-        self.label_show_result.setSizePolicy(sizePolicy)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_show_result.sizePolicy().hasHeightForWidth())
+        #self.label_show_results.setSizePolicy(sizePolicy)
+        #sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        #sizePolicy.setHorizontalStretch(0)
+        #sizePolicy.setVerticalStretch(0)
+        #sizePolicy.setHeightForWidth(self.label_show_results.sizePolicy().hasHeightForWidth())
 
         self.graphicsView = QtWidgets.QLabel(self.widget)
         self.graphicsView.setGeometry(QtCore.QRect(370, 60, 401, 391))
@@ -223,7 +236,7 @@ class Ui_MainWindow(object):
         self.MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label.setText(_translate("MainWindow", "Test Stage"))
         self.button_start_test.setText(_translate("MainWindow", "Start Test"))
-        self.label_show_result.setText(_translate("MainWindow", "Show Result"))
+        self.label_show_results.setText(_translate("MainWindow", "Show Results"))
         self.button_capture.setText(_translate("MainWindow", "Capture"))
         self.button_capture_next.setText(_translate("MainWindow", "-->"))
         self.button_device_number.setText(_translate("MainWindow", "Device #"))
