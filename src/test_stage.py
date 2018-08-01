@@ -103,19 +103,28 @@ class Ui_MainWindow(object):
         self.autofocus_checkbox.setChecked(config.AUTO_FOCUS)
         self.autofocus_checkbox.stateChanged.connect(config.change_autofocus)
 
+        # Prev Button
+        self.button_capture_prev = QtWidgets.QPushButton(self.frame)
+        self.button_capture_prev.setText("<--")
+        self.button_capture_prev.setGeometry(QtCore.QRect(140, 160, 50, 50))
+        self.button_capture_prev.setStyleSheet(css)
+        self.button_capture_prev.setFont(font2)
+        self.button_capture_prev.clicked.connect(self.do_PrevSide)
+
         # "Next" Button
         self.button_capture_next = QtWidgets.QPushButton(self.frame)
-        self.button_capture_next.setGeometry(QtCore.QRect(175, 160, 60, 60))
+        self.button_capture_next.setGeometry(QtCore.QRect(275, 160, 50, 50))
         self.button_capture_next.setObjectName("button_capture_next")
         self.button_capture_next.setStyleSheet(css)
         self.button_capture_next.setFont(font2)
-        self.button_capture_next.clicked.connect(self.do_Nextbutton)
+        self.button_capture_next.clicked.connect(self.do_NextSide)
 
         # Side Label
         self.side_label = QtWidgets.QLabel(self.frame)
-        self.side_label.setGeometry(QtCore.QRect(250, 140, 165, 100))
-        self.side_label.setText("Side:\n" + config.SIDE_NAMES[0])
-        self.side_label.setFont(font2)
+        self.side_label.setGeometry(QtCore.QRect(200, 150, 67, 70))
+        self.side_label.setText("Side 1:\n" + config.SIDE_NAMES[0])
+        self.side_label.setFont(QFont('D2Coding', 13, QFont.DemiBold))
+        self.side_label.setStyleSheet("QLabel { border: 2px solid blue } ")
 
         # Vertical layout for "Start test" and "Show result" buttons
         self.verticalLayoutWidget = QtWidgets.QWidget(self.frame)
@@ -216,7 +225,7 @@ class Ui_MainWindow(object):
         self.button_start_test.setText(_translate("MainWindow", "Start Test"))
         self.label_show_result.setText(_translate("MainWindow", "Show Result"))
         self.button_capture.setText(_translate("MainWindow", "Capture"))
-        self.button_capture_next.setText(_translate("MainWindow", "Next"))
+        self.button_capture_next.setText(_translate("MainWindow", "-->"))
         self.button_device_number.setText(_translate("MainWindow", "Device #"))
         self.home.setText(_translate("MainWindow", "Home"))
 
@@ -239,11 +248,11 @@ class Ui_MainWindow(object):
         self.ROI = roi_unit.readROI(os.path.join(self.absPath, self.deviceName, 'locationInfo.txt'),
                                     config.WINDOW_RATIO)
         print(self.ROI)
-        predictPath = os.path.join(self.absPath, self.deviceName, 'predict');
+        predictPath = os.path.join(self.absPath, self.deviceName, 'predict')
         config.makeDir(predictPath)
-        pOImagePath = os.path.join(predictPath, 'images');
+        pOImagePath = os.path.join(predictPath, 'images')
         config.makeDir(pOImagePath)
-        pCImagePath = os.path.join(predictPath, 'imagesCanny');
+        pCImagePath = os.path.join(predictPath, 'imagesCanny')
         config.makeDir(pCImagePath)
 
         side = self.sideName + str(self.sideNum)
@@ -253,15 +262,31 @@ class Ui_MainWindow(object):
         self.imgview = QImage(self.img.data, self.img.shape[1], self.img.shape[0], QImage.Format_RGB888)
         self.graphicsView.setPixmap(QPixmap.fromImage(self.imgview))
 
-    def do_Nextbutton(self):
+    def do_NextSide(self):
         print("##-NEXT BUTTON CLICKED")
         self.cameraNum = (self.cameraNum + 1) % config.CAMERA_NUMBER  # CAMERA CHANGE
         self.sideNum = (self.sideNum) % 5 + 1
         side = 'side' + str(self.sideNum)
         print("##-CLIKED THE NEXT BUTTON :" + side)
-        if self.sideNum > 3 and not config.DEBUG_STAGE_ABSENT:
-            config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
+        if not config.DEBUG_STAGE_ABSENT:
+            if self.sideNum > 3:
+                config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
+            elif self.sideNum < 3: # UNTESTED
+                config.rotate_machine_with_degree(_x_value=0, _y_value=0)
         self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
+
+    def do_PrevSide(self):
+        self.cameraNum = (self.cameraNum - 1) % config.CAMERA_NUMBER  # CAMERA CHANGE
+        self.sideNum = (self.sideNum - 2) % 5 + 1
+        side = 'side' + str(self.sideNum)
+        print("##-CLIKED THE NEXT BUTTON :" + side)
+        if not config.DEBUG_STAGE_ABSENT:
+            if self.sideNum > 3:
+                config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
+            elif self.sideNum < 3: # UNTESTED
+                config.rotate_machine_with_degree(_x_value=0, _y_value=0)
+        self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
+
 
     # "Start Test" button method
     def do_startTest(self):
@@ -359,7 +384,7 @@ def getResult(imageName, result_arr):
         else:
             result_sum_dict[result_class_name] = result_pair[1]
 
-    maximum_class = None;
+    maximum_class = None
     maximum_score = -1.0
     for result_sum_key in result_sum_dict.keys():
         if result_sum_dict[result_sum_key] > maximum_score:

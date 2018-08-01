@@ -107,9 +107,17 @@ class Ui_MainWindow(object):
         self.autofocus_checkbox.setChecked(config.AUTO_FOCUS)
         self.autofocus_checkbox.stateChanged.connect(config.change_autofocus)
 
+        # Prev Button
+        self.button_capture_prev = QtWidgets.QPushButton(self.frame)
+        self.button_capture_prev.setText("<--")
+        self.button_capture_prev.setGeometry(QtCore.QRect(140, 115, 50, 50))
+        self.button_capture_prev.setStyleSheet(css)
+        self.button_capture_prev.setFont(font2)
+        self.button_capture_prev.clicked.connect(self.do_PrevSide)
+
         # Next Button
         self.button_capture_next = QtWidgets.QPushButton(self.frame)
-        self.button_capture_next.setGeometry(QtCore.QRect(175, 110, 60, 60))
+        self.button_capture_next.setGeometry(QtCore.QRect(275, 115, 50, 50))
         self.button_capture_next.setObjectName("button_capture_next")
         self.button_capture_next.setStyleSheet(css)
         self.button_capture_next.setFont(font2)
@@ -117,9 +125,10 @@ class Ui_MainWindow(object):
 
         # Side Label
         self.side_label = QtWidgets.QLabel(self.frame)
-        self.side_label.setGeometry(QtCore.QRect(250, 90, 165, 100))
-        self.side_label.setText("Side:\n" + config.SIDE_NAMES[0])
-        self.side_label.setFont(font2)
+        self.side_label.setGeometry(QtCore.QRect(200, 105, 67, 70))
+        self.side_label.setText("Side 1:\n" + config.SIDE_NAMES[0])
+        self.side_label.setFont(QFont('D2Coding', 13, QFont.DemiBold))
+        self.side_label.setStyleSheet("QLabel { border: 2px solid blue } ")
 
 
         # Show ROI button
@@ -219,7 +228,7 @@ class Ui_MainWindow(object):
         self.button_create_img.setText(_translate("MainWindow", "Create Training Image"))
         self.correct_capture.setText(_translate("MainWindow", "Correct\nCapture"))
         self.incorrect_capture.setText(_translate("MainWindow", "Incorrect\nCapture"))
-        self.button_capture_next.setText(_translate("MainWindow", "Next"))
+        self.button_capture_next.setText(_translate("MainWindow", "-->"))
         self.home.setText(_translate("MainWindow", "Home"))
 
     def setState(self, _side='side1'):
@@ -248,9 +257,9 @@ class Ui_MainWindow(object):
 
     def do_Capture(self):
         print("##-IMAGE CAPTURE START")
-        root_path = self.absPath;
+        root_path = self.absPath
         config.makeDir(root_path)
-        device_path = os.path.join(root_path, self.dirName);
+        device_path = os.path.join(root_path, self.dirName)
         config.makeDir(device_path)
         sideStr = self.side + str(self.sideNum)
         side_path = os.path.join(device_path, sideStr)
@@ -265,12 +274,28 @@ class Ui_MainWindow(object):
 
     def do_NextSide(self):
         self.cameraNum = (self.cameraNum + 1) % config.CAMERA_NUMBER  # CAMERA CHANGE
-        self.sideNum = (self.sideNum) % 5 + 1;
+        self.sideNum = (self.sideNum) % 5 + 1
         side = self.side + str(self.sideNum)
         self.setState(side)
         print("##-CLIKED THE NEXT BUTTON :" + side)
-        if self.sideNum > 3 and not config.DEBUG_STAGE_ABSENT:
-            config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
+        if not config.DEBUG_STAGE_ABSENT:
+            if self.sideNum > 3:
+                config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
+            elif self.sideNum < 3: # UNTESTED
+                config.rotate_machine_with_degree(_x_value=0, _y_value=0)
+        self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
+
+    def do_PrevSide(self):
+        self.cameraNum = (self.cameraNum - 1) % config.CAMERA_NUMBER  # CAMERA CHANGE
+        self.sideNum = (self.sideNum - 2) % 5 + 1
+        side = self.side + str(self.sideNum)
+        self.setState(side)
+        print("##-CLIKED THE NEXT BUTTON :" + side)
+        if not config.DEBUG_STAGE_ABSENT:
+            if self.sideNum > 3:
+                config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
+            elif self.sideNum < 3: # UNTESTED
+                config.rotate_machine_with_degree(_x_value=0, _y_value=0)
         self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
 
     def create_image(self):
