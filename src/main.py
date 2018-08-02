@@ -93,7 +93,6 @@ class Ui_Interface(object):
         cameraxyinputbox = cameraxy_inputbox.cameraXYInputbox(inputbox.getValue())
         cameraxyinputbox.searchDevice()
         cameraxyinputbox.exec()
-
         self.initialize_machine(inputBox_lineEdits=cameraxyinputbox.lineEdits)
 
         self.training_Window = QtWidgets.QMainWindow()

@@ -6,11 +6,15 @@
 #
 # WARNING! All changes made in this file will be lost!
 import os
-from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtGui import QFont
-import image_process, config, train_on_tensor
-from PyQt5.QtCore import Qt
 import pathlib
+
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
+
+import config
+import image_process
+import train_on_tensor
 
 
 # Contains training_stage UI
@@ -74,6 +78,9 @@ class Ui_MainWindow(object):
         self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame.setObjectName("frame")
+
+
+        # Grid layout
         self.gridLayoutWidget = QtWidgets.QWidget(self.frame)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 190, 321, 61))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
@@ -88,7 +95,7 @@ class Ui_MainWindow(object):
         self.correct_capture.setStyleSheet(css)
         self.correct_capture.setFont(font)
         self.correct_capture.setObjectName("correct_capture")
-        self.correct_capture.clicked.connect(self.do_Capture)
+        self.correct_capture.clicked.connect(self.do_CorrectCapture)
 
         # Incorrect Capture Button
         self.incorrect_capture = QtWidgets.QPushButton(self.frame)
@@ -96,7 +103,7 @@ class Ui_MainWindow(object):
         self.incorrect_capture.setStyleSheet(css)
         self.incorrect_capture.setFont(font)
         self.incorrect_capture.setObjectName("Incorrect Capture")
-        self.incorrect_capture.clicked.connect(self.do_InCorrect)
+        self.incorrect_capture.clicked.connect(self.do_IncorrectCapture)
 
         # "Camera autofocus" Check Box
         self.autofocus_checkbox = QtWidgets.QCheckBox("Autofocus", self.frame)
@@ -155,8 +162,9 @@ class Ui_MainWindow(object):
         self.button_all_delete.setStyleSheet(css)
         self.button_all_delete.setFont(font)
         self.button_all_delete.clicked.connect(self.do_AllDelete)
-
         self.gridLayout.addWidget(self.button_all_delete, 1, 1, 1, 1)
+
+        # Vertical layout for training image & training start buttons
         self.verticalLayoutWidget = QtWidgets.QWidget(self.frame)
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 260, 321, 141))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
@@ -164,7 +172,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
 
-        # Create Training Image
+        # Create Training Image button
         self.button_create_img = QtWidgets.QPushButton(self.verticalLayoutWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
@@ -174,7 +182,6 @@ class Ui_MainWindow(object):
         self.button_create_img.setObjectName("pushButton")
         self.button_create_img.setFont(font)
         self.button_create_img.setStyleSheet(css)
-        # this button calls create_image method
         self.button_create_img.clicked.connect(self.create_image)
         self.verticalLayout.addWidget(self.button_create_img)
 
@@ -188,9 +195,8 @@ class Ui_MainWindow(object):
         self.pushButton_training.setObjectName("pushButton_2")
         self.pushButton_training.setStyleSheet(css)
         self.pushButton_training.setFont(font)
-        self.verticalLayout.addWidget(self.pushButton_training)
-        # this button calls make_model method
         self.pushButton_training.clicked.connect(self.make_model)
+        self.verticalLayout.addWidget(self.pushButton_training)
 
         self.graphicsView = QtWidgets.QGraphicsView(self.widget)
         self.graphicsView.setGeometry(QtCore.QRect(370, 60, 401, 391))
@@ -244,18 +250,7 @@ class Ui_MainWindow(object):
         self.mainUI.show()
         self.MainWindow.close()
 
-    def do_InCorrect(self):
-        # write that you want to do
-        print("##-INCORRECT CAPTURE START")
-        device_path = os.path.join(self.absPath, self.dirName)
-        sideStr = self.side + str(self.sideNum)
-        captured_image = image_process.image_capture(dir_path=device_path,
-                                                     current_side=sideStr,
-                                                     cameraNum=self.cameraNum,
-                                                     correct_ROIs=False)
-        self.selectImg.extend(captured_image)
-
-    def do_Capture(self):
+    def do_CorrectCapture(self):
         print("##-IMAGE CAPTURE START")
         root_path = self.absPath
         config.makeDir(root_path)
@@ -270,6 +265,16 @@ class Ui_MainWindow(object):
                                                      current_side=sideStr,
                                                      cameraNum=self.cameraNum,
                                                      correct_ROIs=True)
+        self.selectImg.extend(captured_image)
+
+    def do_IncorrectCapture(self):
+        print("##-INCORRECT CAPTURE START")
+        device_path = os.path.join(self.absPath, self.dirName)
+        sideStr = self.side + str(self.sideNum)
+        captured_image = image_process.image_capture(dir_path=device_path,
+                                                     current_side=sideStr,
+                                                     cameraNum=self.cameraNum,
+                                                     correct_ROIs=False)
         self.selectImg.extend(captured_image)
 
     def do_NextSide(self):

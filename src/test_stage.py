@@ -110,7 +110,7 @@ class Ui_MainWindow(object):
         self.autofocus_checkbox.setChecked(config.AUTO_FOCUS)
         self.autofocus_checkbox.stateChanged.connect(config.change_autofocus)
 
-        # Prev Button
+        # "Prev" Button
         self.button_capture_prev = QtWidgets.QPushButton(self.frame)
         self.button_capture_prev.setText("<--")
         self.button_capture_prev.setGeometry(QtCore.QRect(140, 160, 50, 50))
@@ -193,16 +193,6 @@ class Ui_MainWindow(object):
         # hbox.addStretch(1)
 
         self.verticalLayout.addLayout(hbox)
-
-        """
-        # "Show Result" Button
-        self.button_show_result = QtWidgets.QPushButton(self.verticalLayoutWidget)
-        self.button_show_result.setObjectName("button_show_result")
-        self.button_show_result.setFont(font)
-        self.button_show_result.setStyleSheet(css)
-        self.button_show_result.clicked.connect(self.show_Result)
-        self.verticalLayout.addWidget(self.button_show_result)
-        """
 
         #self.label_show_results.setSizePolicy(sizePolicy)
         #sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
