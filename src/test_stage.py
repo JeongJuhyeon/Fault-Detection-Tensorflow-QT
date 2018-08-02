@@ -361,6 +361,7 @@ class Ui_MainWindow(object):
         print('Sides:', keys)
         for key in keys:
             cv2.imwrite(result_path + '/' + key + '.jpg', self.smallImages[key])
+        self.showImagesResult()
 
     def showTextResult(self):
         print("##-SHOW TEXT RESULT BUTTON CLICKED")

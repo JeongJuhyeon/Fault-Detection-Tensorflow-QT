@@ -1,10 +1,14 @@
 import sys
 
-import test_stage, inputBox, training_stage, cameraxy_inputbox, config, devname_cameraxy_inputbox
-
-from PyQt5.QtGui import QFont
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
+
+import cameraxy_inputbox
+import config
+import inputBox
+import test_stage
+import training_stage
 
 
 class Ui_Interface(object):
@@ -81,31 +85,12 @@ class Ui_Interface(object):
         self.button_test_stage.setText(_translate("Interface", "Test Stage"))
         self.button_statistic_stage.setText(_translate("Interface", "Statistic & Result"))
 
-    def go_test_stage(self):
-        inputbox = inputBox.App("Enter the device name")
-        inputbox.do_UI()
-        print("##RETURN  VALUE : " + inputbox.getValue())
-
-        cameraxyinputbox = devname_cameraxy_inputbox.devnameCameraXYInputbox(inputbox.getValue())
-        cameraxyinputbox.searchDevice()
-        self.initialize_machine(inputBox_lineEdits=cameraxyinputbox.lineEdits)
-
-        self.test_Window = QtWidgets.QMainWindow()
-        self.test_interface = test_stage.Ui_MainWindow(self.interface)
-        self.test_interface.setupUi(self.test_Window)
-
-        self.test_interface.deviceName = inputbox.getValue()
-        self.test_Window.show()
-        self.interface.close()
-        inputbox.close()
-        print("##-STAGE CHANGED(Test Stage)")
-
     def go_training_stage(self):
         inputbox = inputBox.App("Enter the device name")
         inputbox.do_UI()
         print("##-RETURN  VALUE : " + inputbox.getValue())
 
-        cameraxyinputbox = devname_cameraxy_inputbox.devnameCameraXYInputbox(inputbox.getValue())
+        cameraxyinputbox = cameraxy_inputbox.cameraXYInputbox(inputbox.getValue())
         cameraxyinputbox.searchDevice()
         cameraxyinputbox.exec()
 
@@ -121,6 +106,26 @@ class Ui_Interface(object):
         self.interface.close()
         inputbox.close()
         print("##-STAGE CHANGED(Training Stage)")
+
+    def go_test_stage(self):
+        inputbox = inputBox.App("Enter the device name")
+        inputbox.do_UI()
+        print("##RETURN  VALUE : " + inputbox.getValue())
+
+        cameraxyinputbox = cameraxy_inputbox.cameraXYInputbox(inputbox.getValue())
+        cameraxyinputbox.searchDevice()
+        self.initialize_machine(inputBox_lineEdits=cameraxyinputbox.lineEdits)
+
+        self.test_Window = QtWidgets.QMainWindow()
+        self.test_interface = test_stage.Ui_MainWindow(self.interface)
+        self.test_interface.setupUi(self.test_Window)
+
+        self.test_interface.deviceName = inputbox.getValue()
+        self.test_Window.show()
+        self.interface.close()
+        inputbox.close()
+        print("##-STAGE CHANGED(Test Stage)")
+
 
     def create_inputBox(self):
         inputbox = inputBox.App("Enter the device name")

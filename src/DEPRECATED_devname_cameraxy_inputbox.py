@@ -1,6 +1,7 @@
 import sys
+
 from PyQt5.QtWidgets import QLabel, QApplication, QFormLayout, QLineEdit, QDialog, QDialogButtonBox
-from PyQt5.QtCore import QObject, pyqtSignal
+
 
 class devnameCameraXYInputbox(QDialog):
     def __init__(self, _device_name):

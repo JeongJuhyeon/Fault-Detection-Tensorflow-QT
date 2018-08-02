@@ -31,11 +31,11 @@ right2=1231231
 
 
 [bob6]
-left1=1239
-right1=2148
-above=1239
-left2=2148
-right2=1238
+left1=1237
+right1=2147
+center=1237
+left2=2147
+right2=1237
 
 
 [dev1]
@@ -54,12 +54,6 @@ left2=1239
 right2=12398
 
 
-[dev1]
-left1=12389
-right1=27
-above=23190
-left2=21389
-right2=12389
 [bob3]
 left1=1238
 right1=1238
@@ -76,11 +70,51 @@ left2=18
 right2=18
 
 
-[incortest]
-left1=
-right1=
-center=
-left2=
-right2=
+[p1]
+left1=123
+right1=9
+center=99
+left2=99
+right2=99
+
+
+[p2]
+left1=99
+right1=9
+center=9
+left2=9
+right2=99
+
+
+[p3]
+left1=8
+right1=8
+center=8
+left2=8
+right2=8
+
+
+[p4]
+left1=5
+right1=5
+center=5
+left2=5
+right2=5
+
+
+[p5]
+left1=2
+right1=9
+center=9
+left2=99
+right2=1
+
+
+[p6]
+left1=9
+right1=98
+center=71
+left2=13
+right2=19
 
 

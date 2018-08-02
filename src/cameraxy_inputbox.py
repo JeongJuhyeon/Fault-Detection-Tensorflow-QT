@@ -1,5 +1,9 @@
-import sys, config
+import sys
+
 from PyQt5.QtWidgets import QLabel, QApplication, QFormLayout, QLineEdit, QDialog, QDialogButtonBox
+
+import config
+
 
 class cameraXYInputbox(QDialog):
     def __init__(self, curDevName):
@@ -69,7 +73,10 @@ class cameraXYInputbox(QDialog):
             for i in range(1, 6):
                 self.lines[i + self.foundDeviceLineNo] = self.labels[i - 1].replace(" ", "") + "=" + self.lineEdits[i - 1].text()
             self.file.close()
-            open("../devices.txt", 'w').write('\n'.join(self.lines))
+            self.file = open("../devices.txt", 'w')
+            self.file.write('\n'.join(self.lines))
+            self.file.write('\n')
+            self.file.close()
 
         self.accept()
 
