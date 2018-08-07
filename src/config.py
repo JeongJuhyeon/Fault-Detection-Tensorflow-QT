@@ -10,7 +10,7 @@ WINDOW_SIZE : 실제 카메라 캡쳐화면의 크기
 * IPEVO ZIGGI 같은 경우는 (3264 X 2448) 이 최대 해상도 입니다.
 '''
 
-CAMERA_NUMBER = 3
+CAMERA_NUMBER = 1
 AUTO_FOCUS = False
 TESTWINDOW_SIZE = {'width': 700, 'height': 700}
 WINDOW_SIZE = {'width': 700, 'height': 700}
@@ -20,15 +20,33 @@ WINDOW_RATIO = {
 }
 SIDE_NAMES = ["left 1", "right 1", "center", "left 2", "right 2"]
 
-DEBUG_STAGE_ABSENT = False
+DEBUG_STAGE_ABSENT = True
 SELECT_CLOSEST_CORRECT_ROI_WHEN_SELECTING_INCORRECT_ROI = True
+
+'''
+ cameraConfig Class Usage Example:
+ 
+ def testCam(sideNum):
+    camConfig = cameraConfig()
+
+    if sideNum == 1 or sideNum == 4:
+        cameraNum = camConfig.get_camera_number('LEFT')
+    elif sideNum == 2 or sideNum == 5:
+        cameraNum = camConfig.get_camera_number('RIGHT')
+    else: cameraNum = camConfig.get_camera_number('CENTER')
+    
+    print(cameraNum)
+    
+
+ testCam(1)
+'''
 
 class cameraConfig(object):
     class __cameraConfig:
         def __init__(self):
-            self.CENTER_CAM=0
+            self.CENTER_CAM=2
             self.LEFT_CAM=0
-            self.RIGHT_CAM=0
+            self.RIGHT_CAM=1
         def set_camera_number(self, SIDE, camera_number):
             if SIDE == 'LEFT':
                 self.LEFT_CAM=camera_number
@@ -37,24 +55,20 @@ class cameraConfig(object):
             else :
                 self.CENTER_CAM=camera_number
 
+        def get_camera_number(self, SIDE):
+            if SIDE == 'LEFT':
+                return self.LEFT_CAM
+            elif SIDE == 'RIGHT':
+                return self.RIGHT_CAM
+            else:
+                return self.CENTER_CAM
+
     instance = None
 
     def __new__(cls):
         if not cameraConfig.instance:
             cameraConfig.instance = cameraConfig.__cameraConfig()
         return cameraConfig.instance
-
-    @staticmethod
-    def get_camera_number(SIDE):
-        if SIDE == 'LEFT':
-            # return cameraConfig.__cameraConfig.self.LEFT_CAM
-            return 0
-        elif SIDE == 'RIGHT':
-            # return cameraConfig.__cameraConfig.self.RIGHT_CAM
-            return 0
-        else :
-            # return cameraConfig.__cameraConfig.self.CENTER_CAM
-            return 0
 
 def rotate_machine_with_degree(_x_value=450000, _y_value=500000):
     print('#ROTATE MACHINE')
