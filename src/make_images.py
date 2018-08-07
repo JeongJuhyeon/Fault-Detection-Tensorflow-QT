@@ -27,6 +27,7 @@ def move_and_copy_image(new_dir_path, origin_dir_path):
     image_files_list = os.listdir(origin_dir_path)
     coord_deg_tups = [(0, 0, -20, -20), (20, 0, 0, -20),
                       (0, 20, -20, 0), (20, 20, 0, 0)]
+    brights_value = [-70, -50,-30,0,30,50, 70]
     for file in image_files_list:
         image_path_base = new_dir_path + '/' + file.split('.')[0] + '_'
         origin_image = Image.open(origin_dir_path + '/' + file)
@@ -36,6 +37,9 @@ def move_and_copy_image(new_dir_path, origin_dir_path):
         for coord_deg_tup in coord_deg_tups:
             area = (coord_deg_tup[0], coord_deg_tup[1],
                     width + coord_deg_tup[2], height + coord_deg_tup[3])
-            new_image = resize_image( resized_image.crop( area ) )
-            rotate_and_save_image(new_image, image_path_base, numbering)
-            numbering += 1
+            new_image = resize_image(resized_image.crop(area))
+            for bright_value in brights_value :
+                brt_new_image = Image.eval(new_image, lambda x:x+bright_value)
+                brt_new_image = brt_new_image.convert("RGB")
+                rotate_and_save_image(brt_new_image, image_path_base + str(bright_value), numbering)
+                numbering += 1
