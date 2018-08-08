@@ -260,7 +260,7 @@ class Ui_MainWindow(object):
 
         side = self.sideName + str(self.sideNum)
         print(self.ROI[side])
-        self.img = image_process.test_image_capture(self.ROI[side], pOImagePath, pCImagePath, self.cameraNum)
+        self.img = image_process.test_image_capture(self.ROI[side], pOImagePath, pCImagePath, self.sideNum)
         cv2.imwrite(predictPath + '/' + side + '.jpg', self.img)
         self.imgview = QImage(self.img.data, self.img.shape[1], self.img.shape[0], QImage.Format_RGB888)
         self.graphicsView.setPixmap(QPixmap.fromImage(self.imgview))

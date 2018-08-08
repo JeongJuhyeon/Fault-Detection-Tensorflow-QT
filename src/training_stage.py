@@ -219,7 +219,6 @@ class Ui_MainWindow(object):
     def do_ShowROI(self):
         print("##-SHOW ROI")
         image_process.showROI(selectROI=self.selectImg,
-                              cameraNum=self.cameraNum,
                               current_side=self.side + str(self.sideNum))
 
     def retranslateUi(self):
@@ -263,7 +262,7 @@ class Ui_MainWindow(object):
         print("##IMAGE PROCESS PATH IS : " + side_path)
         captured_image = image_process.image_capture(dir_path=device_path,
                                                      current_side=sideStr,
-                                                     cameraNum=self.cameraNum,
+                                                     sideNum=self.sideNum,
                                                      correct_ROIs=True)
         self.selectImg.extend(captured_image)
 
@@ -273,7 +272,7 @@ class Ui_MainWindow(object):
         sideStr = self.side + str(self.sideNum)
         captured_image = image_process.image_capture(dir_path=device_path,
                                                      current_side=sideStr,
-                                                     cameraNum=self.cameraNum,
+                                                     sideNum=self.sideNum,
                                                      correct_ROIs=False)
         self.selectImg.extend(captured_image)
 

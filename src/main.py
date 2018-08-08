@@ -1,11 +1,14 @@
 import sys
 
+import cv2
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 
+import camerasetting_dialog
 import cameraxy_inputbox
 import config
+import image_process
 import inputBox
 import test_stage
 import training_stage
@@ -73,6 +76,15 @@ class Ui_Interface(object):
         # self.button_statistic_stage.clicked.connect(self.create_inputBox)
         self.verticalLayout.addWidget(self.button_statistic_stage)
 
+        # Camera Configuration
+        self.button_camera_configuration = QtWidgets.QPushButton("Camera configuration", self.verticalLayoutWidget)
+        self.button_camera_configuration.setMinimumSize(QtCore.QSize(1, 100))
+        self.button_camera_configuration.setStyleSheet(css)
+        self.button_camera_configuration.setFont(font)
+        self.button_camera_configuration.clicked.connect(self.select_camera_numbers)
+        self.verticalLayout.addWidget(self.button_camera_configuration)
+
+
         self.interface.setCentralWidget(self.centralwidget)
         self.retranslateUi()
 
@@ -124,6 +136,25 @@ class Ui_Interface(object):
         self.interface.close()
         inputbox.close()
         print("##-STAGE CHANGED(Test Stage)")
+
+    def select_camera_numbers(self):
+        cameradialog = camerasetting_dialog.CameraSettingDialog()
+        camera_order = []
+        cameraConfigObject = config.cameraConfig()
+        for old_number in range(3):
+            img = image_process.get_image_from_camera(old_number + 1, size_conf=config.WINDOW_SIZE)
+            cv2.imshow('Camera', img)
+            button_pressed = cameradialog.exec()
+            if button_pressed == 0x00000800:
+                camera_order.append('LEFT')
+            elif button_pressed == 0x00800000:
+                camera_order.append('CENTER')
+            elif button_pressed == 0x00200000:
+                camera_order.append('RIGHT')
+            cv2.destroyAllWindows()
+
+        for i, camera in enumerate(camera_order):
+            cameraConfigObject.set_camera_number(camera, i)
 
 
     def create_inputBox(self):

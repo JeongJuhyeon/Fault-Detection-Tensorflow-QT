@@ -1,9 +1,15 @@
 # Contains the functions and logic used  after clicking on "Correct Capture" in training stage
 
-import cv2, os, pathlib
-import crop_image, roiactiondialog, roiobjectinputdialog, config
 import copy
 
+import cv2
+import os
+import pathlib
+
+import config
+import crop_image
+import roiactiondialog
+import roiobjectinputdialog
 from config import cameraConfig
 
 img_path_list = []
@@ -25,13 +31,13 @@ def readfile():
 
 
 def get_image_from_camera(sideNum, size_conf):
-    cameraNum = None
-    if sideNum == 1 or sideNum == 4 :
-        cameraNum = cameraConfig.get_camera_number('LEFT')
-    elif sideNum == 2 or sideNum == 5 :
-        cameraNum = cameraConfig.get_camera_number('RIGHT')
-    else :
-        cameraNum = cameraConfig.get_camera_number('CENTER')
+    cameraConfigObject = cameraConfig()
+    if sideNum == 1 or sideNum == 4:
+        cameraNum = cameraConfigObject.get_camera_number('LEFT')
+    elif sideNum == 2 or sideNum == 5:
+        cameraNum = cameraConfigObject.get_camera_number('RIGHT')
+    else:
+        cameraNum = cameraConfigObject.get_camera_number('CENTER')
 
     cap = cv2.VideoCapture(cameraNum)
     cap.set(3, int(size_conf['width']))
@@ -62,7 +68,7 @@ def convert_coord(coord, size_conf):
     return newCoord
 
 # Used in training stage
-def image_capture(dir_path, current_side, cameraNum, correct_ROIs):
+def image_capture(dir_path, current_side, sideNum, correct_ROIs):
     if correct_ROIs:
         file = open(dir_path + '/' + 'locationInfo.txt', "a+")
     else:
@@ -74,11 +80,11 @@ def image_capture(dir_path, current_side, cameraNum, correct_ROIs):
     actiondialog = roiactiondialog.ROIActionDialog()
     objectinputbox = roiobjectinputdialog.ROIobjectInputDialog()
 
-    original_image = get_image_from_camera(cameraNum, size_conf=config.WINDOW_SIZE)
+    original_image = get_image_from_camera(sideNum, size_conf=config.WINDOW_SIZE)
     cv2.imwrite(dir_path + "/Origin.jpg", original_image)
     origin_path = dir_path + "/Origin.jpg"
 
-    img = get_image_from_camera(cameraNum, size_conf=config.TESTWINDOW_SIZE)
+    img = get_image_from_camera(sideNum, size_conf=config.TESTWINDOW_SIZE)
     fromCenter = False
     dirPath = dir_path + '/' + current_side
     obj_name_frequencies = {}
@@ -175,9 +181,9 @@ def image_capture(dir_path, current_side, cameraNum, correct_ROIs):
             return selected_rois
 
 # Used in test stage
-def test_image_capture(infos, O_path, C_path, cameraNum):
+def test_image_capture(infos, O_path, C_path, sideNum):
     print('## Test image capture:', O_path, C_path)
-    img = get_image_from_camera(cameraNum, config.WINDOW_SIZE)
+    img = get_image_from_camera(sideNum, config.WINDOW_SIZE)
     number = 0
 
     noise_min = config.NOISE_TEST['min']
@@ -214,13 +220,22 @@ def checkclicked(checkbox, dirPath, imCrop, x1, x2, y1, y2, file, side):
     print("##-COMPLETE SAVE FILE : " + objName)
 
 
-def showROI(selectROI, cameraNum, current_side):
+def showROI(selectROI, current_side):
+    sideNum = int(current_side[-1])
+    cameraConfigObject = cameraConfig()
+    if sideNum == 1 or sideNum == 4:
+        cameraNum = cameraConfigObject.get_camera_number('LEFT')
+    elif sideNum == 2 or sideNum == 5:
+        cameraNum = cameraConfigObject.get_camera_number('RIGHT')
+    else:
+        cameraNum = cameraConfigObject.get_camera_number('CENTER')
+
     capture = cv2.VideoCapture(cameraNum)
     capture.set(3, int(config.TESTWINDOW_SIZE['width']))
     capture.set(4, int(config.TESTWINDOW_SIZE['height']))
     while True:
         ret, frame = capture.read()
-        if (len(selected_rois) > 0):
+        if len(selected_rois) > 0:
             for rect in (selected_rois):
                 if rect[5] == current_side:
                     if (rect[4]):
