@@ -87,16 +87,19 @@ class Ui_MainWindow(object):
         self.home.setFont(font2)
 
         # "Set Device Number" Button
+        """
         self.button_device_number = QtWidgets.QPushButton(self.frame)
         self.button_device_number.setGeometry(QtCore.QRect(10, 10, 321, 61))
         self.button_device_number.setObjectName("button_device_number")
+        self.button_device_number.setText("Device #")
         self.button_device_number.clicked.connect(self.setDeviceNum)
         self.button_device_number.setStyleSheet(css)
         self.button_device_number.setFont(font)
+        """
 
         # "Capture" button
         self.button_capture = QtWidgets.QPushButton(self.frame)
-        self.button_capture.setGeometry(QtCore.QRect(10, 80, 321, 61))
+        self.button_capture.setGeometry(QtCore.QRect(10, 10, 321, 61))
         self.button_capture.setFont(font)
         self.button_capture.setObjectName("button_capture")
         self.button_capture.setStyleSheet(css)
@@ -105,7 +108,7 @@ class Ui_MainWindow(object):
 
         # "Camera autofocus" Check Box
         self.autofocus_checkbox = QtWidgets.QCheckBox("Autofocus", self.frame)
-        self.autofocus_checkbox.setGeometry(QtCore.QRect(25, 140, 165, 100))
+        self.autofocus_checkbox.setGeometry(QtCore.QRect(25, 70, 165, 100))
         self.autofocus_checkbox.setObjectName("autofocus_checkbox")
         self.autofocus_checkbox.setStyleSheet(css)
         self.autofocus_checkbox.setFont(font2)
@@ -115,14 +118,14 @@ class Ui_MainWindow(object):
         # "Prev" Button
         self.button_capture_prev = QtWidgets.QPushButton(self.frame)
         self.button_capture_prev.setText("<--")
-        self.button_capture_prev.setGeometry(QtCore.QRect(140, 160, 50, 50))
+        self.button_capture_prev.setGeometry(QtCore.QRect(140, 90, 50, 50))
         self.button_capture_prev.setStyleSheet(css)
         self.button_capture_prev.setFont(font2)
         self.button_capture_prev.clicked.connect(self.do_PrevSide)
 
         # "Next" Button
         self.button_capture_next = QtWidgets.QPushButton(self.frame)
-        self.button_capture_next.setGeometry(QtCore.QRect(275, 160, 50, 50))
+        self.button_capture_next.setGeometry(QtCore.QRect(275, 90, 50, 50))
         self.button_capture_next.setObjectName("button_capture_next")
         self.button_capture_next.setStyleSheet(css)
         self.button_capture_next.setFont(font2)
@@ -130,14 +133,14 @@ class Ui_MainWindow(object):
 
         # Side Label
         self.side_label = QtWidgets.QLabel(self.frame)
-        self.side_label.setGeometry(QtCore.QRect(200, 150, 67, 70))
+        self.side_label.setGeometry(QtCore.QRect(200, 80, 67, 70))
         self.side_label.setText("Side 1:\n" + config.SIDE_NAMES[0])
         self.side_label.setFont(QFont('D2Coding', 13, QFont.DemiBold))
         self.side_label.setStyleSheet("QLabel { border: 2px solid blue } ")
 
         # Vertical layout for "Start test" and "Show result" buttons
         self.verticalLayoutWidget = QtWidgets.QWidget(self.frame)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 230, 321, 180))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 160, 321, 180))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -231,7 +234,6 @@ class Ui_MainWindow(object):
         self.label_show_results.setText(_translate("MainWindow", "Show Results"))
         self.button_capture.setText(_translate("MainWindow", "Capture"))
         self.button_capture_next.setText(_translate("MainWindow", "-->"))
-        self.button_device_number.setText(_translate("MainWindow", "Device #"))
         self.home.setText(_translate("MainWindow", "Home"))
 
     def do_Home(self):
