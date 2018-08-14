@@ -311,6 +311,7 @@ class Ui_MainWindow(object):
         path = os.path.join(self.absPath, self.deviceName)
         img_list = os.listdir(path + '/predict')
         classes = os.listdir(path + '/t_images')
+        self.correctList = [[0, 0] for _ in range(5)]
 
         incor_class = {}
         for label in classes:
