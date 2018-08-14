@@ -91,6 +91,9 @@ class Ui_Interface(object):
     def go_training_stage(self):
         inputbox = inputBox.App("Enter the device name")
         inputbox.do_UI()
+        if inputbox.getValue() is None:
+            return
+
         print("##-RETURN  VALUE : " + inputbox.getValue())
 
         cameraxyinputbox = cameraxy_inputbox.cameraXYInputbox(inputbox.getValue())
@@ -112,6 +115,9 @@ class Ui_Interface(object):
     def go_test_stage(self):
         inputbox = inputBox.App("Enter the device name")
         inputbox.do_UI()
+        if inputbox.getValue() is None:
+            return
+
         print("##RETURN  VALUE : " + inputbox.getValue())
 
         cameraxyinputbox = cameraxy_inputbox.cameraXYInputbox(inputbox.getValue())
@@ -155,6 +161,9 @@ class Ui_Interface(object):
         # print(self.inputbox.text)
 
     def initialize_machine(self, inputBox_lineEdits):
+        if config.DEBUG_STAGE_ABSENT:
+            return
+
         print("## INITIALIZE MACHINE")
         print(inputBox_lineEdits[0].text())
         _left_x, _right_x = int(inputBox_lineEdits[0].text()), int(inputBox_lineEdits[1].text())

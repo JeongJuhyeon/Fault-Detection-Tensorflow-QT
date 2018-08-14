@@ -27,7 +27,7 @@ class App(QWidget):
         if self.okPressed and self.val != '':
             return self.val
         else:
-            return "NONE"
+            return None
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
