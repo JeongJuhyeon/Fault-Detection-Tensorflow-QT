@@ -283,7 +283,7 @@ class Ui_MainWindow(object):
         side = 'side' + str(self.sideNum)
         print("##-CLIKED THE NEXT BUTTON :" + side)
         if not config.DEBUG_STAGE_ABSENT:
-            if self.sideNum == 4:
+            if self.sideNum == 4 or self.sideNum == 1:
                 config.rotate_machine_with_degree(_x_value=450000, _y_value=int(self.cameraxyinputbox.lineEdits[2].text()))
            # elif self.sideNum < 3: # UNTESTED
            #     config.rotate_machine_with_degree(_x_value=1, _y_value=1)
@@ -298,7 +298,7 @@ class Ui_MainWindow(object):
         side = 'side' + str(self.sideNum)
         print("##-CLIKED THE NEXT BUTTON :" + side)
         if not config.DEBUG_STAGE_ABSENT:
-            if self.sideNum == 3:
+            if self.sideNum == 3 or self.sideNum == 5:
                 config.rotate_machine_with_degree(_x_value=1, _y_value=int(self.cameraxyinputbox.lineEdits[2].text()))
         self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
 
