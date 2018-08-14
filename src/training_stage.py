@@ -15,6 +15,7 @@ from PyQt5.QtGui import QFont
 import config
 import image_process
 import train_on_tensor
+import cameraxy_inputbox
 
 
 # Contains training_stage UI
@@ -213,8 +214,8 @@ class Ui_MainWindow(object):
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
 
-        if not config.DEBUG_STAGE_ABSENT:
-            config.initialize_machine()
+        #if not config.DEBUG_STAGE_ABSENT:
+        #    config.initialize_machine()
 
     def do_ShowROI(self):
         print("##-SHOW ROI")
@@ -277,29 +278,41 @@ class Ui_MainWindow(object):
         self.selectImg.extend(captured_image)
 
     def do_NextSide(self):
+        self.cameraxyinputbox = cameraxy_inputbox.cameraXYInputbox(self.dirName)
+        self.cameraxyinputbox.searchDevice()
+
         self.cameraNum = (self.cameraNum + 1) % config.CAMERA_NUMBER  # CAMERA CHANGE
         self.sideNum = (self.sideNum) % 5 + 1
         side = self.side + str(self.sideNum)
         self.setState(side)
+
         print("##-CLIKED THE NEXT BUTTON :" + side)
         if not config.DEBUG_STAGE_ABSENT:
-            if self.sideNum > 3:
-                config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
-            elif self.sideNum < 3: # UNTESTED
-                config.rotate_machine_with_degree(_x_value=0, _y_value=0)
+            if self.sideNum == 4:
+                config.rotate_machine_with_degree(_x_value=450000, _y_value=int(self.cameraxyinputbox.lineEdits[2].text()))
+           # elif self.sideNum < 3: # UNTESTED
+           #     config.rotate_machine_with_degree(_x_value=1, _y_value=1)
         self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
 
+
     def do_PrevSide(self):
+        self.cameraxyinputbox = cameraxy_inputbox.cameraXYInputbox(self.dirName)
+        self.cameraxyinputbox.searchDevice()
+
         self.cameraNum = (self.cameraNum - 1) % config.CAMERA_NUMBER  # CAMERA CHANGE
         self.sideNum = (self.sideNum - 2) % 5 + 1
         side = self.side + str(self.sideNum)
         self.setState(side)
         print("##-CLIKED THE NEXT BUTTON :" + side)
         if not config.DEBUG_STAGE_ABSENT:
-            if self.sideNum > 3:
-                config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
-            elif self.sideNum < 3: # UNTESTED
-                config.rotate_machine_with_degree(_x_value=0, _y_value=0)
+            if self.sideNum == 3:
+                config.rotate_machine_with_degree(_x_value=1, _y_value=int(self.cameraxyinputbox.lineEdits[2].text()))
+
+        #""" if self.sideNum > 3:
+        #    config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
+        #elif self.sideNum < 3: # UNTESTED
+        #    config.rotate_machine_with_degree(_x_value=1, _y_value=1)"""
+
         self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
 
     def create_image(self):

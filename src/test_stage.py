@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import datetime
 
 # Form implementation generated from reading ui file '.\test_stage.ui'
 #
@@ -20,6 +21,7 @@ import predict
 import result_images_widget_grid
 import result_text_widget
 import roi_unit
+import cameraxy_inputbox
 
 
 # Contains test stage UI
@@ -218,8 +220,8 @@ class Ui_MainWindow(object):
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
 
-        if not config.DEBUG_STAGE_ABSENT:
-            config.initialize_machine()
+        #if not config.DEBUG_STAGE_ABSENT:
+            #config.initialize_machine()
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
@@ -248,9 +250,15 @@ class Ui_MainWindow(object):
     # "Capture" Button method
     def img_capture(self):
         print('##-CAPTURE BUTTON PRESSED')
+
         self.ROI = roi_unit.readROI(os.path.join(self.absPath, self.deviceName, 'locationInfo.txt'),
                                     config.WINDOW_RATIO)
+        side = self.sideName + str(self.sideNum)
+        if side not in self.ROI:
+            print("No screws on " + side)
+            return
         print(self.ROI)
+
         predictPath = os.path.join(self.absPath, self.deviceName, 'predict')
         config.makeDir(predictPath)
         pOImagePath = os.path.join(predictPath, 'images')
@@ -258,7 +266,7 @@ class Ui_MainWindow(object):
         pCImagePath = os.path.join(predictPath, 'imagesCanny')
         config.makeDir(pCImagePath)
 
-        side = self.sideName + str(self.sideNum)
+
         print(self.ROI[side])
         self.img = image_process.test_image_capture(self.ROI[side], pOImagePath, pCImagePath, self.sideNum)
         cv2.imwrite(predictPath + '/' + side + '.jpg', self.img)
@@ -266,34 +274,39 @@ class Ui_MainWindow(object):
         self.graphicsView.setPixmap(QPixmap.fromImage(self.imgview))
 
     def do_NextSide(self):
+        self.cameraxyinputbox = cameraxy_inputbox.cameraXYInputbox(self.deviceName)
+        self.cameraxyinputbox.searchDevice()
+
         print("##-NEXT BUTTON CLICKED")
         self.cameraNum = (self.cameraNum + 1) % config.CAMERA_NUMBER  # CAMERA CHANGE
         self.sideNum = (self.sideNum) % 5 + 1
         side = 'side' + str(self.sideNum)
         print("##-CLIKED THE NEXT BUTTON :" + side)
         if not config.DEBUG_STAGE_ABSENT:
-            if self.sideNum > 3:
-                config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
-            elif self.sideNum < 3: # UNTESTED
-                config.rotate_machine_with_degree(_x_value=0, _y_value=0)
+            if self.sideNum == 4:
+                config.rotate_machine_with_degree(_x_value=450000, _y_value=int(self.cameraxyinputbox.lineEdits[2].text()))
+           # elif self.sideNum < 3: # UNTESTED
+           #     config.rotate_machine_with_degree(_x_value=1, _y_value=1)
         self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
 
     def do_PrevSide(self):
+        self.cameraxyinputbox = cameraxy_inputbox.cameraXYInputbox(self.deviceName)
+        self.cameraxyinputbox.searchDevice()
+
         self.cameraNum = (self.cameraNum - 1) % config.CAMERA_NUMBER  # CAMERA CHANGE
         self.sideNum = (self.sideNum - 2) % 5 + 1
         side = 'side' + str(self.sideNum)
         print("##-CLIKED THE NEXT BUTTON :" + side)
         if not config.DEBUG_STAGE_ABSENT:
-            if self.sideNum > 3:
-                config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
-            elif self.sideNum < 3: # UNTESTED
-                config.rotate_machine_with_degree(_x_value=0, _y_value=0)
+            if self.sideNum == 3:
+                config.rotate_machine_with_degree(_x_value=1, _y_value=int(self.cameraxyinputbox.lineEdits[2].text()))
         self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
 
 
     # "Start Test" button method
     def do_startTest(self):
         print("##-TEST BUTTON CLICKED")
+        print(datetime.datetime.now())
 
         path = os.path.join(self.absPath, self.deviceName)
         img_list = os.listdir(path + '/predict')
@@ -344,6 +357,9 @@ class Ui_MainWindow(object):
                 self.correctList[sideNo - 1][1] += 1
                 cv2.rectangle(self.smallImages[side], start, end, config.RED, 1)
 
+        print("Test finished")
+        print(datetime.datetime.now())
+
         self.graphicsView.setText("RESULT DATA")
         keys = self.smallImages.keys()
         result_path = os.path.join(self.absPath, self.deviceName, 'result')
@@ -351,6 +367,7 @@ class Ui_MainWindow(object):
         print('Sides:', keys)
         for key in keys:
             cv2.imwrite(result_path + '/' + key + '.jpg', self.smallImages[key])
+
         self.showImagesResult()
 
     def showTextResult(self):
@@ -375,14 +392,14 @@ class Ui_MainWindow(object):
 
 def getResult(imageName, result_arr):
     temp = imageName.split('_')
-    correct_class = temp[0] + '_' + temp[1] + '_' + 'cor'
+    correct_class = temp[1] + '_' + 'cor'
 
     print(result_arr)
     result_sum_dict = {}
 
     for result_pair in result_arr:
         temp = result_pair[0].decode('ascii').split(' ')
-        result_class_name = temp[0] + '_' + temp[1] + '_' + temp[3]
+        result_class_name = temp[0] + '_' + temp[1]
         if result_class_name in result_sum_dict:
             result_sum_dict[result_class_name] += result_pair[1]
         else:

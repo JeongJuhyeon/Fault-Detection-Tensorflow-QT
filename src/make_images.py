@@ -13,9 +13,10 @@ def cut_image_on_standard(image):
     return new
 
 def rotate_and_save_image(base_image, base_path, numbering):
-    rotate_deg = [3, -3, 5, -5]
+    #rotate_deg = [3, -3, 5, -5]
+    rotate_deg = [-1]
     base_image.save(base_path + str(numbering) + '_rot0.jpg')
-    for i in range(0,4):
+    for i in range(0,1):
         rotated_image = base_image.rotate(rotate_deg[i])
         rotated_image = cut_image_on_standard( rotated_image)
         new_file_path = "{base}{number}_rot{degree}.jpg".format(
@@ -27,7 +28,7 @@ def move_and_copy_image(new_dir_path, origin_dir_path):
     image_files_list = os.listdir(origin_dir_path)
     coord_deg_tups = [(0, 0, -20, -20), (20, 0, 0, -20),
                       (0, 20, -20, 0), (20, 20, 0, 0)]
-    brights_value = [-70, -50,-30,0,30,50, 70]
+    brights_value = [-30,-15,0,20,40]
     for file in image_files_list:
         image_path_base = new_dir_path + '/' + file.split('.')[0] + '_'
         origin_image = Image.open(origin_dir_path + '/' + file)

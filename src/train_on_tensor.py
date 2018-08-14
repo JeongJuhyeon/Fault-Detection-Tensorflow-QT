@@ -21,7 +21,8 @@ def copy_images(device_path_to_copy):
 
         for element in classes:
             dir_path = os.path.join(side_path , element)
-            element_path = os.path.join(new_base_path, element)
+            temp = element.split('_')
+            element_path = os.path.join(new_base_path, temp[1]+'_'+temp[3])
             config.makeDir(element_path)
             make_images.move_and_copy_image(new_dir_path=element_path,
                                             origin_dir_path=dir_path)

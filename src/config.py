@@ -12,15 +12,15 @@ WINDOW_SIZE : 실제 카메라 캡쳐화면의 크기
 
 CAMERA_NUMBER = 3
 AUTO_FOCUS = False
-TESTWINDOW_SIZE = {'width': 700, 'height': 700}
-WINDOW_SIZE = {'width': 700, 'height': 700}
+TESTWINDOW_SIZE = {'width': 816, 'height': 612}
+WINDOW_SIZE = {'width': 3264, 'height': 2448}
 WINDOW_RATIO = {
     'width_ratio': WINDOW_SIZE['width'] / TESTWINDOW_SIZE['width'],
     'height_ratio': WINDOW_SIZE['height'] / TESTWINDOW_SIZE['height']
 }
 SIDE_NAMES = ["left 1", "right 1", "center", "left 2", "right 2"]
 
-DEBUG_STAGE_ABSENT = True
+DEBUG_STAGE_ABSENT = False
 SELECT_CLOSEST_CORRECT_ROI_WHEN_SELECTING_INCORRECT_ROI = True
 
 '''
@@ -44,9 +44,9 @@ SELECT_CLOSEST_CORRECT_ROI_WHEN_SELECTING_INCORRECT_ROI = True
 class cameraConfig(object):
     class __cameraConfig:
         def __init__(self):
-            self.CENTER_CAM=2
-            self.LEFT_CAM=0
-            self.RIGHT_CAM=1
+            self.CENTER_CAM=0
+            self.LEFT_CAM=1
+            self.RIGHT_CAM=2
         def set_camera_number(self, SIDE, camera_number):
             if SIDE == 'LEFT':
                 self.LEFT_CAM=camera_number
@@ -72,9 +72,8 @@ class cameraConfig(object):
 
 def rotate_machine_with_degree(_x_value=450000, _y_value=500000):
     print('#ROTATE MACHINE')
-    cameraConfigObject = cameraConfig()
     cmd = "../stage/rotatePort.exe {side_number} {x_value} {y_value}".format(
-        side_number=cameraConfigObject.get_camera_number('CENTER'),
+        side_number=1,
                                                                             x_value=_x_value,
                                                                             y_value=_y_value)
     rt_value = call(cmd)
@@ -85,11 +84,11 @@ def initialize_machine():
 
 def move_camera_with_position(camera_device_number, _x_value, _y_value):
     print('#MOVE CAMERA')
-    cmd = "./stage/rotatePort.exe {side_number} {x_value} {y_value}".format(
+    cmd = "../stage/rotatePort.exe {side_number} {x_value} {y_value}".format(
         side_number=camera_device_number,
         x_value=_x_value,
         y_value=_y_value)
-
+    rt_value = call(cmd)
 '''
 <학습 설정>
 IMAGE_SIZE : 학습에 사용되는 이미지 가로 및 세로 픽셀수, 512 이상 권장
@@ -100,7 +99,7 @@ NUM_CHANNEL : 추후 수정
 VALIDATION_SIZE = 0.3
 DROPOUT = 0.3
 IMAGE_SIZE = 128
-ITERATION = 500
+ITERATION = 1000
 BATCH_SIZE = 16
 NUM_CHANNEL = 3
 

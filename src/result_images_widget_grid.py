@@ -11,8 +11,8 @@ class resultImagesWidget(QWidget):
 
     def initUI(self):
         self.curImg = 1
-        self.resultspath_relative = "./res" + "/" + self.curDevName + "/results"
-        self.resultspath_absolute = os.path.dirname(sys.argv[0]) + self.resultspath_relative[1:]
+        self.resultspath_relative = "../res" + "/" + self.curDevName + "/result"
+        self.resultspath_absolute = os.path.dirname(sys.argv[0])[0:-4] + self.resultspath_relative.split('.')[-1]
 
         self.image_names = os.listdir(self.resultspath_relative)
         self.nrOfImages = len(self.image_names)
@@ -102,13 +102,11 @@ class resultImagesWidget(QWidget):
         self.imageNoLabel.setText(str(self.curImg) + "/" + str(self.nrOfImages))
 
 if __name__ == '__main__':
-    import random
     app = QApplication(sys.argv)
     print('sys.argv[0] =', sys.argv[0])
     pathname = os.path.dirname(sys.argv[0])
     print('path =', pathname)
     print('full path =', os.path.abspath(pathname))
-    window = resultImagesWidget()
-    window.curDevName = "dev1"
+    window = resultImagesWidget("escrow")
     window.initUI()
     sys.exit(app.exec_())

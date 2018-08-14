@@ -10,8 +10,8 @@ class resultTextWidget(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.resultspath_relative = "./res" + "/" + self.curDevName + "/results"
-        self.resultspath_absolute = os.path.dirname(sys.argv[0]) + self.resultspath_relative[1:]
+        self.resultspath_relative = "../res" + "/" + self.curDevName + "/result"
+        self.resultspath_absolute = os.path.dirname(sys.argv[0])[0:-4] + self.resultspath_relative.split('.')[-1]
 
         self.image_names = os.listdir(self.resultspath_relative)
         self.nrOfImages = len(self.image_names)

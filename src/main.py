@@ -1,4 +1,5 @@
 import sys
+import time
 
 import cv2
 from PyQt5 import QtCore, QtWidgets
@@ -67,15 +68,6 @@ class Ui_Interface(object):
         self.button_test_stage.setFont(font)
         self.verticalLayout.addWidget(self.button_test_stage)
 
-        # Statistics Button
-        self.button_statistic_stage = QtWidgets.QPushButton(self.verticalLayoutWidget)
-        self.button_statistic_stage.setMinimumSize(QtCore.QSize(1, 100))
-        self.button_statistic_stage.setObjectName("button_statistic_stage")
-        self.button_statistic_stage.setStyleSheet(css)
-        self.button_statistic_stage.setFont(font)
-        # self.button_statistic_stage.clicked.connect(self.create_inputBox)
-        self.verticalLayout.addWidget(self.button_statistic_stage)
-
         # Camera Configuration
         self.button_camera_configuration = QtWidgets.QPushButton("Camera configuration", self.verticalLayoutWidget)
         self.button_camera_configuration.setMinimumSize(QtCore.QSize(1, 100))
@@ -95,7 +87,6 @@ class Ui_Interface(object):
         self.interface.setWindowTitle(_translate("Interface", "MainWindow"))
         self.button_training_stage.setText(_translate("Interface", "Training Stage"))
         self.button_test_stage.setText(_translate("Interface", "Test Stage"))
-        self.button_statistic_stage.setText(_translate("Interface", "Statistic & Result"))
 
     def go_training_stage(self):
         inputbox = inputBox.App("Enter the device name")
@@ -171,6 +162,7 @@ class Ui_Interface(object):
         _center_y = int(inputBox_lineEdits[2].text())
 
         config.initialize_machine()
+        time.sleep(12)
         config.move_camera_with_position(1, 1, _center_y)
         config.move_camera_with_position(2, _left_x, _left_y)
         config.move_camera_with_position(3, _right_x, _right_y)
