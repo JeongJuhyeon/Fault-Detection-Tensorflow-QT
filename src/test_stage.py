@@ -42,6 +42,7 @@ class Ui_MainWindow(object):
         self.ROI = None
         self.smallImages = {}
         self.correctList = [[0, 0] for _ in range(5)]
+        self.startEndTimes = []
 
     def setupUi(self, _mainwindow):
         css = """QPushButton { background-color: white;
@@ -308,7 +309,9 @@ class Ui_MainWindow(object):
     # "Start Test" button method
     def do_startTest(self):
         print("##-TEST BUTTON CLICKED")
-        print(datetime.datetime.now())
+        startTime = datetime.datetime.now()
+        print(startTime)
+        self.startEndTimes = [startTime]
 
         path = os.path.join(self.absPath, self.deviceName)
         img_list = os.listdir(path + '/predict')
@@ -361,7 +364,9 @@ class Ui_MainWindow(object):
                 cv2.rectangle(self.smallImages[side], start, end, config.RED, 1)
 
         print("Test finished")
-        print(datetime.datetime.now())
+        endTime = datetime.datetime.now()
+        print(endTime)
+        self.startEndTimes.append(endTime)
 
         self.graphicsView.setText("RESULT DATA")
         keys = self.smallImages.keys()
@@ -375,7 +380,7 @@ class Ui_MainWindow(object):
 
     def showTextResult(self):
         print("##-SHOW TEXT RESULT BUTTON CLICKED")
-        self.resultTextWidget = result_text_widget.resultTextWidget(self.correctList, self.deviceName)
+        self.resultTextWidget = result_text_widget.resultTextWidget(self.deviceName, self.correctList, self.startEndTimes)
 
     def showImagesResult(self):
         print("##-SHOW IMAGES RESULT BUTTON CLICKED")

@@ -3,10 +3,11 @@ from PyQt5.QtWidgets import QLabel, QApplication, QWidget, QGridLayout
 
 
 class resultTextWidget(QWidget):
-    def __init__(self, correct, curDevname):
+    def __init__(self, curDevname, correct, times):
         super(resultTextWidget, self).__init__()
         self.curDevName = curDevname
         self.correctList = correct
+        self.times = times
         self.initUI()
 
     def initUI(self):
@@ -39,6 +40,28 @@ class resultTextWidget(QWidget):
         self.grid.addWidget(self.dynamic_labels[5][0], 6, 1)
         self.grid.addWidget(self.dynamic_labels[5][1], 6, 2)
 
+        # Set correct label numbers
+        self.set_correct_label_numbers()
+
+        # Invisible empty row
+        self.grid.addWidget(QLabel(""), 7, 0)
+
+        # Start, end, per-inspection rows
+        self.grid.addWidget(QLabel("start time"), 8, 0)
+        self.grid.addWidget(
+            QLabel(" " + str(datetime.time(times[0].hour, times[0].minute, times[0].second, times[0].microsecond))),
+            8, 1, 1, 2)
+
+        self.grid.addWidget(QLabel("end time"), 9, 0)
+        self.grid.addWidget(
+            QLabel(" " + str(datetime.time(times[1].hour, times[1].minute, times[1].second, times[1].microsecond))),
+            9, 1, 1, 2)
+
+        self.grid.addWidget(QLabel("time per inspected part"), 10, 0, 1, 1)
+        diff = times[1] - times[0]
+        diff_per_part = diff / (self.totalCorrect + self.totalIncorrect)
+        self.grid.addWidget(QLabel("   " + str(diff_per_part)), 10, 1, 1, 2)
+
         # Resize window
         #self.resize(self.pixmap.width() + 200, self.pixmap.height() + 200)
 
@@ -58,29 +81,33 @@ class resultTextWidget(QWidget):
         self.setGeometry(300, 300, 350, 300)
         self.setWindowTitle('Result Statistics')
 
-        self.set_label_numbers()
         self.show()
 
-    def set_label_numbers(self):
-        totalCorrect = 0
-        totalIncorrect = 0
+    def set_correct_label_numbers(self):
+        self.totalCorrect = 0
+        self.totalIncorrect = 0
         for i in range(5):
             self.dynamic_labels[i][0].setText(str(self.correctList[i][0]))
-            totalCorrect += self.correctList[i][0]
+            self.totalCorrect += self.correctList[i][0]
             self.dynamic_labels[i][1].setText(str(self.correctList[i][1]))
-            totalIncorrect += self.correctList[i][1]
-        self.dynamic_labels[5][0].setText(str(totalCorrect))
-        self.dynamic_labels[5][1].setText(str(totalIncorrect))
+            self.totalIncorrect += self.correctList[i][1]
+        self.dynamic_labels[5][0].setText(str(self.totalCorrect))
+        self.dynamic_labels[5][1].setText(str(self.totalIncorrect))
 
 
 if __name__ == '__main__':
-    import random
+    import random, datetime
     app = QApplication(sys.argv)
     print('sys.argv[0] =', sys.argv[0])
     pathname = os.path.dirname(sys.argv[0])
     print('path =', pathname)
     print('full path =', os.path.abspath(pathname))
-    window = resultTextWidget()
-    window.curDevName = "dev1"
+
+    correctlist = [[1, 0] for _ in range(5)]
+    curDevName = "dev1"
+    times = [datetime.datetime.now(), datetime.datetime(2018, datetime.datetime.now().month,
+                                                        datetime.datetime.now().day, datetime.datetime.now().hour+1, 10, 9, 8)]
+
+    window = resultTextWidget(curDevName, correctlist, times)
     window.initUI()
     sys.exit(app.exec_())
