@@ -106,6 +106,13 @@ class Ui_MainWindow(object):
         self.incorrect_capture.setObjectName("Incorrect Capture")
         self.incorrect_capture.clicked.connect(self.do_IncorrectCapture)
 
+        # Modify Button
+        self.button_modify = QtWidgets.QPushButton("Modify", self.frame)
+        self.button_modify.setGeometry(QtCore.QRect(150, 10, 155, 40))
+        self.button_modify.setStyleSheet(css)
+        self.button_modify.setFont(font)
+        self.button_modify.clicked.connect(self.recapture_image)
+
         # "Camera autofocus" Check Box
         self.autofocus_checkbox = QtWidgets.QCheckBox("Autofocus", self.frame)
         self.autofocus_checkbox.setGeometry(QtCore.QRect(25, 90, 165, 100))
@@ -261,9 +268,7 @@ class Ui_MainWindow(object):
         config.makeDir(side_path)
 
         print("##IMAGE PROCESS PATH IS : " + side_path)
-        captured_image = image_process.image_capture(dir_path=device_path,
-                                                     current_side=sideStr,
-                                                     sideNum=self.sideNum,
+        captured_image = image_process.image_capture(dir_path=device_path, current_side=sideStr, sideNum=self.sideNum,
                                                      correct_ROIs=True)
         self.selectImg.extend(captured_image)
 
