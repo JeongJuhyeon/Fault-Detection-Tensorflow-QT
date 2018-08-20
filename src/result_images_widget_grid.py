@@ -1,7 +1,10 @@
-import sys, os
-from PyQt5.QtWidgets import QLabel, QApplication, QPushButton, QWidget, QGridLayout
+import os
+import sys
+
 from PyQt5.QtCore import QRect
 from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QLabel, QApplication, QPushButton, QWidget, QGridLayout
+
 
 class resultImagesWidget(QWidget):
     def __init__(self, curDevName):
@@ -19,19 +22,18 @@ class resultImagesWidget(QWidget):
 
         # "previous" button
         self.button_previous = QPushButton("Previous")
-        #self.button_previous.move(10, 10)
+        # self.button_previous.move(10, 10)
         self.button_previous.clicked.connect(self.onPrevious)
         self.button_previous.setDisabled(True)
-        #self.button_previous.setText("Previous")
+        # self.button_previous.setText("Previous")
 
         # "next" button
         self.button_next = QPushButton("Next")
-        #self.button_next.move(190, 10)
+        # self.button_next.move(190, 10)
         self.button_next.clicked.connect(self.onNext)
         if self.nrOfImages == 1:
             self.button_next.setDisabled(True)
-        #self.button_next.setText("Next")
-
+        # self.button_next.setText("Next")
 
         """# Horizontal box for the buttons
         hbox = QHBoxLayout()
@@ -43,12 +45,12 @@ class resultImagesWidget(QWidget):
         self.grid = QGridLayout()
         self.grid.setSpacing(10)
 
-        #Label that shows cur/max image number
+        # Label that shows cur/max image number
         self.imageNoLabel = QLabel(self)
         self.imageNoLabel.setText("1/" + str(self.nrOfImages))
         self.imageNoLabel.move(140, 15)
 
-        #Pixmap that will show the image
+        # Pixmap that will show the image
         self.pixmap = QPixmap(self.resultspath_absolute + "/" + self.image_names[self.curImg - 1])
 
         # Label that will contain the pixmap to show the image
@@ -57,7 +59,7 @@ class resultImagesWidget(QWidget):
         self.imageLabel.setPixmap(self.pixmap)
 
         # Resize window
-        #self.resize(self.pixmap.width() + 200, self.pixmap.height() + 200)
+        # self.resize(self.pixmap.width() + 200, self.pixmap.height() + 200)
 
         """
         # Vertical box to add everything to
@@ -73,7 +75,6 @@ class resultImagesWidget(QWidget):
         self.grid.addWidget(self.imageLabel, 2, 1, 5, 10)
         self.grid.addWidget(self.button_previous, 8, 5)
         self.grid.addWidget(self.button_next, 8, 6)
-
 
         self.setLayout(self.grid)
 
@@ -100,6 +101,7 @@ class resultImagesWidget(QWidget):
         if self.curImg == self.nrOfImages:
             self.button_next.setDisabled(True)
         self.imageNoLabel.setText(str(self.curImg) + "/" + str(self.nrOfImages))
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

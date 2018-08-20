@@ -1,8 +1,9 @@
 import sys
-from PyQt5.QtWidgets import QMessageBox, QApplication, QPushButton
+
+from PyQt5.QtWidgets import QMessageBox, QApplication
+
 
 class correctIncorrectDialog(QMessageBox):
-
 
     def __init__(self):
         super().__init__()

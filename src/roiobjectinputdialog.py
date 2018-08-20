@@ -1,5 +1,7 @@
 import sys
+
 from PyQt5.QtWidgets import QApplication, QInputDialog
+
 
 class ROIobjectInputDialog(QInputDialog):
     def __init__(self):
@@ -17,8 +19,9 @@ class ROIobjectInputDialog(QInputDialog):
     def onSelected(self):
         self.setResult(self.itemNames.index(self.textValue()))
 
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     dialog = ROIobjectInputDialog()
     a = dialog.exec()
-    print(a,  "selected")
+    print(a, "selected")

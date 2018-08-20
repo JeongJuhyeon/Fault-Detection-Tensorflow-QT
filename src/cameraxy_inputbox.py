@@ -33,7 +33,7 @@ class cameraXYInputbox(QDialog):
         buttonBox.accepted.connect(self.onOkay)
         form.addRow(buttonBox)
 
-        #Open file
+        # Open file
         try:
             self.file = open(self.configFilePath, 'r')
         except IOError:
@@ -52,7 +52,7 @@ class cameraXYInputbox(QDialog):
                     self.foundDeviceLineNo = i
                     i += 1
                     for j in range(5):
-                        self.lineEdits[j].setText(self.lines[i+j].split("=")[1])
+                        self.lineEdits[j].setText(self.lines[i + j].split("=")[1])
                     self.textChanged = False
                     break
 
@@ -71,7 +71,8 @@ class cameraXYInputbox(QDialog):
         # Already used device but values changed
         elif not self.newDevice and self.textChanged:
             for i in range(1, 6):
-                self.lines[i + self.foundDeviceLineNo] = self.labels[i - 1].replace(" ", "") + "=" + self.lineEdits[i - 1].text()
+                self.lines[i + self.foundDeviceLineNo] = self.labels[i - 1].replace(" ", "") + "=" + self.lineEdits[
+                    i - 1].text()
             self.file.close()
             self.file = open("../devices.txt", 'w')
             self.file.write('\n'.join(self.lines))
@@ -84,12 +85,12 @@ class cameraXYInputbox(QDialog):
         self.textChanged = True
 
 
-
 if __name__ == '__main__':
     import random
+
     app = QApplication(sys.argv)
     dialog = cameraXYInputbox()
     dialog.curDevName = "Bob" + str(random)
     dialog.searchDevice()
     a = dialog.exec()
-    print(a,  "selected")
+    print(a, "selected")

@@ -1,16 +1,18 @@
 # Contains the functions and logic used  after clicking on "Correct Capture" in training stage
 
 import copy
-
-import cv2
 import os
 import pathlib
 
-import config
-import crop_image
-import roiactiondialog, roiobjectinputdialog, correctincorrect_dialog
-from config import cameraConfig
+import cv2
 from PyQt5.QtWidgets import QMessageBox
+
+import config
+import correctincorrect_dialog
+import crop_image
+import roiactiondialog
+import roiobjectinputdialog
+from config import cameraConfig
 
 img_path_list = []
 selected_rois = []
@@ -67,7 +69,12 @@ def convert_coord(coord, size_conf):
                 int((coord[1] + coord[3]) * heightRatio))
     return newCoord
 
-def recapture_image(dir_path, current_side, sideNum):
+
+def recapture_image(device_dir_path, current_side, sideNum):
+    print("INTO RECAPTURE")
+    side_dir_path = device_dir_path + '/' + current_side
+
+    # Creating dialog objects used when saving
     savedialog = QMessageBox()
     savedialog.setStandardButtons(QMessageBox.Save | QMessageBox.Discard | QMessageBox.Close)
     savedialog.setDefaultButton(QMessageBox.Save)
@@ -75,24 +82,37 @@ def recapture_image(dir_path, current_side, sideNum):
 
     correctdialog = correctincorrect_dialog.correctIncorrectDialog()
 
+    # Reading locations of existing ROI's used when matching with selected rectangle
     correct_locs = []
-    file = open(dir_path + '/' + 'locationInfo.txt', "r")
+    file = open(device_dir_path + '/' + 'locationInfo.txt', "r")
     locationInfolines = []
     for line in file:
         correct_locs.append([int(x) for x in line.split("_")[0:4]])
         locationInfolines.append(line)
 
+    # Original picture is later cropped according to ROI
     original_image = get_image_from_camera(sideNum, size_conf=config.WINDOW_SIZE)
-    cv2.imwrite(dir_path + "/Origin.jpg", original_image)
-    origin_path = dir_path + "/Origin.jpg"
+    cv2.imwrite(device_dir_path + "/Origin.jpg", original_image)
+    origin_path = device_dir_path + "/Origin.jpg"
 
+    # Image used to select ROI's on
     img = get_image_from_camera(sideNum, size_conf=config.TESTWINDOW_SIZE)
-    fromCenter = False
-    dirPath = dir_path + '/' + current_side
-    obj_name_frequencies = {}
-    first_img = copy.copy(img)
-    file_name_idx = 1
 
+    # Apparently needed
+    fromCenter = False
+
+    # Creating frequency dict used for file names when making new images
+    image_folder_names = os.listdir(side_dir_path)
+    print(image_folder_names)
+    class_correct_incorrect_dict = {}
+    for folder in image_folder_names:
+        class_and_is_correct = folder.split('_')[1] + folder.split('_')[-1]
+        if class_and_is_correct in class_correct_incorrect_dict:
+            class_correct_incorrect_dict[class_and_is_correct] += 1
+        else:
+            class_correct_incorrect_dict[class_and_is_correct] = 1
+
+    print("##-RECAPTURE SETUP COMPLETE")
     while True:
         # Drawing ROI's
         if len(selected_rois) > 0:
@@ -101,13 +121,14 @@ def recapture_image(dir_path, current_side, sideNum):
                     if rect[4]:
                         cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 1)
                     else:
-                        cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (255, 0, 0), 1)
+                        cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 0, 255), 1)
+
+        # Get ROI
         selected_roi = cv2.selectROI("Select ROI", img, fromCenter)
 
-        # Make r the closest ROI
+        # Set ROI to closest existing ROI
         closest_dist = 99999999
         closest_idx = -1
-
         for i, rect in enumerate(correct_locs):
             dist = abs(rect[0] - selected_roi[0]) + abs(rect[1] - selected_roi[1])
             if dist < closest_dist:
@@ -122,24 +143,33 @@ def recapture_image(dir_path, current_side, sideNum):
 
         # If save:
         if button_pressed == QMessageBox.Save:
-            unique_object_name = "side" + locationInfolines[closest_idx].split("side")[1][:-1]
             class_name = locationInfolines[closest_idx].split("_")[-2]
-            file_name = dirPath + '/' + unique_object_name + '_cor/' + unique_object_name
+            side_and_class_prefix = current_side + "_" + class_name
 
-            """isIncorrect = correctincorrect_dialog.exec()
+            # Create file names, paths based on correct/incorrect
+            isIncorrect = correctdialog.exec()
             # Correct
             if isIncorrect == 0:
-                file_name = dirPath + '/' + unique_object_name + '_cor/' + unique_object_name
+                unique_object_name = side_and_class_prefix + '_' + str(class_correct_incorrect_dict[class_name + 'cor'])
+                class_correct_incorrect_dict[class_name + 'cor'] += 1
+                file_dir = side_dir_path + '/' + unique_object_name + '_cor'
+                file_path_including_name = file_dir + '/' + unique_object_name
             # Incorrect
             else:
-                file_name = dirPath + '/' + unique_object_name + '_cor/' + unique_object_name"""
+                unique_object_name = side_and_class_prefix + '_' + str(
+                    class_correct_incorrect_dict[class_name + 'incor'])
+                class_correct_incorrect_dict[class_name + 'incor'] += 1
+                file_dir = side_dir_path + '/' + unique_object_name + '_incor'
+                file_path_including_name = file_dir + '/' + unique_object_name
 
             x, y, w, h = closest_rect[0], closest_rect[1], closest_rect[2], closest_rect[3]
 
+            # Create directory and image
             coord = convert_coord(closest_rect, size_conf=config.WINDOW_RATIO)
+            config.makeDir(file_dir)
             crop_image.reduce_and_save_image(origin_image=origin_path,
                                              crop_coords=coord,
-                                             saved_base_path=file_name)
+                                             saved_base_path=file_path_including_name)
         # Else if close:
         elif button_pressed == QMessageBox.Close:
             cv2.destroyAllWindows()
@@ -157,13 +187,16 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
         for line in file:
             correct_locs.append([int(x) for x in line.split("_")[0:4]])
 
+    # Creating dialog objects for later use
     actiondialog = roiactiondialog.ROIActionDialog()
     objectinputbox = roiobjectinputdialog.ROIobjectInputDialog()
 
+    # Original picture is later cropped according to ROI
     original_image = get_image_from_camera(sideNum, size_conf=config.WINDOW_SIZE)
     cv2.imwrite(dir_path + "/Origin.jpg", original_image)
     origin_path = dir_path + "/Origin.jpg"
 
+    # Image used to select ROI's on
     img = get_image_from_camera(sideNum, size_conf=config.TESTWINDOW_SIZE)
     fromCenter = False
     dirPath = dir_path + '/' + current_side
@@ -191,10 +224,13 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
                         cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 1)
                     else:
                         cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (255, 0, 0), 1)
+
+        # Get ROI
         r = cv2.selectROI("Select ROI", img, fromCenter)
 
+        # If incorrect, set ROI to closest correct ROI
         if not correct_ROIs and config.SELECT_CLOSEST_CORRECT_ROI_WHEN_SELECTING_INCORRECT_ROI:
-            closest_dist = 10000000
+            closest_dist = 99999999
             for rect in correct_locs:
                 dist = abs(rect[0] - r[0]) + abs(rect[1] - r[1])
                 if dist < closest_dist:

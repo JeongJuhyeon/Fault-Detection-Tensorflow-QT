@@ -1,4 +1,7 @@
-import sys, os, config
+import config
+import os
+import sys
+
 from PyQt5.QtWidgets import QLabel, QApplication, QWidget, QGridLayout
 
 
@@ -63,7 +66,7 @@ class resultTextWidget(QWidget):
         self.grid.addWidget(QLabel("   " + str(diff_per_part)), 10, 1, 1, 2)
 
         # Resize window
-        #self.resize(self.pixmap.width() + 200, self.pixmap.height() + 200)
+        # self.resize(self.pixmap.width() + 200, self.pixmap.height() + 200)
 
         """
         # Vertical box to add everything to
@@ -74,7 +77,6 @@ class resultTextWidget(QWidget):
         vbox.setAlignment(Qt.AlignVCenter)
         self.setLayout(vbox)
         """
-
 
         self.setLayout(self.grid)
 
@@ -96,7 +98,8 @@ class resultTextWidget(QWidget):
 
 
 if __name__ == '__main__':
-    import random, datetime
+    import datetime
+
     app = QApplication(sys.argv)
     print('sys.argv[0] =', sys.argv[0])
     pathname = os.path.dirname(sys.argv[0])
@@ -106,7 +109,8 @@ if __name__ == '__main__':
     correctlist = [[1, 0] for _ in range(5)]
     curDevName = "dev1"
     times = [datetime.datetime.now(), datetime.datetime(2018, datetime.datetime.now().month,
-                                                        datetime.datetime.now().day, datetime.datetime.now().hour+1, 10, 9, 8)]
+                                                        datetime.datetime.now().day, datetime.datetime.now().hour + 1,
+                                                        10, 9, 8)]
 
     window = resultTextWidget(curDevName, correctlist, times)
     window.initUI()

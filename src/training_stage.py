@@ -12,10 +12,10 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 
+import cameraxy_inputbox
 import config
 import image_process
 import train_on_tensor
-import cameraxy_inputbox
 
 
 # Contains training_stage UI
@@ -286,7 +286,8 @@ class Ui_MainWindow(object):
         print("##-RECAPTURE START")
         device_path = os.path.join(self.absPath, self.dirName)
         sideStr = self.side + str(self.sideNum)
-        captured_image = image_process.recapture_image(dir_path=device_path, current_side=sideStr, sideNum=self.sideNum)
+        captured_image = image_process.recapture_image(device_dir_path=device_path, current_side=sideStr,
+                                                       sideNum=self.sideNum)
         # self.selectImg.extend(captured_image)
 
     def do_NextSide(self):

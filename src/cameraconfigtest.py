@@ -1,7 +1,7 @@
-from config import cameraConfig
-from PyQt5.QtWidgets import QApplication, QMessageBox
+import os
 import sys
-import correctincorrect_dialog
+
+from PyQt5.QtWidgets import QApplication, QMessageBox
 
 a = "../res/a/b/c"
 print(a.split('.')[0])
@@ -14,6 +14,21 @@ print(d.get_camera_number('LEFT'))
 c = cameraConfig()
 print(c.get_camera_number('LEFT'))1
 1"""
+
+resultspath_relative = "../res/restest/" + "side1"
+image_folder_names = os.listdir(resultspath_relative)
+print(image_folder_names)
+class_correct_incorrect_dict = {}
+
+for folder in image_folder_names:
+    class_and_is_correct = folder.split('_')[1] + folder.split('_')[-1]
+    if class_and_is_correct in class_correct_incorrect_dict:
+        class_correct_incorrect_dict[class_and_is_correct] += 1
+    else:
+        class_correct_incorrect_dict[class_and_is_correct] = 0
+
+print((cur_cor, cur_incor))
+
 
 app = QApplication(sys.argv)
 #correctdialog = correctincorrect_dialog.correctIncorrectDialog()
