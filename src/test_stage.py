@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import os
 import datetime
+import os
 
 # Form implementation generated from reading ui file '.\test_stage.ui'
 #
@@ -14,6 +14,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QImage, QPixmap, QFont
 
+import cameraxy_inputbox
 import config
 import image_process
 import inputBox
@@ -21,7 +22,6 @@ import predict
 import result_images_widget_grid
 import result_text_widget
 import roi_unit
-import cameraxy_inputbox
 
 
 # Contains test stage UI
@@ -286,8 +286,11 @@ class Ui_MainWindow(object):
         side = 'side' + str(self.sideNum)
         print("##-CLIKED THE NEXT BUTTON :" + side)
         if not config.DEBUG_STAGE_ABSENT:
-            if self.sideNum == 4 or self.sideNum == 1:
+            if self.sideNum == 4:
                 config.rotate_machine_with_degree(_x_value=450000, _y_value=int(self.cameraxyinputbox.lineEdits[2].text()))
+            elif self.sideNum == 1:
+                config.rotate_machine_with_degree(_x_value=1,
+                                                  _y_value=int(self.cameraxyinputbox.lineEdits[2].text()))
            # elif self.sideNum < 3: # UNTESTED
            #     config.rotate_machine_with_degree(_x_value=1, _y_value=1)
         self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
@@ -301,8 +304,11 @@ class Ui_MainWindow(object):
         side = 'side' + str(self.sideNum)
         print("##-CLIKED THE NEXT BUTTON :" + side)
         if not config.DEBUG_STAGE_ABSENT:
-            if self.sideNum == 3 or self.sideNum == 5:
+            if self.sideNum == 3:
                 config.rotate_machine_with_degree(_x_value=1, _y_value=int(self.cameraxyinputbox.lineEdits[2].text()))
+            elif self.sideNum == 5:
+                config.rotate_machine_with_degree(_x_value=450000,
+                                                  _y_value=int(self.cameraxyinputbox.lineEdits[2].text()))
         self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
 
 

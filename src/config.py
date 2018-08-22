@@ -14,6 +14,8 @@ CAMERA_NUMBER = 3
 AUTO_FOCUS = False
 TESTWINDOW_SIZE = {'width': 816, 'height': 612}
 WINDOW_SIZE = {'width': 3264, 'height': 2448}
+# TESTWINDOW_SIZE = {'width': 700, 'height': 700}
+# WINDOW_SIZE = {'width': 700, 'height': 700}
 WINDOW_RATIO = {
     'width_ratio': WINDOW_SIZE['width'] / TESTWINDOW_SIZE['width'],
     'height_ratio': WINDOW_SIZE['height'] / TESTWINDOW_SIZE['height']
@@ -22,6 +24,7 @@ SIDE_NAMES = ["left 1", "right 1", "center", "left 2", "right 2"]
 
 DEBUG_STAGE_ABSENT = False
 SELECT_CLOSEST_CORRECT_ROI_WHEN_SELECTING_INCORRECT_ROI = True
+ENABLE_MODIFY = False
 
 '''
  cameraConfig Class Usage Example:
@@ -99,7 +102,7 @@ NUM_CHANNEL : 추후 수정
 VALIDATION_SIZE = 0.3
 DROPOUT = 0.3
 IMAGE_SIZE = 128
-ITERATION = 1000
+ITERATION = 4000
 BATCH_SIZE = 16
 NUM_CHANNEL = 3
 

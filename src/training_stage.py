@@ -38,8 +38,9 @@ class Ui_MainWindow(object):
                                 border-color: black;
                                 padding: 4px;
                             }"""
-        font = QFont('D2Coding', 18, QFont.Light)
+        font = QFont('D2Coding', 17, QFont.Light)
         font2 = QFont('D2Coding', 12, QFont.Light)
+        font4 = QFont('D2Coding', 15, QFont.Light)
         self.MainWindow = _MainWindow
         self.MainWindow.setObjectName("MainWindow")
         self.MainWindow.resize(800, 600)
@@ -106,12 +107,17 @@ class Ui_MainWindow(object):
         self.incorrect_capture.setObjectName("Incorrect Capture")
         self.incorrect_capture.clicked.connect(self.do_IncorrectCapture)
 
-        # Modify Button
-        self.button_modify = QtWidgets.QPushButton("Modify", self.frame)
-        self.button_modify.setGeometry(QtCore.QRect(150, 10, 155, 40))
-        self.button_modify.setStyleSheet(css)
-        self.button_modify.setFont(font)
-        self.button_modify.clicked.connect(self.recapture_image)
+        if config.ENABLE_MODIFY:
+            self.correct_capture.setFont(font4)
+            self.correct_capture.setGeometry(QtCore.QRect(10, 10, 100, 80))
+            self.incorrect_capture.setFont(font4)
+            self.incorrect_capture.setGeometry(QtCore.QRect(120, 10, 100, 80))
+            # Modify Button
+            self.button_modify = QtWidgets.QPushButton("Modify", self.frame)
+            self.button_modify.setGeometry(QtCore.QRect(230, 10, 100, 80))
+            self.button_modify.setStyleSheet(css)
+            self.button_modify.setFont(font4)
+            self.button_modify.clicked.connect(self.recapture_image)
 
         # "Camera autofocus" Check Box
         self.autofocus_checkbox = QtWidgets.QCheckBox("Autofocus", self.frame)
@@ -301,8 +307,11 @@ class Ui_MainWindow(object):
 
         print("##-CLIKED THE NEXT BUTTON :" + side)
         if not config.DEBUG_STAGE_ABSENT:
-            if self.sideNum == 4 or self.sideNum == 1:
+            if self.sideNum == 4:
                 config.rotate_machine_with_degree(_x_value=450000, _y_value=int(self.cameraxyinputbox.lineEdits[2].text()))
+            elif self.sideNum == 1:
+                config.rotate_machine_with_degree(_x_value=1,
+                                                  _y_value=int(self.cameraxyinputbox.lineEdits[2].text()))
            # elif self.sideNum < 3: # UNTESTED
            #     config.rotate_machine_with_degree(_x_value=1, _y_value=1)
         self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
@@ -318,9 +327,11 @@ class Ui_MainWindow(object):
         self.setState(side)
         print("##-CLIKED THE NEXT BUTTON :" + side)
         if not config.DEBUG_STAGE_ABSENT:
-            if self.sideNum == 3 or self.sideNum == 5:
+            if self.sideNum == 3:
                 config.rotate_machine_with_degree(_x_value=1, _y_value=int(self.cameraxyinputbox.lineEdits[2].text()))
-
+            elif self.sideNum == 5:
+                config.rotate_machine_with_degree(_x_value=450000,
+                                                  _y_value=int(self.cameraxyinputbox.lineEdits[2].text()))
         #""" if self.sideNum > 3:
         #    config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
         #elif self.sideNum < 3: # UNTESTED

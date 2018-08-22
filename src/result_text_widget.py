@@ -1,8 +1,9 @@
-import config
 import os
 import sys
 
 from PyQt5.QtWidgets import QLabel, QApplication, QWidget, QGridLayout
+
+import config
 
 
 class resultTextWidget(QWidget):
@@ -52,16 +53,18 @@ class resultTextWidget(QWidget):
         # Start, end, per-inspection rows
         self.grid.addWidget(QLabel("start time"), 8, 0)
         self.grid.addWidget(
-            QLabel(" " + str(datetime.time(times[0].hour, times[0].minute, times[0].second, times[0].microsecond))),
+            QLabel(" " + str(datetime.time(self.times[0].hour, self.times[0].minute, self.times[0].second,
+                                           self.times[0].microsecond))),
             8, 1, 1, 2)
 
         self.grid.addWidget(QLabel("end time"), 9, 0)
         self.grid.addWidget(
-            QLabel(" " + str(datetime.time(times[1].hour, times[1].minute, times[1].second, times[1].microsecond))),
+            QLabel(" " + str(datetime.time(self.times[1].hour, self.times[1].minute, self.times[1].second,
+                                           self.times[1].microsecond))),
             9, 1, 1, 2)
 
         self.grid.addWidget(QLabel("time per inspected part"), 10, 0, 1, 1)
-        diff = times[1] - times[0]
+        diff = self.times[1] - self.times[0]
         diff_per_part = diff / (self.totalCorrect + self.totalIncorrect)
         self.grid.addWidget(QLabel("   " + str(diff_per_part)), 10, 1, 1, 2)
 
@@ -107,7 +110,7 @@ if __name__ == '__main__':
     print('full path =', os.path.abspath(pathname))
 
     correctlist = [[1, 0] for _ in range(5)]
-    curDevName = "dev1"
+    curDevName = "sample4"
     times = [datetime.datetime.now(), datetime.datetime(2018, datetime.datetime.now().month,
                                                         datetime.datetime.now().day, datetime.datetime.now().hour + 1,
                                                         10, 9, 8)]

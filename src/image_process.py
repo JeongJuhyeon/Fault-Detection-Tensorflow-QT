@@ -32,6 +32,26 @@ def readfile():
     return dic
 
 
+def get_rect_list_from_locationinfo(device_dir_path):
+    try:
+        file = open(device_dir_path + '/' + 'locationInfo.txt', "r")
+    except:
+        return []
+
+    selected_rois_t = []
+
+    for line in file:
+        a = []
+        for i in line.split('_')[:4]:
+            a.append(int(i))
+        a.append(True)
+        a.append(line.split('_')[4])
+        selected_rois_t.append(a)
+
+    file.close()
+    return selected_rois_t
+
+
 def get_image_from_camera(sideNum, size_conf):
     cameraConfigObject = cameraConfig()
     if sideNum == 1 or sideNum == 4:
@@ -87,8 +107,11 @@ def recapture_image(device_dir_path, current_side, sideNum):
     file = open(device_dir_path + '/' + 'locationInfo.txt', "r")
     locationInfolines = []
     for line in file:
-        correct_locs.append([int(x) for x in line.split("_")[0:4]])
-        locationInfolines.append(line)
+        if line.split('_')[4] == current_side:
+            correct_locs.append([int(x) for x in line.split("_")[0:4]])
+            locationInfolines.append(line)
+    file.close()
+
 
     # Original picture is later cropped according to ROI
     original_image = get_image_from_camera(sideNum, size_conf=config.WINDOW_SIZE)
@@ -113,6 +136,14 @@ def recapture_image(device_dir_path, current_side, sideNum):
             class_correct_incorrect_dict[class_and_is_correct] = 1
 
     print("##-RECAPTURE SETUP COMPLETE")
+
+    if len(selected_rois) == 0:
+        for roi in get_rect_list_from_locationinfo(device_dir_path):
+            selected_rois.append(roi)
+        if len(selected_rois == 0):
+            print("No existing ROI's found! Nothing to recapture.")
+            return
+
     while True:
         # Drawing ROI's
         if len(selected_rois) > 0:
@@ -150,14 +181,23 @@ def recapture_image(device_dir_path, current_side, sideNum):
             isIncorrect = correctdialog.exec()
             # Correct
             if isIncorrect == 0:
-                unique_object_name = side_and_class_prefix + '_' + str(class_correct_incorrect_dict[class_name + 'cor'])
+                try:
+                    unique_object_name = side_and_class_prefix + '_' + str(
+                        class_correct_incorrect_dict[class_name + 'cor'])
+                except:
+                    unique_object_name = side_and_class_prefix + '_' + '0'
+                    class_correct_incorrect_dict[class_name + 'cor'] = 0
                 class_correct_incorrect_dict[class_name + 'cor'] += 1
                 file_dir = side_dir_path + '/' + unique_object_name + '_cor'
                 file_path_including_name = file_dir + '/' + unique_object_name
             # Incorrect
             else:
-                unique_object_name = side_and_class_prefix + '_' + str(
-                    class_correct_incorrect_dict[class_name + 'incor'])
+                try:
+                    unique_object_name = side_and_class_prefix + '_' + str(
+                        class_correct_incorrect_dict[class_name + 'incor'])
+                except:
+                    unique_object_name = side_and_class_prefix + '_' + '0'
+                    class_correct_incorrect_dict[class_name + 'incor'] = 0
                 class_correct_incorrect_dict[class_name + 'incor'] += 1
                 file_dir = side_dir_path + '/' + unique_object_name + '_incor'
                 file_path_including_name = file_dir + '/' + unique_object_name
@@ -174,7 +214,7 @@ def recapture_image(device_dir_path, current_side, sideNum):
         elif button_pressed == QMessageBox.Close:
             cv2.destroyAllWindows()
             file.close()
-            return selected_rois
+            return
 
 
 # Used in training stage
@@ -185,7 +225,10 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
         correct_locs = []
         file = open(dir_path + '/' + 'locationInfo.txt', "r")
         for line in file:
-            correct_locs.append([int(x) for x in line.split("_")[0:4]])
+            if line.split('_')[4] == current_side:
+                correct_locs.append([int(x) for x in line.split("_")[0:4]])
+        file.close()
+
 
     # Creating dialog objects for later use
     actiondialog = roiactiondialog.ROIActionDialog()
