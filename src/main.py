@@ -126,9 +126,9 @@ class Ui_Interface(object):
 
         self.test_Window = QtWidgets.QMainWindow()
         self.test_interface = test_stage.Ui_MainWindow(self.interface)
-        self.test_interface.setupUi(self.test_Window)
+        self.test_interface.setupUi(self.test_Window, inputbox.getValue())
 
-        self.test_interface.deviceName = inputbox.getValue()
+        # self.test_interface.deviceName = inputbox.getValue()
         self.test_Window.show()
         self.interface.close()
         inputbox.close()

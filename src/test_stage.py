@@ -30,6 +30,7 @@ class Ui_MainWindow(object):
     def __init__(self, _mainUI=None):
         self.absPath = '../res'
         self.deviceName = 'device'
+        self.curDeviceNo = 1
         self.sideName = 'side'
         self.sideNum = 1
         self.sideBox = inputBox.App("Enter the Side name")
@@ -43,8 +44,13 @@ class Ui_MainWindow(object):
         self.smallImages = {}
         self.correctList = [[0, 0] for _ in range(5)]
         self.startEndTimes = []
+        self.result_directories = []
 
-    def setupUi(self, _mainwindow):
+    def setupUi(self, _mainwindow, curDeviceName):
+        self.deviceName = curDeviceName
+        self.curDeviceNo = self.get_device_number()
+        self.resultsDeviceNo = self.curDeviceNo - 1
+
         css = """QPushButton { background-color: white;
                         border-style: outset;
                         border-width: 2px;
@@ -54,31 +60,45 @@ class Ui_MainWindow(object):
                     }"""
         font = QFont('D2Coding', 22, QFont.Light)
         font2 = QFont('D2Coding', 12, QFont.Light)
+        font3 = QFont('D2Coding', 25, QFont.Light)
+
         self.MainWindow = _mainwindow
         self.MainWindow.setObjectName("MainWindow")
         self.MainWindow.resize(800, 600)
         pal = self.MainWindow.palette()
         pal.setColor(self.MainWindow.backgroundRole(), Qt.white)
         self.MainWindow.setPalette(pal)
+
+        # Central widget on MainWindow. This has the 'Test Stage' label, Device name label, and Home Button on it.
         self.centralwidget = QtWidgets.QWidget(self.MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
-        font3 = QFont('D2Coding', 25, QFont.Light)
-        self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(0, 10, 781, 41))
-
-        self.label.setFont(font3)
-        self.label.setAlignment(QtCore.Qt.AlignCenter)
-        self.label.setObjectName("label")
-
+        # Widget on central widget. This has the graphics view on it.
         self.widget = QtWidgets.QWidget(self.centralwidget)
         self.widget.setGeometry(QtCore.QRect(10, 60, 781, 491))
         self.widget.setObjectName("widget")
+
+        # Frame on Widget. This has all the buttons on it.
         self.frame = QtWidgets.QFrame(self.widget)
         self.frame.setGeometry(QtCore.QRect(20, 50, 341, 421))
         self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame.setObjectName("frame")
+
+        # 'Test Stage' Label
+        self.label_test_stage = QtWidgets.QLabel(self.centralwidget)
+        self.label_test_stage.setGeometry(QtCore.QRect(35, 20, 140, 41))
+        self.label_test_stage.setFont(font)
+        # self.label_test_stage.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_test_stage.setObjectName("label")
+
+        # Device name label
+        self.label_device_name = QtWidgets.QLabel(self.centralwidget)
+        self.label_device_name.setText(self.deviceName)
+        self.label_device_name.setGeometry(QtCore.QRect(200, 20, 160, 41))
+        self.label_device_name.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_device_name.setFont(QFont('D2Coding', 13, QFont.DemiBold))
+        self.label_device_name.setStyleSheet("QLabel { border: 2px solid black } ")
 
         # Home Button
         self.home = QtWidgets.QPushButton(self.centralwidget)
@@ -98,9 +118,16 @@ class Ui_MainWindow(object):
         self.button_device_number.setFont(font)
         """
 
+        # Current device number label
+        self.label_device_number = QtWidgets.QLabel(self.frame)
+        self.label_device_number.setGeometry(10, 20, 321, 50)
+        self.label_device_number.setFont(font)
+        self.label_device_number.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_device_number.setStyleSheet(css)
+
         # "Capture" button
         self.button_capture = QtWidgets.QPushButton(self.frame)
-        self.button_capture.setGeometry(QtCore.QRect(10, 10, 321, 61))
+        self.button_capture.setGeometry(QtCore.QRect(10, 70, 321, 50))  # x, y, w, h
         self.button_capture.setFont(font)
         self.button_capture.setObjectName("button_capture")
         self.button_capture.setStyleSheet(css)
@@ -108,6 +135,7 @@ class Ui_MainWindow(object):
         self.button_capture.clicked.connect(self.img_capture)
 
         # "Camera autofocus" Check Box
+        """
         self.autofocus_checkbox = QtWidgets.QCheckBox("Autofocus", self.frame)
         self.autofocus_checkbox.setGeometry(QtCore.QRect(25, 70, 165, 100))
         self.autofocus_checkbox.setObjectName("autofocus_checkbox")
@@ -115,36 +143,40 @@ class Ui_MainWindow(object):
         self.autofocus_checkbox.setFont(font2)
         self.autofocus_checkbox.setChecked(config.AUTO_FOCUS)
         self.autofocus_checkbox.stateChanged.connect(config.change_autofocus)
+        """
 
         # "Prev" Button
         self.button_capture_prev = QtWidgets.QPushButton(self.frame)
         self.button_capture_prev.setText("<--")
-        self.button_capture_prev.setGeometry(QtCore.QRect(140, 90, 50, 50))
+        self.button_capture_prev.setGeometry(QtCore.QRect(10, 150, 80, 50))
         self.button_capture_prev.setStyleSheet(css)
-        self.button_capture_prev.setFont(font2)
+        self.button_capture_prev.setFont(QFont('D2Coding', 14, QFont.Bold))
         self.button_capture_prev.clicked.connect(self.do_PrevSide)
 
         # "Next" Button
         self.button_capture_next = QtWidgets.QPushButton(self.frame)
-        self.button_capture_next.setGeometry(QtCore.QRect(275, 90, 50, 50))
+        self.button_capture_next.setGeometry(QtCore.QRect(255, 150, 80, 50))
         self.button_capture_next.setObjectName("button_capture_next")
         self.button_capture_next.setStyleSheet(css)
-        self.button_capture_next.setFont(font2)
+        self.button_capture_next.setFont(QFont('D2Coding', 14, QFont.Bold))
         self.button_capture_next.clicked.connect(self.do_NextSide)
 
         # Side Label
         self.side_label = QtWidgets.QLabel(self.frame)
-        self.side_label.setGeometry(QtCore.QRect(200, 80, 67, 70))
+        self.side_label.setGeometry(QtCore.QRect(120, 140, 110, 70))
         self.side_label.setText("Side 1:\n" + config.SIDE_NAMES[0])
         self.side_label.setFont(QFont('D2Coding', 13, QFont.DemiBold))
         self.side_label.setStyleSheet("QLabel { border: 2px solid blue } ")
+        self.side_label.setAlignment(QtCore.Qt.AlignCenter)
 
-        # Vertical layout for "Start test" and "Show result" buttons
+        # Vertical layout widget for "Start test" and 2 hboxes containing result button lines
+        # Also contains 2 horizontal
         self.verticalLayoutWidget = QtWidgets.QWidget(self.frame)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 160, 321, 180))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 230, 331, 160))  # x, y, w, h
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setSpacing(15)
         self.verticalLayout.setObjectName("verticalLayout")
 
         # "Start Test" Button
@@ -162,18 +194,55 @@ class Ui_MainWindow(object):
         self.button_start_test.setFont(font)
         self.verticalLayout.addWidget(self.button_start_test)
 
+        """
         # Invisible label
         self.label_invisible = QtWidgets.QLabel(self.verticalLayoutWidget)
         self.label_invisible.setFixedSize(20, 20)
         self.verticalLayout.addWidget(self.label_invisible)
+        """
 
         # "Show Result" Label
-        self.label_show_results = QtWidgets.QLabel(self.verticalLayoutWidget)
+        # self.label_show_results = QtWidgets.QLabel("Show Results", self.verticalLayoutWidget)
+        self.label_show_results = QtWidgets.QLabel("Show Result", self.frame)
         self.label_show_results.setObjectName("label_show_result")
-        self.label_show_results.setFont(QFont('D2Coding', 18))
+        self.label_show_results.setFont(QFont('D2Coding', 14))
         self.label_show_results.setStyleSheet(css)
-        self.label_show_results.setAlignment(Qt.AlignHCenter)
-        self.verticalLayout.addWidget(self.label_show_results)
+        # self.verticalLayout.addWidget(self.label_show_results)
+
+        # Results device number label
+        self.label_results_device_number = QtWidgets.QLabel(self.frame)
+        self.label_results_device_number.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_results_device_number.setFont(QFont('D2Coding', 11, QFont.DemiBold))
+        self.label_results_device_number.setStyleSheet("QLabel { border: 1px solid black } ")
+
+        # Prev result button
+        self.button_prev_result = QtWidgets.QPushButton("<--", self.frame)
+        self.button_prev_result.setStyleSheet(css)
+        self.button_prev_result.setFont(QFont('D2Coding', 13, QFont.Bold))
+        self.button_prev_result.clicked.connect(self.do_PrevResults)
+
+        # Change result device number button
+        self.button_change_device_number = QtWidgets.QPushButton("Change", self.frame)
+        self.button_change_device_number.setStyleSheet(css)
+        self.button_change_device_number.setFont(font2)
+        self.button_change_device_number.clicked.connect(self.change_device_number)
+
+        # Next result button
+        self.button_next_result = QtWidgets.QPushButton("-->", self.frame)
+        self.button_next_result.setStyleSheet(css)
+        self.button_next_result.setFont(QFont('D2Coding', 13, QFont.Bold))
+        self.button_next_result.clicked.connect(self.do_NextResults)
+
+        # Hbox for "Results" label, devno label, change devno buttons
+        hbox_devno_results = QtWidgets.QHBoxLayout()
+        hbox_devno_results.addWidget(self.label_show_results)
+        hbox_devno_results.addWidget(self.label_results_device_number)
+        hbox_devno_results.addWidget(self.button_prev_result)
+        hbox_devno_results.addWidget(self.button_change_device_number)
+        hbox_devno_results.addWidget(self.button_next_result)
+        hbox_devno_results.setSpacing(8)
+
+        self.verticalLayout.addLayout(hbox_devno_results)
 
         # Show "Text" Result Button
         self.button_text_result = QtWidgets.QPushButton(self.frame)
@@ -193,12 +262,12 @@ class Ui_MainWindow(object):
         self.button_images_result.clicked.connect(self.showImagesResult)
 
         # Hbox for "Text" result and "Images" result buttons
-        hbox = QtWidgets.QHBoxLayout()
-        hbox.addWidget(self.button_text_result)
-        hbox.addWidget(self.button_images_result)
+        hbox_text_image_result_buttons = QtWidgets.QHBoxLayout()
+        hbox_text_image_result_buttons.addWidget(self.button_text_result)
+        hbox_text_image_result_buttons.addWidget(self.button_images_result)
         # hbox.addStretch(1)
 
-        self.verticalLayout.addLayout(hbox)
+        self.verticalLayout.addLayout(hbox_text_image_result_buttons)
 
         #self.label_show_results.setSizePolicy(sizePolicy)
         #sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
@@ -209,7 +278,7 @@ class Ui_MainWindow(object):
         self.graphicsView = QtWidgets.QLabel(self.widget)
         self.graphicsView.setGeometry(QtCore.QRect(370, 60, 401, 391))
         self.graphicsView.setObjectName("graphicsView")
-        self.graphicsView.setText("Cannot load the image Please Capture button")
+        self.graphicsView.setText("Cannot load the image, press the Capture button")
         self.graphicsView.setAlignment(QtCore.Qt.AlignCenter)
 
         self.MainWindow.setCentralWidget(self.centralwidget)
@@ -222,17 +291,32 @@ class Ui_MainWindow(object):
         self.MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi()
+        self.update_buttons_and_labels()
+
         QtCore.QMetaObject.connectSlotsByName(self.MainWindow)
 
         #if not config.DEBUG_STAGE_ABSENT:
             #config.initialize_machine()
 
+    def update_buttons_and_labels(self):
+        if self.resultsDeviceNo <= 1:
+            self.button_prev_result.setDisabled(True)
+        else:
+            self.button_prev_result.setEnabled(True)
+
+        if self.resultsDeviceNo >= self.curDeviceNo - 1:
+            self.button_next_result.setDisabled(True)
+        else:
+            self.button_next_result.setEnabled(True)
+
+        self.label_results_device_number.setText('{:04}'.format(self.resultsDeviceNo))
+        self.label_device_number.setText('{:04}'.format(self.curDeviceNo))
+
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label.setText(_translate("MainWindow", "Test Stage"))
+        self.label_test_stage.setText(_translate("MainWindow", "Test Stage"))
         self.button_start_test.setText(_translate("MainWindow", "Start Test"))
-        self.label_show_results.setText(_translate("MainWindow", "Show Results"))
         self.button_capture.setText(_translate("MainWindow", "Capture"))
         self.button_capture_next.setText(_translate("MainWindow", "-->"))
         self.home.setText(_translate("MainWindow", "Home"))
@@ -242,6 +326,15 @@ class Ui_MainWindow(object):
         self.mainUI.show()
         self.MainWindow.close()
 
+    def get_device_number(self):
+        resultspath_relative = "../res" + "/" + self.deviceName + "/result"
+        try:
+            self.result_directories = os.listdir(resultspath_relative)
+        except:
+            return 1
+        return int(self.result_directories[-1].split('_')[0]) + 1
+
+    """
     def setDeviceNum(self):
         self.deviceBox.do_UI()
         self.deviceName = self.deviceBox.getValue()
@@ -249,6 +342,7 @@ class Ui_MainWindow(object):
         self.sideName = self.sideBox.getValue()
         path = self.absPath + self.deviceName + '/' + self.sideName
         print('##-PATH : ' + path)
+        """
 
     # "Capture" Button method
     def img_capture(self):
@@ -310,6 +404,26 @@ class Ui_MainWindow(object):
                 config.rotate_machine_with_degree(_x_value=450000,
                                                   _y_value=int(self.cameraxyinputbox.lineEdits[2].text()))
         self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
+
+    def do_PrevResults(self):
+        self.resultsDeviceNo -= 1
+        self.update_buttons_and_labels()
+
+    def do_NextResults(self):
+        self.resultsDeviceNo += 1
+        self.update_buttons_and_labels()
+
+    def change_device_number(self):
+        b = QtWidgets.QInputDialog.getText(self.MainWindow, "Device Number", "Enter device number:")
+        try:
+            t = int(b[0])
+            if 1 <= t <= self.curDeviceNo - 1:
+                self.resultsDeviceNo = t
+                self.update_buttons_and_labels()
+            else:
+                print("Incorrect number entered!")
+        except:
+            print("Incorrect number entered!")
 
 
     # "Start Test" button method
@@ -382,6 +496,12 @@ class Ui_MainWindow(object):
         for key in keys:
             cv2.imwrite(result_path + '/' + key + '.jpg', self.smallImages[key])
 
+        self.curDeviceNo += 1
+        self.resultsDeviceNo = self.curDeviceNo - 1
+
+        # TODO: self.result_directories.append(newest directory)
+
+        self.update_buttons_and_labels()
         self.showImagesResult()
 
     def showTextResult(self):
@@ -438,6 +558,6 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
+    ui.setupUi(MainWindow, "restest")
     MainWindow.show()
     sys.exit(app.exec_())
