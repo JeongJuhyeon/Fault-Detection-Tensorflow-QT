@@ -232,8 +232,8 @@ class Ui_MainWindow(object):
 
     def do_ShowROI(self):
         print("##-SHOW ROI")
-        image_process.showROI(selectROI=self.selectImg,
-                              current_side=self.side + str(self.sideNum))
+        device_dir_path = os.path.join(self.absPath, self.dirName)
+        image_process.showROI(device_dir_path, current_side=self.side + str(self.sideNum))
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate

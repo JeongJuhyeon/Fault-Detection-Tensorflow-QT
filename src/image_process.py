@@ -15,14 +15,13 @@ import roiobjectinputdialog
 from config import cameraConfig
 
 img_path_list = []
-selected_rois = []
 
 
 def readfile():
     f = open("./../data.txt", 'r')
     lines = f.readlines()
     f.close()
-    dic = {};
+    dic = {}
     for line in lines:
         left, right = line.split(':')
         temp = list(right.split(','))
@@ -35,7 +34,7 @@ def readfile():
 def get_rect_list_from_locationinfo(device_dir_path):
     try:
         file = open(device_dir_path + '/' + 'locationInfo.txt', "r")
-    except:
+    except FileNotFoundError:
         return []
 
     selected_rois_t = []
@@ -94,11 +93,18 @@ def recapture_image(device_dir_path, current_side, sideNum):
     print("INTO RECAPTURE")
     side_dir_path = device_dir_path + '/' + current_side
 
+    # Make list of rois to display
+    selected_rois_to_draw = get_rect_list_from_locationinfo(device_dir_path)
+    if len(selected_rois_to_draw) == 0:
+        print("No existing ROI's found! Nothing to recapture.")
+        return
+
     # Creating dialog objects used when saving
     savedialog = QMessageBox()
     savedialog.setStandardButtons(QMessageBox.Save | QMessageBox.Discard | QMessageBox.Close)
     savedialog.setDefaultButton(QMessageBox.Save)
     savedialog.setText("Save recapture, Discard recapture, Quit?")
+    savedialog.button(QMessageBox.Close).setText("Quit")
 
     correctdialog = correctincorrect_dialog.correctIncorrectDialog()
 
@@ -111,7 +117,6 @@ def recapture_image(device_dir_path, current_side, sideNum):
             correct_locs.append([int(x) for x in line.split("_")[0:4]])
             locationInfolines.append(line)
     file.close()
-
 
     # Original picture is later cropped according to ROI
     original_image = get_image_from_camera(sideNum, size_conf=config.WINDOW_SIZE)
@@ -137,17 +142,10 @@ def recapture_image(device_dir_path, current_side, sideNum):
 
     print("##-RECAPTURE SETUP COMPLETE")
 
-    if len(selected_rois) == 0:
-        for roi in get_rect_list_from_locationinfo(device_dir_path):
-            selected_rois.append(roi)
-        if len(selected_rois == 0):
-            print("No existing ROI's found! Nothing to recapture.")
-            return
-
     while True:
         # Drawing ROI's
-        if len(selected_rois) > 0:
-            for rect in selected_rois:
+        if len(selected_rois_to_draw) > 0:
+            for rect in selected_rois_to_draw:
                 if rect[5] == current_side:
                     if rect[4]:
                         cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 1)
@@ -156,6 +154,12 @@ def recapture_image(device_dir_path, current_side, sideNum):
 
         # Get ROI
         selected_roi = cv2.selectROI("Select ROI", img, fromCenter)
+
+        if selected_roi[2] == 0:
+            savedialog.button(QMessageBox.Save).setDisabled(True)
+        else:
+            savedialog.button(QMessageBox.Save).setEnabled(True)
+            savedialog.setDefaultButton(QMessageBox.Save)
 
         # Set ROI to closest existing ROI
         closest_dist = 99999999
@@ -184,7 +188,7 @@ def recapture_image(device_dir_path, current_side, sideNum):
                 try:
                     unique_object_name = side_and_class_prefix + '_' + str(
                         class_correct_incorrect_dict[class_name + 'cor'])
-                except:
+                except KeyError:
                     unique_object_name = side_and_class_prefix + '_' + '0'
                     class_correct_incorrect_dict[class_name + 'cor'] = 0
                 class_correct_incorrect_dict[class_name + 'cor'] += 1
@@ -195,7 +199,7 @@ def recapture_image(device_dir_path, current_side, sideNum):
                 try:
                     unique_object_name = side_and_class_prefix + '_' + str(
                         class_correct_incorrect_dict[class_name + 'incor'])
-                except:
+                except KeyError:
                     unique_object_name = side_and_class_prefix + '_' + '0'
                     class_correct_incorrect_dict[class_name + 'incor'] = 0
                 class_correct_incorrect_dict[class_name + 'incor'] += 1
@@ -219,16 +223,26 @@ def recapture_image(device_dir_path, current_side, sideNum):
 
 # Used in training stage
 def image_capture(dir_path, current_side, sideNum, correct_ROIs):
+    # Correct Capture button pressed
     if correct_ROIs:
         file = open(dir_path + '/' + 'locationInfo.txt', "a+")
+    # Incorrect Capture button pressed
     else:
         correct_locs = []
-        file = open(dir_path + '/' + 'locationInfo.txt', "r")
+        try:
+            file = open(dir_path + '/' + 'locationInfo.txt', "r")
+        except FileNotFoundError:
+            print("No existing ROI's found! Can't capture incorrect areas.")
+            return
         for line in file:
             if line.split('_')[4] == current_side:
                 correct_locs.append([int(x) for x in line.split("_")[0:4]])
         file.close()
+        if len(correct_locs) == 0:
+            print("No existing ROI's found! Can't capture incorrect areas.")
+            return
 
+    selected_rois_to_draw = get_rect_list_from_locationinfo(dir_path)
 
     # Creating dialog objects for later use
     actiondialog = roiactiondialog.ROIActionDialog()
@@ -243,9 +257,22 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
     img = get_image_from_camera(sideNum, size_conf=config.TESTWINDOW_SIZE)
     fromCenter = False
     dirPath = dir_path + '/' + current_side
-    obj_name_frequencies = {}
+
+    # Creating frequency dict used for file names when making new images
+    class_frequencies = {}
+
+    image_folder_names = os.listdir(dirPath)
+    print(image_folder_names)
+    for folder in image_folder_names:
+        class_name = folder.split('_')[1]
+        correct_folder = folder.split('_')[-1] == "cor"
+        if correct_ROIs and correct_folder or (not correct_ROIs and not correct_folder):
+            if class_name in class_frequencies:
+                class_frequencies[class_name] += 1
+            else:
+                class_frequencies[class_name] = 0
+
     first_img = copy.copy(img)
-    file_name_idx = 1
 
     """
     selected_img is a list of rectangles
@@ -260,8 +287,8 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
 
     while True:
         # Drawing ROI's
-        if len(selected_rois) > 0:
-            for rect in selected_rois:
+        if len(selected_rois_to_draw) > 0:
+            for rect in selected_rois_to_draw:
                 if rect[5] == current_side:
                     if rect[4]:
                         cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 1)
@@ -281,8 +308,13 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
                     closest_rect = rect
             r = list(closest_rect)
 
+        # Save button default. If no ROI is selected, disable the save button
 
-
+        if r[2] == 0:
+            actiondialog.button(QMessageBox.Save).setDisabled(True)
+        else:
+            actiondialog.button(QMessageBox.Save).setEnabled(True)
+            actiondialog.setDefaultButton(QMessageBox.Save)
 
         # Asking what the user wants to do
         button_pressed = actiondialog.exec()
@@ -292,12 +324,12 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
         # Giving a name to the ROI and saving it
         if button_pressed == 0x00000800:
             obj_name = objectinputbox.itemNames[objectinputbox.exec()]
-            if obj_name in obj_name_frequencies:
-                obj_name_frequencies[obj_name] += 1
+            if obj_name in class_frequencies:
+                class_frequencies[obj_name] += 1
             else:
-                obj_name_frequencies[obj_name] = 0
+                class_frequencies[obj_name] = 0
             x, y, w, h = r[0], r[1], r[2], r[3]
-            dir_name = current_side + '_' + obj_name + '_' + str(obj_name_frequencies[obj_name])
+            dir_name = current_side + '_' + obj_name + '_' + str(class_frequencies[obj_name])
             if correct_ROIs:
                 dir_name += '_cor'
             else:
@@ -310,26 +342,35 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
             coord = convert_coord(r, size_conf=config.WINDOW_RATIO)
             crop_image.reduce_and_save_image(origin_image=origin_path,
                                              crop_coords=coord,
-                                             saved_base_path=file_name + '_' + str(obj_name_frequencies[obj_name]))
+                                             saved_base_path=file_name + '_' + str(class_frequencies[obj_name]))
             img_path_list.append(temp_path)
-            selected_rois.append([x, y, w, h, correct_ROIs, current_side])
+            selected_rois_to_draw.append([x, y, w, h, correct_ROIs, current_side])
             if correct_ROIs:
                 file.write(
-                    "%s_%s_%s_%s_%s_%s_%s\n" % (x, y, w, h, current_side, obj_name, obj_name_frequencies[obj_name]))
+                    "%s_%s_%s_%s_%s_%s_%s\n" % (x, y, w, h, current_side, obj_name, class_frequencies[obj_name]))
                 file.flush()
                 print("##-COMPLETE SAVE FILE : " + obj_name)
         # Deleting last ROI
         elif button_pressed == 0x00800000:
             _size = len(img_path_list)
-            if _size > 0:
+            if correct_ROIs and img_path_list[-1].split('_')[-1] == 'incor':
+                print("Last saved incorrect ROI! Can't delete from correct capture mode!")
+            elif not correct_ROIs and img_path_list[-1].split('_')[-1] == 'cor':
+                print("Last saved correct ROI! Can't delete from incorrect capture mode!")
+            elif _size > 0:
                 print("##-IMAGE DELETE")
                 _path = img_path_list.pop()
                 print(_path)
+                obj_name = _path.split('_')[-3]
+                class_frequencies[obj_name] -= 1
                 config.delete_folder(pathlib.Path(_path))
                 # os.remove()
-                selected_rois.pop()
+                selected_rois_to_draw.pop()
                 img = copy.copy(first_img)  # before img
-                file_name_idx -= 1
+                if correct_ROIs:
+                    file.close()
+                    delete_last_line_from_roi_text_file(dir_path + '/' + 'locationInfo.txt')
+                    file = open(dir_path + '/' + 'locationInfo.txt', "a+")
             else:
                 print("##-IMAGE DELETE - FAILED(No File)")
         # Exiting
@@ -337,7 +378,31 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
             print("##-IMAGE PROCESS COMPLETE")
             cv2.destroyAllWindows()
             file.close()
-            return selected_rois
+            return selected_rois_to_draw
+
+
+def delete_last_line_from_roi_text_file(roi_file_path):
+    try:
+        with open(roi_file_path, 'r+') as file:
+            file.seek(0, os.SEEK_END)  # seek to end of file
+            file_end = file.tell()  # get number of bytes in file
+            i = 13  # A line has at least 13 characters
+            while True:
+                if file_end - i < 12:  # Only one line in ROI file
+                    file.truncate(0)
+                    file.close()
+                    break
+
+                file.seek(file_end - i, os.SEEK_SET)  # go to end - i bytes
+                c = file.read(1)
+                if c == '\n':  # End of last line found
+                    file.truncate(file_end - i + 1)
+                    file.close()
+                    break
+                i += 1
+    except FileNotFoundError:
+        print("ROI File not found, can't delete any lines.")
+
 
 # Used in test stage
 def test_image_capture(infos, O_path, C_path, sideNum):
@@ -360,6 +425,7 @@ def test_image_capture(infos, O_path, C_path, sideNum):
     return cv2.resize(img, (config.TESTWINDOW_SIZE['width'], config.TESTWINDOW_SIZE['height']))
 
 
+""" OBSOLETE?
 def checkclicked(checkbox, dirPath, imCrop, x1, x2, y1, y2, file, side):
     while True:
         if (checkbox.flag):
@@ -377,9 +443,11 @@ def checkclicked(checkbox, dirPath, imCrop, x1, x2, y1, y2, file, side):
     file.write("%s_%s_%s_%s_%s_%s\n" % (x1, y1, x2, y2, side, objName))
     file.flush()
     print("##-COMPLETE SAVE FILE : " + objName)
+"""
 
 
-def showROI(selectROI, current_side):
+def showROI(device_dir_path, current_side):
+    selected_rois_to_draw = get_rect_list_from_locationinfo(device_dir_path)
     sideNum = int(current_side[-1])
     cameraConfigObject = cameraConfig()
     if sideNum == 1 or sideNum == 4:
@@ -394,10 +462,10 @@ def showROI(selectROI, current_side):
     capture.set(4, int(config.TESTWINDOW_SIZE['height']))
     while True:
         ret, frame = capture.read()
-        if len(selected_rois) > 0:
-            for rect in (selected_rois):
+        if len(selected_rois_to_draw) > 0:
+            for rect in selected_rois_to_draw:
                 if rect[5] == current_side:
-                    if (rect[4]):
+                    if rect[4]:
                         cv2.rectangle(frame, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 1)
                     else:
                         cv2.rectangle(frame, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (255, 0, 0), 1)
@@ -406,11 +474,12 @@ def showROI(selectROI, current_side):
 
         cv2.imshow('Show ROI', frame)
         if cv2.waitKey(25) & 0xFF == ord('q'):
-            break;
+            break
 
     capture.release()
     cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
-    image_capture()
+    a = 1
+    # image_capture([], 'side1', )

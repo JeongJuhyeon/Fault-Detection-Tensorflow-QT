@@ -96,8 +96,24 @@ class Ui_Interface(object):
 
         print("##-RETURN  VALUE : " + inputbox.getValue())
 
+        """ # OBSOLETE?
+        # If we already went to the training stage before, and now we want to train a different device
+        try:
+            if self.training_interface.dirName != inputbox.getValue():
+                image_process.reset_global_roi_list()
+        except AttributeError as e:
+            # First device after starting the program
+            pass
+        """
+
         cameraxyinputbox = cameraxy_inputbox.cameraXYInputbox(inputbox.getValue())
-        cameraxyinputbox.searchDevice()
+
+        # In training stage, it's fine if it's a new model.
+        try:
+            cameraxyinputbox.searchDevice()
+        except FileNotFoundError:
+            pass
+
         cameraxyinputbox.exec()
         self.initialize_machine(inputBox_lineEdits=cameraxyinputbox.lineEdits)
 
@@ -121,7 +137,14 @@ class Ui_Interface(object):
         print("##RETURN  VALUE : " + inputbox.getValue())
 
         cameraxyinputbox = cameraxy_inputbox.cameraXYInputbox(inputbox.getValue())
-        cameraxyinputbox.searchDevice()
+
+        # In the test stage, we can't have a new model.
+        try:
+            cameraxyinputbox.searchDevice()
+        except FileNotFoundError:
+            print("Device named " + inputbox.getValue() + " not found.")
+            return
+
         self.initialize_machine(inputBox_lineEdits=cameraxyinputbox.lineEdits)
 
         self.test_Window = QtWidgets.QMainWindow()

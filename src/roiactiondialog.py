@@ -1,5 +1,7 @@
 import sys
+
 from PyQt5.QtWidgets import QMessageBox, QApplication
+
 
 class ROIActionDialog(QMessageBox):
 
@@ -17,7 +19,7 @@ class ROIActionDialog(QMessageBox):
 
         self.button(QMessageBox.Save).setText("Save (s)")
         self.button(QMessageBox.Save).setShortcut("s")
-        self.button(QMessageBox.Discard).setText("Delete (d)")
+        self.button(QMessageBox.Discard).setText("Delete last (d)")
         self.button(QMessageBox.Discard).setShortcut("d")
         self.button(QMessageBox.Close).setText("Quit (q)")
         self.button(QMessageBox.Close).setShortcut("q")

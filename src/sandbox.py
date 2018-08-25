@@ -5,6 +5,27 @@ from PyQt5.QtWidgets import QInputDialog, QApplication, QMainWindow
 
 selected_rois = []
 
+with open('../res\\filetest' + '/' + 'locationInfo.txt', 'r+') as file:
+    file.seek(0, os.SEEK_END)  # seek to end of file
+    file_end = file.tell()  # get number of bytes in file
+    i = 13
+    while True:
+        if file_end - i < 12:
+            print("There's only one line.")
+            file.truncate(0)
+            file.close()
+            break
+
+        file.seek(file_end - i, os.SEEK_SET)  # go to end - i bytes
+        c = file.read(1)
+        print(c)
+        if c == '\n':
+            print("End of line found.")
+            file.truncate(file_end - i + 1)
+            file.close()
+            break
+        i += 1
+    file.close()
 
 def f():
     return

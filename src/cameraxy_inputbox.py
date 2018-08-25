@@ -45,6 +45,7 @@ class cameraXYInputbox(QDialog):
     # Searches if device name was used before, if it was, populate self.lineEdits
     def searchDevice(self):
         self.newDevice = True
+        found = False
         for i, line in enumerate(self.lines):
             if i % 8 == 0:
                 if line[1:-1] == self.curDevName:
@@ -54,7 +55,11 @@ class cameraXYInputbox(QDialog):
                     for j in range(5):
                         self.lineEdits[j].setText(self.lines[i + j].split("=")[1])
                     self.textChanged = False
+                    found = True
                     break
+        if not found:
+            raise FileNotFoundError
+
 
     # If okay is clicked, write to file if necessary
     def onOkay(self):
