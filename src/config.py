@@ -24,7 +24,7 @@ SIDE_NAMES = ["left 1", "right 1", "center", "left 2", "right 2"]
 
 DEBUG_STAGE_ABSENT = False
 SELECT_CLOSEST_CORRECT_ROI_WHEN_SELECTING_INCORRECT_ROI = True
-ENABLE_MODIFY = False
+ENABLE_MODIFY = True
 
 '''
  cameraConfig Class Usage Example:
@@ -98,11 +98,17 @@ IMAGE_SIZE : 학습에 사용되는 이미지 가로 및 세로 픽셀수, 512 �
 ITERATION : 학습 시 반복 횟수, 30000 이상 권장
 NUM_CHANNEL : 추후 수정
 '''
+
+coord_deg_tups = [(0, 0, -20, -20), (20, 0, 0, -20),
+                  (0, 20, -20, 0), (20, 20, 0, 0)]
+brights_value = [-30, -15, 0, 20, 40]
+extend_boundary_degree = (5,6)
+
 # 30% of the data will automatically be used for validation
 VALIDATION_SIZE = 0.3
 DROPOUT = 0.3
 IMAGE_SIZE = 128
-ITERATION = 4000
+ITERATION = 3000
 BATCH_SIZE = 16
 NUM_CHANNEL = 3
 

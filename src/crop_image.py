@@ -1,5 +1,8 @@
 from PIL import Image
 
+import config
+
+
 def reduce_and_save_image(origin_image, crop_coords, saved_base_path):
     print(origin_image)
     image_obj = Image.open(origin_image)
@@ -14,7 +17,9 @@ def is_in_bound(size, coords):
         return True
 
 def save_new_images(image, coords, saved_location) :
-    for i in range(5,7):
+    st_boundary = config.extend_boundary_degree[0]
+    end_boundary = config.extend_boundary_degree[1]
+    for i in range(st_boundary, end_boundary):
         ext_width = round( (coords[2] - coords[0]) / i)
         ext_height = round( (coords[3] - coords[1]) / i)
         size = image.size

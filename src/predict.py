@@ -1,6 +1,8 @@
+import os
+
 import numpy as np
 import tensorflow as tf
-import os
+
 
 def create_graph(modelFullPath):
     with tf.gfile.FastGFile(modelFullPath, 'rb') as graphFile :
@@ -37,10 +39,10 @@ def run_inference_on_image(modelFullPath, labelsFullPath, imageDir, tensorName):
 
             top_k = predictions.argsort()[-2:][::-1]
             for node_id in top_k :
-                human_string = labels[node_id]
+                human_string = labels[node_id].decode('ascii')
                 score = predictions[node_id]
                 print('%s (score = %.5f)'% (human_string, score))
-                cur['results'].append( (human_string, score) )
+                cur['results'].append([human_string, score])
 
             rtValue.append(cur)
 
