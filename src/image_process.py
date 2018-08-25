@@ -101,10 +101,10 @@ def recapture_image(device_dir_path, current_side, sideNum):
 
     # Creating dialog objects used when saving
     savedialog = QMessageBox()
-    savedialog.setStandardButtons(QMessageBox.Save | QMessageBox.Discard | QMessageBox.Close)
+    savedialog.setStandardButtons(QMessageBox.Save | QMessageBox.Cancel | QMessageBox.Apply)
     savedialog.setDefaultButton(QMessageBox.Save)
-    savedialog.setText("Save recapture, Discard recapture, Quit?")
-    savedialog.button(QMessageBox.Close).setText("Quit")
+    savedialog.setText("Save recapture, Cancel, Quit?")
+    savedialog.button(QMessageBox.Apply).setText("Quit")
 
     correctdialog = correctincorrect_dialog.correctIncorrectDialog()
 
@@ -215,7 +215,7 @@ def recapture_image(device_dir_path, current_side, sideNum):
                                              crop_coords=coord,
                                              saved_base_path=file_path_including_name)
         # Else if close:
-        elif button_pressed == QMessageBox.Close:
+        elif button_pressed == QMessageBox.Apply:
             cv2.destroyAllWindows()
             file.close()
             return
@@ -322,7 +322,7 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
         # imCrop = img[int(r[1]):int(r[1] + r[3]), int(r[0]):int(r[0] + r[2])]
 
         # Giving a name to the ROI and saving it
-        if button_pressed == 0x00000800:
+        if button_pressed == QMessageBox.Save:
             obj_name = objectinputbox.itemNames[objectinputbox.exec()]
             if obj_name in class_frequencies:
                 class_frequencies[obj_name] += 1
@@ -351,7 +351,7 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
                 file.flush()
                 print("##-COMPLETE SAVE FILE : " + obj_name)
         # Deleting last ROI
-        elif button_pressed == 0x00800000:
+        elif button_pressed == QMessageBox.Discard:
             _size = len(img_path_list)
             if correct_ROIs and img_path_list[-1].split('_')[-1] == 'incor':
                 print("Last saved incorrect ROI! Can't delete from correct capture mode!")
@@ -374,7 +374,7 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
             else:
                 print("##-IMAGE DELETE - FAILED(No File)")
         # Exiting
-        elif button_pressed == 0x00200000:
+        elif button_pressed == QMessageBox.Apply:
             print("##-IMAGE PROCESS COMPLETE")
             cv2.destroyAllWindows()
             file.close()

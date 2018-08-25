@@ -472,7 +472,11 @@ class Ui_MainWindow(object):
             sideNo = int(result['imageName'][4])
             print('#Predict Result[{}]'.format(image))
             matchRates = result['results']
-            camera_position, origin_class, predicted_class, maxmimum_score, isCorrect = getResult(image, matchRates)
+            try:
+                camera_position, origin_class, predicted_class, maxmimum_score, isCorrect = getResult(image, matchRates)
+            except Exception as e:
+                print(e)
+
             dict_of_result_values.append({
                 'image name': image,
                 'camera position': camera_position,
