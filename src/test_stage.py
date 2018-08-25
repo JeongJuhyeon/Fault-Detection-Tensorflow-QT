@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import json
 import os
 
 # Form implementation generated from reading ui file '.\test_stage.ui'
@@ -363,7 +364,6 @@ class Ui_MainWindow(object):
         pCImagePath = os.path.join(predictPath, 'imagesCanny')
         config.makeDir(pCImagePath)
 
-
         print(self.ROI[side])
         self.img = image_process.test_image_capture(self.ROI[side], pOImagePath, pCImagePath, self.sideNum)
         cv2.imwrite(predictPath + '/' + side + '.jpg', self.img)
@@ -463,22 +463,40 @@ class Ui_MainWindow(object):
         results = predict.run_inference_on_image(modelFullPath, labelsFullPath, imageDir, tensorName)
 
         # results is a [{}, {}, ..] list of dictionaries
+
+        summary_of_result = {'total': {'CORRECT': 0, 'INCORRECT': 0}}
+        dict_of_result_values = []
+
         for result in results:
             image = result['imageName']
             sideNo = int(result['imageName'][4])
             print('#Predict Result[{}]'.format(image))
             matchRates = result['results']
-            isCorrect = getResult(image, matchRates)
+            camera_position, origin_class, predicted_class, maxmimum_score, isCorrect = getResult(image, matchRates)
+            dict_of_result_values.append({
+                'image name': image,
+                'camera position': camera_position,
+                'class': origin_class,
+                'predicted': predicted_class,
+                'maximum score': str(maxmimum_score),
+                'result': isCorrect
+            })
 
             print('result:', isCorrect, end='\n')
 
+            if camera_position not in summary_of_result:
+                summary_of_result[camera_position] = {'CORRECT': 0, 'INCORRECT': 0}
+            if origin_class not in summary_of_result['total']:
+                summary_of_result['total'][origin_class] = {'CORRECT': 0, 'INCORRECT': 0}
+
+            summary_of_result[camera_position][isCorrect] += 1
+            summary_of_result['total'][isCorrect] += 1
+            summary_of_result['total'][origin_class][isCorrect] += 1
             start, end, side = self.getArea(image)
 
             if isCorrect == 'CORRECT':
                 cv2.rectangle(self.smallImages[side], start, end, config.GREEN, 1)
                 self.correctList[sideNo - 1][0] += 1
-            elif isCorrect == 'CHECK':
-                cv2.rectangle(self.smallImages[side], start, end, config.BLUE, 1)
             else:
                 self.correctList[sideNo - 1][1] += 1
                 cv2.rectangle(self.smallImages[side], start, end, config.RED, 1)
@@ -492,9 +510,18 @@ class Ui_MainWindow(object):
         keys = self.smallImages.keys()
         result_path = os.path.join(self.absPath, self.deviceName, 'result')
         config.makeDir(result_path)
+
+        '''
         print('Sides:', keys)
         for key in keys:
             cv2.imwrite(result_path + '/' + key + '.jpg', self.smallImages[key])
+        '''
+
+        self.record_result_data_on_json(startTime=str(startTime),
+                                        endTime=str(endTime),
+                                        result_dict_values=dict_of_result_values,
+                                        summary_of_result=summary_of_result,
+                                        result_path=result_path)
 
         self.curDeviceNo += 1
         self.resultsDeviceNo = self.curDeviceNo - 1
@@ -503,6 +530,37 @@ class Ui_MainWindow(object):
 
         self.update_buttons_and_labels()
         self.showImagesResult()
+
+    def record_result_data_on_json(self, startTime, endTime, result_dict_values, summary_of_result, result_path):
+        # Create result file path
+        num_of_dirs = len(os.listdir(result_path)) + 1
+        created_date = datetime.datetime.now().date()
+        created_time = datetime.datetime.now().time()
+
+        dir_path_to_write_result = os.path.join(result_path, '{:0>4}_RESULT_{}_{:0>2}-{:0>2}-{:0>2}'.format(num_of_dirs,
+                                                                                                            created_date,
+                                                                                                            created_time.hour,
+                                                                                                            created_time.minute,
+                                                                                                            created_time.second))
+        config.makeDir(dir_path_to_write_result)
+
+        # Write result image files
+        keys = self.smallImages.keys()
+        for key in keys:
+            cv2.imwrite(dir_path_to_write_result + '/' + key + '.jpg', self.smallImages[key])
+
+        # Fill result data
+        data = {
+            'START': startTime,
+            'END': endTime,
+            'SUMMARY': summary_of_result,
+            'VALUES': result_dict_values
+        }
+        print('#FILE WRITE', data)
+        json_file_path_to_write_result = os.path.join(dir_path_to_write_result, 'RESULT.json')
+
+        with open(json_file_path_to_write_result, 'w') as outfile:
+            json.dump(data, outfile, indent=4, separators=(',', ': '))
 
     def showTextResult(self):
         print("##-SHOW TEXT RESULT BUTTON CLICKED")
@@ -526,13 +584,17 @@ class Ui_MainWindow(object):
 
 def getResult(imageName, result_arr):
     temp = imageName.split('_')
+    image_class = temp[1]
+
+    camera_position = config.SIDE_NAMES[int(temp[0][-1]) - 1]
     correct_class = temp[1] + '_' + 'cor'
 
     print(result_arr)
     result_sum_dict = {}
 
     for result_pair in result_arr:
-        temp = result_pair[0].decode('ascii').split(' ')
+        # temp = result_pair[0].decode('ascii').split(' ')
+        temp = result_pair[0].split(' ')
         result_class_name = temp[0] + '_' + temp[1]
         if result_class_name in result_sum_dict:
             result_sum_dict[result_class_name] += result_pair[1]
@@ -548,9 +610,9 @@ def getResult(imageName, result_arr):
 
     print(maximum_class, correct_class)
     if maximum_class == correct_class:
-        return 'CORRECT'
+        return camera_position, image_class, maximum_class, maximum_score, 'CORRECT'
     else:
-        return 'INCORRECT'
+        return camera_position, image_class, maximum_class, maximum_score, 'INCORRECT'
 
 if __name__ == "__main__":
     import sys
