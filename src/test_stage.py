@@ -526,8 +526,6 @@ class Ui_MainWindow(object):
         self.curDeviceNo += 1
         self.resultsDeviceNo = self.curDeviceNo - 1
 
-        # TODO: self.result_directories.append(newest directory)
-
         self.update_buttons_and_labels()
         self.showImagesResult()
 
@@ -543,6 +541,7 @@ class Ui_MainWindow(object):
                                                                                                             created_time.minute,
                                                                                                             created_time.second))
         config.makeDir(dir_path_to_write_result)
+        self.result_directories.append(dir_path_to_write_result.split('\\')[-1])
 
         # Write result image files
         keys = self.smallImages.keys()
@@ -564,11 +563,13 @@ class Ui_MainWindow(object):
 
     def showTextResult(self):
         print("##-SHOW TEXT RESULT BUTTON CLICKED")
-        self.resultTextWidget = result_text_widget.resultTextWidget(self.deviceName, self.correctList, self.startEndTimes)
+        self.resultTextWidget = result_text_widget.resultTextWidget(self.deviceName,
+                                                                    self.result_directories[self.resultsDeviceNo - 1])
 
     def showImagesResult(self):
         print("##-SHOW IMAGES RESULT BUTTON CLICKED")
-        self.resultImagesWidget = result_images_widget_grid.resultImagesWidget(self.deviceName)
+        self.resultImagesWidget = result_images_widget_grid.resultImagesWidget(self.deviceName, self.result_directories[
+            self.resultsDeviceNo - 1])
 
     def getArea(self, imageName):
         temp = imageName.split('.')[-2].split('_')
@@ -613,6 +614,7 @@ def getResult(imageName, result_arr):
         return camera_position, image_class, maximum_class, maximum_score, 'CORRECT'
     else:
         return camera_position, image_class, maximum_class, maximum_score, 'INCORRECT'
+
 
 if __name__ == "__main__":
     import sys

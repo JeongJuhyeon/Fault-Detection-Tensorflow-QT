@@ -1,9 +1,21 @@
+import json
 import os
 import sys
 
 from PyQt5.QtWidgets import QInputDialog, QApplication, QMainWindow
 
+import config
+
 selected_rois = []
+
+resultspath_relative = "../res" + "/" + 'fri' + "/result/" + "0001_RESULT_2018-08-24_11-54-10"
+with open(resultspath_relative + "/RESULT.json", 'r') as json_file:
+    loaded_json_dict = json.load(json_file)
+
+for key in loaded_json_dict["SUMMARY"]:
+    if key != "total":
+        print(config.SIDE_NAMES.index(key), loaded_json_dict["SUMMARY"][key]["CORRECT"],
+              loaded_json_dict["SUMMARY"][key]["INCORRECT"])
 
 with open('../res\\filetest' + '/' + 'locationInfo.txt', 'r+') as file:
     file.seek(0, os.SEEK_END)  # seek to end of file
@@ -13,7 +25,6 @@ with open('../res\\filetest' + '/' + 'locationInfo.txt', 'r+') as file:
         if file_end - i < 12:
             print("There's only one line.")
             file.truncate(0)
-            file.close()
             break
 
         file.seek(file_end - i, os.SEEK_SET)  # go to end - i bytes
@@ -22,10 +33,8 @@ with open('../res\\filetest' + '/' + 'locationInfo.txt', 'r+') as file:
         if c == '\n':
             print("End of line found.")
             file.truncate(file_end - i + 1)
-            file.close()
             break
         i += 1
-    file.close()
 
 def f():
     return

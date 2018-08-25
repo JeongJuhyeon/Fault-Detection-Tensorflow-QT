@@ -7,17 +7,18 @@ from PyQt5.QtWidgets import QLabel, QApplication, QPushButton, QWidget, QGridLay
 
 
 class resultImagesWidget(QWidget):
-    def __init__(self, curDevName):
+    def __init__(self, curDevName, resultsDirectory):
         super(resultImagesWidget, self).__init__()
         self.curDevName = curDevName
+        self.resultsDirectory = resultsDirectory
         self.initUI()
 
     def initUI(self):
         self.curImg = 1
-        self.resultspath_relative = "../res" + "/" + self.curDevName + "/result"
+        self.resultspath_relative = "../res" + "/" + self.curDevName + "/result/" + self.resultsDirectory
         self.resultspath_absolute = os.path.dirname(sys.argv[0])[0:-4] + self.resultspath_relative.split('.')[-1]
 
-        self.image_names = os.listdir(self.resultspath_relative)
+        self.image_names = os.listdir(self.resultspath_relative)[1:]
         self.nrOfImages = len(self.image_names)
 
         # "previous" button

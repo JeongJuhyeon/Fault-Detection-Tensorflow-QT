@@ -390,14 +390,12 @@ def delete_last_line_from_roi_text_file(roi_file_path):
             while True:
                 if file_end - i < 12:  # Only one line in ROI file
                     file.truncate(0)
-                    file.close()
                     break
 
                 file.seek(file_end - i, os.SEEK_SET)  # go to end - i bytes
                 c = file.read(1)
                 if c == '\n':  # End of last line found
                     file.truncate(file_end - i + 1)
-                    file.close()
                     break
                 i += 1
     except FileNotFoundError:

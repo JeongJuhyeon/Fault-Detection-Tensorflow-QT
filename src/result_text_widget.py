@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 
@@ -7,19 +8,24 @@ import config
 
 
 class resultTextWidget(QWidget):
-    def __init__(self, curDevname, correct, times):
+    def __init__(self, curDevname, resultsDirectory):
         super(resultTextWidget, self).__init__()
         self.curDevName = curDevname
-        self.correctList = correct
-        self.times = times
+        self.resultsDirectory = resultsDirectory
         self.initUI()
 
     def initUI(self):
-        self.resultspath_relative = "../res" + "/" + self.curDevName + "/result"
+        self.resultspath_relative = "../res" + "/" + self.curDevName + "/result/" + self.resultsDirectory
         self.resultspath_absolute = os.path.dirname(sys.argv[0])[0:-4] + self.resultspath_relative.split('.')[-1]
 
         self.image_names = os.listdir(self.resultspath_relative)
         self.nrOfImages = len(self.image_names)
+
+        with open(self.resultspath_relative + "/RESULT.json", 'r') as json_file:
+            self.json_dict = json.load(json_file)
+
+        self.times = [datetime.datetime.strptime(self.json_dict["START"], "%Y-%m-%d %H:%M:%S.%f"),
+                      datetime.datetime.strptime(self.json_dict["END"], "%Y-%m-%d %H:%M:%S.%f")]
 
         self.grid = QGridLayout()
         self.grid.setSpacing(10)
@@ -89,15 +95,16 @@ class resultTextWidget(QWidget):
         self.show()
 
     def set_correct_label_numbers(self):
-        self.totalCorrect = 0
-        self.totalIncorrect = 0
-        for i in range(5):
-            self.dynamic_labels[i][0].setText(str(self.correctList[i][0]))
-            self.totalCorrect += self.correctList[i][0]
-            self.dynamic_labels[i][1].setText(str(self.correctList[i][1]))
-            self.totalIncorrect += self.correctList[i][1]
+        self.totalCorrect = self.json_dict["SUMMARY"]["total"]["CORRECT"]
+        self.totalIncorrect = self.json_dict["SUMMARY"]["total"]["INCORRECT"]
         self.dynamic_labels[5][0].setText(str(self.totalCorrect))
         self.dynamic_labels[5][1].setText(str(self.totalIncorrect))
+        for key in self.json_dict["SUMMARY"]:
+            if key == "total":
+                continue
+            self.dynamic_labels[config.SIDE_NAMES.index(key)][0].setText(str(self.json_dict["SUMMARY"][key]["CORRECT"]))
+            self.dynamic_labels[config.SIDE_NAMES.index(key)][1].setText(
+                str(self.json_dict["SUMMARY"][key]["INCORRECT"]))
 
 
 if __name__ == '__main__':
