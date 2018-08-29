@@ -5,6 +5,8 @@ import sys
 from PyQt5.QtWidgets import QInputDialog, QApplication, QMainWindow
 
 import config
+import image_process
+
 
 selected_rois = []
 

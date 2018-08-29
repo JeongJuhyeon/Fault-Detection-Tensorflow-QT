@@ -15,7 +15,7 @@ class cameraXYInputbox(QDialog):
         self.newDevice = True
         self.foundDeviceLineNo = -1
         self.textChanged = False
-        self.configFilePath = "../devices.txt"
+        self.devices_file_path = "../devices.txt"
 
         # Add labels and self.lineEdits
         self.labels = config.SIDE_NAMES
@@ -35,12 +35,13 @@ class cameraXYInputbox(QDialog):
 
         # Open file
         try:
-            self.file = open(self.configFilePath, 'r')
+            file = open(self.devices_file_path, 'r')
         except IOError:
-            open(self.configFilePath, 'w')
-            self.file = open(self.configFilePath, 'r+')
+            open(self.devices_file_path, 'w')
+            file = open(self.devices_file_path, 'r+')
 
-        self.lines = self.file.read().splitlines()
+        self.lines = file.read().splitlines()
+        file.close()
 
     # Searches if device name was used before, if it was, populate self.lineEdits
     def searchDevice(self):
@@ -60,41 +61,39 @@ class cameraXYInputbox(QDialog):
         if not found:
             raise FileNotFoundError
 
-
     # If okay is clicked, write to file if necessary
     def onOkay(self):
         # New device
         if self.newDevice:
-            self.file.close()
-            self.file = open(self.configFilePath, 'a')
-            self.file.write("[" + self.curDevName + "]\n")
-            for i, pos in enumerate(self.labels):
-                self.file.write(pos.replace(" ", "") + "=" + self.lineEdits[i].text() + "\n")
-            self.file.write("\n\n")
-            self.file.close()
+            with open(self.devices_file_path, 'a') as file:
+                file.write("[" + self.curDevName + "]\n")
+                for i, pos in enumerate(self.labels):
+                    file.write(pos.replace(" ", "") + "=" + self.lineEdits[i].text() + "\n")
+                file.write("\n\n")
 
         # Already used device but values changed
         elif not self.newDevice and self.textChanged:
             for i in range(1, 6):
                 self.lines[i + self.foundDeviceLineNo] = self.labels[i - 1].replace(" ", "") + "=" + self.lineEdits[
                     i - 1].text()
-            self.file.close()
-            self.file = open("../devices.txt", 'w')
-            self.file.write('\n'.join(self.lines))
-            self.file.write('\n')
-            self.file.close()
+            with open(self.devices_file_path, 'w') as file:
+                file.write('\n'.join(self.lines))
+                file.write('\n')
 
         self.accept()
 
     def onChanged(self):
         self.textChanged = True
 
+    def __repr__(self):
+        return 'cameraXYInputbox(%r)' % self.curDevName
+
 
 if __name__ == '__main__':
     import random
 
     app = QApplication(sys.argv)
-    dialog = cameraXYInputbox()
+    dialog = cameraXYInputbox("Bob")
     dialog.curDevName = "Bob" + str(random)
     dialog.searchDevice()
     a = dialog.exec()

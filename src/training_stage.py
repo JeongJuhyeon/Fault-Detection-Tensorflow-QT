@@ -312,8 +312,7 @@ class Ui_MainWindow(object):
             elif self.sideNum == 1:
                 config.rotate_machine_with_degree(_x_value=1,
                                                   _y_value=int(self.cameraxyinputbox.lineEdits[2].text()))
-           # elif self.sideNum < 3: # UNTESTED
-           #     config.rotate_machine_with_degree(_x_value=1, _y_value=1)
+
         self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
 
 
@@ -332,10 +331,6 @@ class Ui_MainWindow(object):
             elif self.sideNum == 5:
                 config.rotate_machine_with_degree(_x_value=450000,
                                                   _y_value=int(self.cameraxyinputbox.lineEdits[2].text()))
-        #""" if self.sideNum > 3:
-        #    config.rotate_machine_with_degree(_x_value=450000, _y_value=500000)
-        #elif self.sideNum < 3: # UNTESTED
-        #    config.rotate_machine_with_degree(_x_value=1, _y_value=1)"""
 
         self.side_label.setText("Side " + str(self.sideNum) + ":\n" + config.SIDE_NAMES[self.sideNum - 1])
 

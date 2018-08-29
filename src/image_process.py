@@ -132,13 +132,13 @@ def recapture_image(device_dir_path, current_side, sideNum):
     # Creating frequency dict used for file names when making new images
     image_folder_names = os.listdir(side_dir_path)
     print(image_folder_names)
-    class_correct_incorrect_dict = {}
+    class_correct_incorrect_frequencies = {}
     for folder in image_folder_names:
         class_and_is_correct = folder.split('_')[1] + folder.split('_')[-1]
-        if class_and_is_correct in class_correct_incorrect_dict:
-            class_correct_incorrect_dict[class_and_is_correct] += 1
+        if class_and_is_correct in class_correct_incorrect_frequencies:
+            class_correct_incorrect_frequencies[class_and_is_correct] += 1
         else:
-            class_correct_incorrect_dict[class_and_is_correct] = 1
+            class_correct_incorrect_frequencies[class_and_is_correct] = 1
 
     print("##-RECAPTURE SETUP COMPLETE")
 
@@ -171,8 +171,6 @@ def recapture_image(device_dir_path, current_side, sideNum):
                 closest_rect = rect
                 closest_idx = i
 
-        selected_roi = list(closest_rect)
-
         # Asking what the user wants to do
         button_pressed = savedialog.exec()
 
@@ -181,36 +179,23 @@ def recapture_image(device_dir_path, current_side, sideNum):
             class_name = locationInfolines[closest_idx].split("_")[-2]
             side_and_class_prefix = current_side + "_" + class_name
 
-            # Create file names, paths based on correct/incorrect
-            isIncorrect = correctdialog.exec()
-            # Correct
-            if isIncorrect == 0:
-                try:
-                    unique_object_name = side_and_class_prefix + '_' + str(
-                        class_correct_incorrect_dict[class_name + 'cor'])
-                except KeyError:
-                    unique_object_name = side_and_class_prefix + '_' + '0'
-                    class_correct_incorrect_dict[class_name + 'cor'] = 0
-                class_correct_incorrect_dict[class_name + 'cor'] += 1
-                file_dir = side_dir_path + '/' + unique_object_name + '_cor'
-                file_path_including_name = file_dir + '/' + unique_object_name
-            # Incorrect
-            else:
-                try:
-                    unique_object_name = side_and_class_prefix + '_' + str(
-                        class_correct_incorrect_dict[class_name + 'incor'])
-                except KeyError:
-                    unique_object_name = side_and_class_prefix + '_' + '0'
-                    class_correct_incorrect_dict[class_name + 'incor'] = 0
-                class_correct_incorrect_dict[class_name + 'incor'] += 1
-                file_dir = side_dir_path + '/' + unique_object_name + '_incor'
-                file_path_including_name = file_dir + '/' + unique_object_name
+            # Create file names, paths, dictionary of existing images
+            is_incorrect = correctdialog.exec()
 
-            x, y, w, h = closest_rect[0], closest_rect[1], closest_rect[2], closest_rect[3]
+            correctness_string = 'incor' if is_incorrect else 'cor'
+            try:
+                unique_object_name = side_and_class_prefix + '_' + str(
+                    class_correct_incorrect_frequencies[class_name + correctness_string])
+            except KeyError:
+                unique_object_name = side_and_class_prefix + '_' + '0'
+                class_correct_incorrect_frequencies[class_name + correctness_string] = 0
+            class_correct_incorrect_frequencies[class_name + correctness_string] += 1
+            file_directory = side_dir_path + '/' + unique_object_name + '_' + correctness_string
+            file_path_including_name = file_directory + '/' + unique_object_name
 
             # Create directory and image
             coord = convert_coord(closest_rect, size_conf=config.WINDOW_RATIO)
-            config.makeDir(file_dir)
+            config.makeDir(file_directory)
             crop_image.reduce_and_save_image(origin_image=origin_path,
                                              crop_coords=coord,
                                              saved_base_path=file_path_including_name)
@@ -423,27 +408,6 @@ def test_image_capture(infos, O_path, C_path, sideNum):
     return cv2.resize(img, (config.TESTWINDOW_SIZE['width'], config.TESTWINDOW_SIZE['height']))
 
 
-""" OBSOLETE?
-def checkclicked(checkbox, dirPath, imCrop, x1, x2, y1, y2, file, side):
-    while True:
-        if (checkbox.flag):
-            break
-    print(checkbox.getValue())
-    objName = checkbox.getValue()
-    filename = objName + ".jpg"
-    temppath = dirPath + '/' + objName
-    if not os.path.isdir(temppath):
-        print('##-DIRECTORY CREATE : ' + temppath)
-        os.mkdir(temppath)
-    cv2.imwrite(temppath + '/' + filename, imCrop)
-    # img_path_list.append(temppath+'/'+filename)
-    # selected_img.append([x1,y1,x2,y2])
-    file.write("%s_%s_%s_%s_%s_%s\n" % (x1, y1, x2, y2, side, objName))
-    file.flush()
-    print("##-COMPLETE SAVE FILE : " + objName)
-"""
-
-
 def showROI(device_dir_path, current_side):
     selected_rois_to_draw = get_rect_list_from_locationinfo(device_dir_path)
     sideNum = int(current_side[-1])
@@ -479,5 +443,5 @@ def showROI(device_dir_path, current_side):
 
 
 if __name__ == '__main__':
-    a = 1
+    g = 1
     # image_capture([], 'side1', )

@@ -76,7 +76,6 @@ class Ui_Interface(object):
         self.button_camera_configuration.clicked.connect(self.select_camera_numbers)
         self.verticalLayout.addWidget(self.button_camera_configuration)
 
-
         self.interface.setCentralWidget(self.centralwidget)
         self.retranslateUi()
 
@@ -161,6 +160,7 @@ class Ui_Interface(object):
         cameradialog = camerasetting_dialog.CameraSettingDialog()
         camera_order = []
         cameraConfigObject = config.cameraConfig()
+        # Show cameras in order camera 0, camera 1, camera 2
         for old_number in range(3):
             img = image_process.get_image_from_camera(old_number + 1, size_conf=config.WINDOW_SIZE)
             cv2.imshow('Camera', img)
@@ -172,7 +172,7 @@ class Ui_Interface(object):
             elif button_pressed == 0x00200000:
                 camera_order.append('RIGHT')
             cv2.destroyAllWindows()
-
+        # Set 0, 1, 2 to the received order e.g. [Right, Left, Center]
         for i, camera in enumerate(camera_order):
             cameraConfigObject.set_camera_number(camera, i)
 

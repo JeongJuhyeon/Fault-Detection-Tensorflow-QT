@@ -107,6 +107,9 @@ class resultTextWidget(QWidget):
             self.dynamic_labels[config.SIDE_NAMES.index(key)][1].setText(
                 str(self.json_dict["SUMMARY"][key]["INCORRECT"]))
 
+    def __repr__(self):
+        return 'resultTextWidget(%r, %r)' % (self.curDevName, self.resultsDirectory)
+
 
 if __name__ == '__main__':
     import datetime

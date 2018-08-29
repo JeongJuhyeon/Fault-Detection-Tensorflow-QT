@@ -103,6 +103,9 @@ class resultImagesWidget(QWidget):
             self.button_next.setDisabled(True)
         self.imageNoLabel.setText(str(self.curImg) + "/" + str(self.nrOfImages))
 
+    def __repr__(self):
+        return 'resultTextWidget(%r, %r)' % (self.curDevName, self.resultsDirectory)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

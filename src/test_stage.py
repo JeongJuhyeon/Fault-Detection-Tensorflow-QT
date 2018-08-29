@@ -500,9 +500,7 @@ class Ui_MainWindow(object):
 
             if isCorrect == 'CORRECT':
                 cv2.rectangle(self.smallImages[side], start, end, config.GREEN, 1)
-                self.correctList[sideNo - 1][0] += 1
             else:
-                self.correctList[sideNo - 1][1] += 1
                 cv2.rectangle(self.smallImages[side], start, end, config.RED, 1)
 
         print("Test finished")
