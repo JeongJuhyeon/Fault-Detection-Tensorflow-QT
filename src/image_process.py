@@ -121,13 +121,8 @@ def recapture_image(device_dir_path, current_side, sideNum):
     # Original picture is later cropped according to ROI
     original_image = get_image_from_camera(sideNum, size_conf=config.WINDOW_SIZE)
     cv2.imwrite(device_dir_path + "/Origin.jpg", original_image)
-    origin_path = device_dir_path + "/Origin.jpg"
-
     # Image used to select ROI's on
     img = get_image_from_camera(sideNum, size_conf=config.TESTWINDOW_SIZE)
-
-    # Apparently needed
-    fromCenter = False
 
     # Creating frequency dict used for file names when making new images
     image_folder_names = os.listdir(side_dir_path)
@@ -145,15 +140,10 @@ def recapture_image(device_dir_path, current_side, sideNum):
     while True:
         # Drawing ROI's
         if len(selected_rois_to_draw) > 0:
-            for rect in selected_rois_to_draw:
-                if rect[5] == current_side:
-                    if rect[4]:
-                        cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 1)
-                    else:
-                        cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 0, 255), 1)
+            draw_rois(current_side, img, selected_rois_to_draw)
 
         # Get ROI
-        selected_roi = cv2.selectROI("Select ROI", img, fromCenter)
+        selected_roi = cv2.selectROI("Select ROI", img, False)
 
         if selected_roi[2] == 0:
             savedialog.button(QMessageBox.Save).setDisabled(True)
@@ -196,7 +186,7 @@ def recapture_image(device_dir_path, current_side, sideNum):
             # Create directory and image
             coord = convert_coord(closest_rect, size_conf=config.WINDOW_RATIO)
             config.makeDir(file_directory)
-            crop_image.reduce_and_save_image(origin_image=origin_path,
+            crop_image.reduce_and_save_image(origin_image=(device_dir_path + "/Origin.jpg"),
                                              crop_coords=coord,
                                              saved_base_path=file_path_including_name)
         # Else if close:
@@ -204,6 +194,15 @@ def recapture_image(device_dir_path, current_side, sideNum):
             cv2.destroyAllWindows()
             file.close()
             return
+
+
+def draw_rois(current_side, img, selected_rois_to_draw):
+    for rect in selected_rois_to_draw:
+        if rect[5] == current_side:
+            if rect[4]:
+                cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 1)
+            else:
+                cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 0, 255), 1)
 
 
 # Used in training stage
@@ -236,17 +235,12 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
     # Original picture is later cropped according to ROI
     original_image = get_image_from_camera(sideNum, size_conf=config.WINDOW_SIZE)
     cv2.imwrite(dir_path + "/Origin.jpg", original_image)
-    origin_path = dir_path + "/Origin.jpg"
-
     # Image used to select ROI's on
     img = get_image_from_camera(sideNum, size_conf=config.TESTWINDOW_SIZE)
-    fromCenter = False
-    dirPath = dir_path + '/' + current_side
-
     # Creating frequency dict used for file names when making new images
     class_frequencies = {}
 
-    image_folder_names = os.listdir(dirPath)
+    image_folder_names = os.listdir(dir_path + '/' + current_side)
     print(image_folder_names)
     for folder in image_folder_names:
         class_name = folder.split('_')[1]
@@ -260,7 +254,7 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
     first_img = copy.copy(img)
 
     """
-    selected_img is a list of rectangles
+    selected_rois_to_draw is a list of rectangles
     r is the currently selected region
 
     Logic:
@@ -273,15 +267,10 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
     while True:
         # Drawing ROI's
         if len(selected_rois_to_draw) > 0:
-            for rect in selected_rois_to_draw:
-                if rect[5] == current_side:
-                    if rect[4]:
-                        cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 1)
-                    else:
-                        cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (255, 0, 0), 1)
+            draw_rois(current_side, img, selected_rois_to_draw)
 
         # Get ROI
-        r = cv2.selectROI("Select ROI", img, fromCenter)
+        r = cv2.selectROI("Select ROI", img, False)
 
         # If incorrect, set ROI to closest correct ROI
         if not correct_ROIs and config.SELECT_CLOSEST_CORRECT_ROI_WHEN_SELECTING_INCORRECT_ROI:
@@ -319,13 +308,13 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
                 dir_name += '_cor'
             else:
                 dir_name += '_incor'
-            temp_path = dirPath + '/' + dir_name
+            temp_path = dir_path + '/' + current_side + '/' + dir_name
             file_name = temp_path + '/' + current_side + '_' + obj_name
 
             config.makeDir(temp_path)
             # cv2.imwrite(temp_path + '/' + filename, imCrop)
             coord = convert_coord(r, size_conf=config.WINDOW_RATIO)
-            crop_image.reduce_and_save_image(origin_image=origin_path,
+            crop_image.reduce_and_save_image(origin_image=(dir_path + "/Origin.jpg"),
                                              crop_coords=coord,
                                              saved_base_path=file_name + '_' + str(class_frequencies[obj_name]))
             img_path_list.append(temp_path)

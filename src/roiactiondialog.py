@@ -28,7 +28,7 @@ class ROIActionDialog(QMessageBox):
 
         self.hide()
 
-    #def keyPressEvent(self, e):
+    # def keyPressEvent(self, e):
     #    if e.key() == q:
 
 

@@ -24,7 +24,6 @@ class Ui_MainWindow(object):
     def __init__(self, _mainUI=None):
         self.absPath = '../res'
         self.dirName = 'device'
-        self.side = 'side'
         self.sideNum = 1
         self.cameraNum = 0
         self.mainUI = _mainUI
@@ -233,7 +232,7 @@ class Ui_MainWindow(object):
     def do_ShowROI(self):
         print("##-SHOW ROI")
         device_dir_path = os.path.join(self.absPath, self.dirName)
-        image_process.showROI(device_dir_path, current_side=self.side + str(self.sideNum))
+        image_process.showROI(device_dir_path, current_side='side' + str(self.sideNum))
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
@@ -269,7 +268,7 @@ class Ui_MainWindow(object):
         config.makeDir(root_path)
         device_path = os.path.join(root_path, self.dirName)
         config.makeDir(device_path)
-        sideStr = self.side + str(self.sideNum)
+        sideStr = 'side' + str(self.sideNum)
         side_path = os.path.join(device_path, sideStr)
         config.makeDir(side_path)
 
@@ -281,7 +280,7 @@ class Ui_MainWindow(object):
     def do_IncorrectCapture(self):
         print("##-INCORRECT CAPTURE START")
         device_path = os.path.join(self.absPath, self.dirName)
-        sideStr = self.side + str(self.sideNum)
+        sideStr = 'side' + str(self.sideNum)
         captured_image = image_process.image_capture(dir_path=device_path,
                                                      current_side=sideStr,
                                                      sideNum=self.sideNum,
@@ -291,7 +290,7 @@ class Ui_MainWindow(object):
     def recapture_image(self):
         print("##-RECAPTURE START")
         device_path = os.path.join(self.absPath, self.dirName)
-        sideStr = self.side + str(self.sideNum)
+        sideStr = 'side' + str(self.sideNum)
         captured_image = image_process.recapture_image(device_dir_path=device_path, current_side=sideStr,
                                                        sideNum=self.sideNum)
         # self.selectImg.extend(captured_image)
@@ -302,7 +301,7 @@ class Ui_MainWindow(object):
 
         self.cameraNum = (self.cameraNum + 1) % config.CAMERA_NUMBER  # CAMERA CHANGE
         self.sideNum = (self.sideNum) % 5 + 1
-        side = self.side + str(self.sideNum)
+        side = 'side' + str(self.sideNum)
         self.setState(side)
 
         print("##-CLIKED THE NEXT BUTTON :" + side)
@@ -322,7 +321,7 @@ class Ui_MainWindow(object):
 
         self.cameraNum = (self.cameraNum - 1) % config.CAMERA_NUMBER  # CAMERA CHANGE
         self.sideNum = (self.sideNum - 2) % 5 + 1
-        side = self.side + str(self.sideNum)
+        side = 'side' + str(self.sideNum)
         self.setState(side)
         print("##-CLIKED THE NEXT BUTTON :" + side)
         if not config.DEBUG_STAGE_ABSENT:

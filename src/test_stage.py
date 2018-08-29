@@ -32,7 +32,6 @@ class Ui_MainWindow(object):
         self.absPath = '../res'
         self.deviceName = 'device'
         self.curDeviceNo = 1
-        self.sideName = 'side'
         self.sideNum = 1
         self.sideBox = inputBox.App("Enter the Side name")
         self.deviceBox = inputBox.App("Enter the Device Name")
@@ -351,7 +350,7 @@ class Ui_MainWindow(object):
 
         self.ROI = roi_unit.readROI(os.path.join(self.absPath, self.deviceName, 'locationInfo.txt'),
                                     config.WINDOW_RATIO)
-        side = self.sideName + str(self.sideNum)
+        side = 'side' + str(self.sideNum)
         if side not in self.ROI:
             print("No screws on " + side)
             return
