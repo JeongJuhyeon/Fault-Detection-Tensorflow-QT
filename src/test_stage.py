@@ -95,7 +95,7 @@ class Ui_MainWindow(object):
         # Device name label
         self.label_device_name = QtWidgets.QLabel(self.centralwidget)
         self.label_device_name.setText(self.deviceName)
-        self.label_device_name.setGeometry(QtCore.QRect(200, 20, 160, 41))
+        self.label_device_name.setGeometry(QtCore.QRect(230, 20, round(len(self.deviceName) * 9.3 + 20), 41))
         self.label_device_name.setAlignment(QtCore.Qt.AlignCenter)
         self.label_device_name.setFont(QFont('D2Coding', 13, QFont.DemiBold))
         self.label_device_name.setStyleSheet("QLabel { border: 2px solid black } ")
@@ -118,6 +118,13 @@ class Ui_MainWindow(object):
         self.button_device_number.setFont(font)
         """
 
+        # "검사할 시료" label
+        self.label_device_to_test = QtWidgets.QLabel("검사할 시료:", self.frame)
+        self.label_device_to_test.setGeometry(10, 15, 321, 60)
+        self.label_device_to_test.setFont(QFont('Malgun Gothic', 16, QFont.Medium))
+        self.label_device_to_test.setStyleSheet(css)
+
+
         # Current device number label
         self.label_device_number = QtWidgets.QLabel(self.frame)
         self.label_device_number.setGeometry(10, 20, 321, 50)
@@ -135,27 +142,26 @@ class Ui_MainWindow(object):
         self.button_capture.clicked.connect(self.img_capture)
 
         # "Camera autofocus" Check Box
-        """
         self.autofocus_checkbox = QtWidgets.QCheckBox("Autofocus", self.frame)
-        self.autofocus_checkbox.setGeometry(QtCore.QRect(25, 70, 165, 100))
+        self.autofocus_checkbox.setGeometry(QtCore.QRect(20, 125, 165, 100))
         self.autofocus_checkbox.setObjectName("autofocus_checkbox")
         self.autofocus_checkbox.setStyleSheet(css)
         self.autofocus_checkbox.setFont(font2)
         self.autofocus_checkbox.setChecked(config.AUTO_FOCUS)
         self.autofocus_checkbox.stateChanged.connect(config.change_autofocus)
-        """
+
 
         # "Prev" Button
         self.button_capture_prev = QtWidgets.QPushButton(self.frame)
         self.button_capture_prev.setText("<--")
-        self.button_capture_prev.setGeometry(QtCore.QRect(10, 150, 80, 50))
+        self.button_capture_prev.setGeometry(QtCore.QRect(130, 150, 50, 50))
         self.button_capture_prev.setStyleSheet(css)
         self.button_capture_prev.setFont(QFont('D2Coding', 14, QFont.Bold))
         self.button_capture_prev.clicked.connect(self.do_PrevSide)
 
         # "Next" Button
         self.button_capture_next = QtWidgets.QPushButton(self.frame)
-        self.button_capture_next.setGeometry(QtCore.QRect(255, 150, 80, 50))
+        self.button_capture_next.setGeometry(QtCore.QRect(290, 150, 50, 50))
         self.button_capture_next.setObjectName("button_capture_next")
         self.button_capture_next.setStyleSheet(css)
         self.button_capture_next.setFont(QFont('D2Coding', 14, QFont.Bold))
@@ -163,7 +169,7 @@ class Ui_MainWindow(object):
 
         # Side Label
         self.side_label = QtWidgets.QLabel(self.frame)
-        self.side_label.setGeometry(QtCore.QRect(120, 140, 110, 70))
+        self.side_label.setGeometry(QtCore.QRect(190, 140, 90, 70))
         self.side_label.setText("Side 1:\n" + config.SIDE_NAMES[0])
         self.side_label.setFont(QFont('D2Coding', 13, QFont.DemiBold))
         self.side_label.setStyleSheet("QLabel { border: 2px solid blue } ")
@@ -203,9 +209,9 @@ class Ui_MainWindow(object):
 
         # "Show Result" Label
         # self.label_show_results = QtWidgets.QLabel("Show Results", self.verticalLayoutWidget)
-        self.label_show_results = QtWidgets.QLabel("Show Result", self.frame)
+        self.label_show_results = QtWidgets.QLabel("이전 결과:", self.frame)
         self.label_show_results.setObjectName("label_show_result")
-        self.label_show_results.setFont(QFont('D2Coding', 14))
+        self.label_show_results.setFont(QFont('Malgun Gothic', 14))
         self.label_show_results.setStyleSheet(css)
         # self.verticalLayout.addWidget(self.label_show_results)
 
@@ -623,6 +629,6 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
-    ui.setupUi(MainWindow, "restest")
+    ui.setupUi(MainWindow, "escrow")
     MainWindow.show()
     sys.exit(app.exec_())

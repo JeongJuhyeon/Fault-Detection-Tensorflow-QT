@@ -130,14 +130,14 @@ class Ui_MainWindow(object):
         # Prev Button
         self.button_capture_prev = QtWidgets.QPushButton(self.frame)
         self.button_capture_prev.setText("<--")
-        self.button_capture_prev.setGeometry(QtCore.QRect(140, 115, 50, 50))
+        self.button_capture_prev.setGeometry(QtCore.QRect(130, 115, 50, 50))
         self.button_capture_prev.setStyleSheet(css)
         self.button_capture_prev.setFont(font2)
         self.button_capture_prev.clicked.connect(self.do_PrevSide)
 
         # Next Button
         self.button_capture_next = QtWidgets.QPushButton(self.frame)
-        self.button_capture_next.setGeometry(QtCore.QRect(275, 115, 50, 50))
+        self.button_capture_next.setGeometry(QtCore.QRect(290, 115, 50, 50))
         self.button_capture_next.setObjectName("button_capture_next")
         self.button_capture_next.setStyleSheet(css)
         self.button_capture_next.setFont(font2)
@@ -145,10 +145,11 @@ class Ui_MainWindow(object):
 
         # Side Label
         self.side_label = QtWidgets.QLabel(self.frame)
-        self.side_label.setGeometry(QtCore.QRect(200, 105, 67, 70))
+        self.side_label.setGeometry(QtCore.QRect(190, 105, 90, 70))
         self.side_label.setText("Side 1:\n" + config.SIDE_NAMES[0])
         self.side_label.setFont(QFont('D2Coding', 13, QFont.DemiBold))
         self.side_label.setStyleSheet("QLabel { border: 2px solid blue } ")
+        self.side_label.setAlignment(QtCore.Qt.AlignCenter)
 
 
         # Show ROI button

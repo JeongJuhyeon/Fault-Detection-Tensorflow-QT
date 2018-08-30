@@ -6,6 +6,7 @@ import pathlib
 
 import cv2
 from PyQt5.QtWidgets import QMessageBox
+from collections import namedtuple
 
 import config
 import correctincorrect_dialog
@@ -272,6 +273,18 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
         # Get ROI
         r = cv2.selectROI("Select ROI", img, False)
 
+        # If correct, if "fixed ROI size" is turned on, set to the given size
+        if correct_ROIs and config.ROI_SIZE_FIXED:
+            x, y, w, h = r[:4]
+            Coords = namedtuple('Coords', 'x y')
+            mid_point = Coords(round(x + w / 2), round(y + h / 2))
+            x = max(mid_point.x - round(config.ROI_FIXED_WIDTH / 2), 0)
+            y = max(mid_point.y - round(config.ROI_FIXED_HEIGHT / 2), 0)
+            w = min(config.ROI_FIXED_WIDTH, config.WINDOW_SIZE['width'] - x)
+            h = min(config.ROI_FIXED_HEIGHT, config.WINDOW_SIZE['height'] - y)
+            r = list(r)
+            r[:4] = (x, y, w, h)
+
         # If incorrect, set ROI to closest correct ROI
         if not correct_ROIs and config.SELECT_CLOSEST_CORRECT_ROI_WHEN_SELECTING_INCORRECT_ROI:
             closest_dist = 99999999
@@ -302,7 +315,7 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
                 class_frequencies[obj_name] += 1
             else:
                 class_frequencies[obj_name] = 0
-            x, y, w, h = r[0], r[1], r[2], r[3]
+            x, y, w, h = r[:4]
             dir_name = current_side + '_' + obj_name + '_' + str(class_frequencies[obj_name])
             if correct_ROIs:
                 dir_name += '_cor'

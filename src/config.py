@@ -4,7 +4,7 @@ from subprocess import call
 '''
 <카메라 설정>
 CAMERA_NUMBER : 현재 연결된 카메라 개수
-AUTO_FOCUS : 카메라가 자동초점 모드로 연결되어 있다면 True, 수동초점 모드로 연결되어 있다면 False
+AUTO_FOCUS : 자동초점 기본값. 카메라가 자동초점 모드로 연결되어 있다면 True, 수동초점 모드로 연결되어 있다면 False
 TESTWINDOW_SIZE : 영역 선택 화면의 크기 WIDTH, HEIGHT는 가로 및 세로 픽셀 수(WINDOW_SIZE의 절반 혹은 1/4 권장)
 WINDOW_SIZE : 실제 카메라 캡쳐화면의 크기
 * IPEVO ZIGGI 같은 경우는 (3264 X 2448) 이 최대 해상도 입니다.
@@ -14,15 +14,27 @@ CAMERA_NUMBER = 3
 AUTO_FOCUS = False
 TESTWINDOW_SIZE = {'width': 816, 'height': 612}
 WINDOW_SIZE = {'width': 3264, 'height': 2448}
-# TESTWINDOW_SIZE = {'width': 700, 'height': 700}
-# WINDOW_SIZE = {'width': 700, 'height': 700}
+# TESTWINDOW_SIZE = {'width': 800, 'height': 600}
+# WINDOW_SIZE = {'width': 800, 'height': 600}
 WINDOW_RATIO = {
     'width_ratio': WINDOW_SIZE['width'] / TESTWINDOW_SIZE['width'],
     'height_ratio': WINDOW_SIZE['height'] / TESTWINDOW_SIZE['height']
 }
 SIDE_NAMES = ["left 1", "right 1", "center", "left 2", "right 2"]
 
+"""
+DEBUG_STAGE_ABSENT: 스테이지 쓰려면 False, 스테이지 없다면 True
+ROI_SIZE_FIXED: 모든 ROI를 똑같은 크기로 잡으려면 True, 아니면 False
+ROI_FIXED_WIDTH: ROI_SIZE_FIXED True면, 각 ROI의 넓이
+ROI_FIXED_HEIGHT: ROI_SIZE_FIXED True면, 각 ROI의 높이
+"""
+
 DEBUG_STAGE_ABSENT = False
+ROI_SIZE_FIXED = True
+ROI_FIXED_WIDTH = 40
+ROI_FIXED_HEIGHT = 40
+
+
 SELECT_CLOSEST_CORRECT_ROI_WHEN_SELECTING_INCORRECT_ROI = True
 ENABLE_MODIFY = True
 
@@ -48,8 +60,8 @@ class cameraConfig(object):
     class __cameraConfig:
         def __init__(self):
             self.CENTER_CAM=0
-            self.LEFT_CAM=1
-            self.RIGHT_CAM=2
+            self.LEFT_CAM = 0
+            self.RIGHT_CAM = 0
         def set_camera_number(self, SIDE, camera_number):
             if SIDE == 'LEFT':
                 self.LEFT_CAM=camera_number
