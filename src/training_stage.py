@@ -254,7 +254,7 @@ class Ui_MainWindow(object):
         self.currentState.setText(QtCore.QCoreApplication.translate("MainWindow", self.dirName + " " + _side))
 
     def do_AllDelete(self):
-        delete_path = self.absPath + self.dirName
+        delete_path = os.path.join(self.absPath, self.dirName)
         config.delete_folder(pathlib.Path(delete_path))
         print("##-DELETE ALL")
 

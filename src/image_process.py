@@ -437,8 +437,15 @@ def showROI(device_dir_path, current_side):
             return
 
         cv2.imshow('Show ROI', frame)
-        if cv2.waitKey(25) & 0xFF == ord('q'):
+
+        try:
+            k = chr(cv2.waitKey(25))
             break
+        except:
+            pass
+
+        #if (cv2.waitKey(25) & 0xFF) == ord('q'):
+        #    break
 
     capture.release()
     cv2.destroyAllWindows()

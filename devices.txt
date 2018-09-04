@@ -254,3 +254,19 @@ left2=9
 right2=9
 
 
+[rrlt]
+left1=9
+right1=9
+center=9
+left2=9
+right2=9
+
+
+[lasttry]
+left1=9
+right1=9
+center=9
+left2=9
+right2=9
+
+
