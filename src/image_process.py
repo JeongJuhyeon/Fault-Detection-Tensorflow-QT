@@ -146,7 +146,7 @@ def recapture_image(device_dir_path, current_side, sideNum):
         # Get ROI
         selected_roi = cv2.selectROI("Select ROI", img, False)
 
-        if selected_roi[2] == 0:
+        if sum(selected_roi) == 0:
             savedialog.button(QMessageBox.Save).setDisabled(True)
         else:
             savedialog.button(QMessageBox.Save).setEnabled(True)
@@ -155,12 +155,23 @@ def recapture_image(device_dir_path, current_side, sideNum):
         # Set ROI to closest existing ROI
         closest_dist = 99999999
         closest_idx = -1
-        for i, rect in enumerate(correct_locs):
-            dist = abs(rect[0] - selected_roi[0]) + abs(rect[1] - selected_roi[1])
-            if dist < closest_dist:
-                closest_dist = dist
-                closest_rect = rect
-                closest_idx = i
+        # If user has dragged
+        if selected_roi[2] >= 5 and selected_roi[3] >= 5:
+            for i, rect in enumerate(correct_locs):
+                dist = abs(rect[0] - selected_roi[0]) + abs(rect[1] - selected_roi[1])
+                if dist < closest_dist:
+                    closest_dist = dist
+                    closest_rect = rect
+                    closest_idx = i
+        # If user has clicked:
+        else:
+            for i, uncentered_rect in enumerate(correct_locs):
+                centered_rect = list(calculate_rectangle_center(uncentered_rect)) + uncentered_rect[2:]
+                dist = abs(centered_rect[0] - selected_roi[0]) + abs(centered_rect[1] - selected_roi[1])
+                if dist < closest_dist:
+                    closest_dist = dist
+                    closest_rect = uncentered_rect
+                    closest_idx = i
 
         # Asking what the user wants to do
         button_pressed = savedialog.exec()
@@ -204,6 +215,11 @@ def draw_rois(current_side, img, selected_rois_to_draw):
                 cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 255, 0), 1)
             else:
                 cv2.rectangle(img, (rect[0], rect[1]), (rect[0] + rect[2], rect[1] + rect[3]), (0, 0, 255), 1)
+
+# Returns tuple containing x, y of center point of rectangle
+# When grabbing incorrect ROI's, on one-click, we want to choose the closest center
+def calculate_rectangle_center(rect):
+    return (rect[0]+rect[2]//2, rect[1]+rect[3]//2)
 
 
 # Used in training stage
@@ -273,6 +289,12 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
         # Get ROI
         r = cv2.selectROI("Select ROI", img, False)
 
+        if sum(r) == 0:
+            actiondialog.button(QMessageBox.Save).setDisabled(True)
+        else:
+            actiondialog.button(QMessageBox.Save).setEnabled(True)
+            actiondialog.setDefaultButton(QMessageBox.Save)
+
         # If correct, if "fixed ROI size" is turned on, set to the given size
         if correct_ROIs and config.ROI_SIZE_FIXED:
             x, y, w, h = r[:4]
@@ -287,21 +309,28 @@ def image_capture(dir_path, current_side, sideNum, correct_ROIs):
 
         # If incorrect, set ROI to closest correct ROI
         if not correct_ROIs and config.SELECT_CLOSEST_CORRECT_ROI_WHEN_SELECTING_INCORRECT_ROI:
+            print(r)
             closest_dist = 99999999
-            for rect in correct_locs:
-                dist = abs(rect[0] - r[0]) + abs(rect[1] - r[1])
-                if dist < closest_dist:
-                    closest_dist = dist
-                    closest_rect = rect
+            # If user has dragged
+            if r[2] >= 5 and r[3] >= 5:
+                for rect in correct_locs:
+                    dist = abs(rect[0] - r[0]) + abs(rect[1] - r[1])
+                    if dist < closest_dist:
+                        closest_dist = dist
+                        closest_rect = rect
+            # If user has clicked
+            else:
+                for uncentered_rect in correct_locs:
+                    centered_rect = list(calculate_rectangle_center(uncentered_rect)) + uncentered_rect[2:]
+                    dist = abs(centered_rect[0] - r[0]) + abs(centered_rect[1] - r[1])
+                    # Debug use: print("UNCENTERED RECT:", uncentered_rect, "||||CENTERED_RECT:", centered_rect, "||||DIST:", dist)
+                    if dist < closest_dist:
+                        closest_dist = dist
+                        closest_rect = uncentered_rect
+
             r = list(closest_rect)
 
         # Save button default. If no ROI is selected, disable the save button
-
-        if r[2] == 0:
-            actiondialog.button(QMessageBox.Save).setDisabled(True)
-        else:
-            actiondialog.button(QMessageBox.Save).setEnabled(True)
-            actiondialog.setDefaultButton(QMessageBox.Save)
 
         # Asking what the user wants to do
         button_pressed = actiondialog.exec()

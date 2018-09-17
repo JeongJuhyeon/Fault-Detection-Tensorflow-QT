@@ -255,8 +255,12 @@ class Ui_MainWindow(object):
 
     def do_AllDelete(self):
         delete_path = os.path.join(self.absPath, self.dirName)
-        config.delete_folder(pathlib.Path(delete_path))
-        print("##-DELETE ALL")
+        try:
+            config.delete_folder(pathlib.Path(delete_path))
+            print("##-DELETE ALL")
+        except:
+            print("Error: No results to delete!")
+
 
     def do_Home(self):
         print("##-Return Home Stage")
