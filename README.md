@@ -1,3 +1,3 @@
 # Fault-detection-inceptionV3
-Detect the fault in machine via CV
+Detect faults in machine parts through image recognition using Tensorflow. Interface done in PyQT.
 <hr>
